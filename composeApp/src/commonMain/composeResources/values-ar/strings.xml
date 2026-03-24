@@ -1,0 +1,405 @@
+<resources>
+
+    <string name="rwaq">رواق كافيه</string>
+
+    <string name="reward">مكافأة</string>
+    <string name="pick_up_from_branch">إستلام من الفرع</string>
+    <string name="drive_thru">درايف ثرو</string>
+    <string name="open">مفتوح</string>
+    <string name="close">مغلق</string>
+    <string name="cart">السلة</string>
+    <string name="profile_language_english">الإنجليزية</string>
+    <string name="profile_language_arabic">العربية</string>
+    <string name="extensions">الإضافات</string>
+    <string name="max_count">الحد الأقصي</string>
+    <string name="status_pending">قيد الانتظار</string>
+    <string name="reward_discount">خصم المكافأة</string>
+    <string name="failed_to_load_branches">فشل في تحميل الفروع</string>
+
+    <string name="status_completed">مكتمل</string>
+    <string name="status_cancelled">ملغى</string>
+    <string name="status_unknown">غير معروف</string>
+    <string name="order_items_count">الطلب (%1$s)</string>
+    <string name="item_total">إجمالي الصنف: %1$s</string>
+    <string name="status_processing">جاري التنفيذ</string>
+    <string name="cashback">كاش باك</string>
+    <string name="coffee_tools">ادوات القهوة</string>
+
+    <string name="insufficient_points_title">نقاط غير كافية</string>
+
+    <!-- Reward Redeemed with details -->
+    <string name="reward_redeemed_with_points_message">تم استرداد المكافأة! تم استخدام %1$d نقطة. الرصيد: %2$d</string>
+
+    <!-- Reward Redeemed simple -->
+    <string name="reward_redeemed_message">تم استرداد المكافأة!</string>
+
+    <!-- Redeem Failed -->
+    <string name="redeem_reward_failed_message">فشل في استرداد المكافأة</string>
+
+
+    <string name="out_of_stock_title">غير متوفر</string>
+    <string name="out_of_stock_message">%1$s غير متوفر حالياً</string>
+
+    <string name="added_to_cart_title">تمت الإضافة إلى السلة</string>
+    <string name="added_to_cart_message">تمت إضافة %1$s إلى سلتك</string>
+
+    <!-- Error -->
+    <string name="error_title">خطأ</string>
+    <string name="add_to_cart_error_message">فشل في إضافة المنتج إلى السلة</string>
+    <string name="insufficient_points_message">نقاط غير كافية. تحتاج إلى %1$d نقطة ولكن لديك %2$d.</string>
+
+    <string name="you_have_reach_max_count_of_this_extension">لقد وصلت للحد الأقصي من هذه الإضافة</string>
+    <string name="choose_branch">حدد الفرع</string>
+    <string name="select_branch">إختر الفرع</string>
+    <string name="distance_from_you">يبعد عنك %1$s كم</string>
+    <string name="please_choose_car">الرجاء اختيار سيارة</string>
+    <string name="choose_car">اختيار سيارة</string>
+    <string name="choose">اختر</string>
+    <string name="back">رجوع</string>
+    <string name="are_you_sure_you_want_to_logout">هل تريد تسجيل الخروج ؟</string>
+    <string name="wallet">كاش باك</string>
+    <string name="my_points">نقاطي</string>
+    <string name="point">نقطة</string>
+    <string name="language">اللغة</string>
+    <string name="email_required">البريد الإلكتروني مطلوب</string>
+    <string name="email_invalid">صيغة البريد الإلكتروني غير صحيحة</string>
+    <string name="message_required">نص الرسالة مطلوب</string>
+    <string name="message_sent_success">تم إرسال رسالتك بنجاح</string>
+    <string name="contact_us_title">راسلنا</string>
+    <string name="privacy_policy_content">الشروط والأحكام\n\n1. المقدمة\nمرحبًا بكم في قهوة رواق (RWAQ Coffee). باستخدامك لهذا التطبيق، فإنك توافق على الالتزام بهذه الشروط.\n\n2. الخدمات والحساب\n• الأهلية: يجب أن يكون عمرك 18 عامًا على الأقل لاستخدام خدماتنا.\n• الحساب: أنت مسؤول عن الحفاظ على سرية بيانات حسابك.\n\n3. الطلبات والدفع\n• الدفع: نقبل طرق دفع متعددة تشمل البطاقات الائتمانية والمحافظ الرقمية.\n• التسعير: جميع الأسعار قابلة للتغيير دون إشعار مسبق.\n• الاسترداد: تتم معالجة طلبات الاسترجاع بناءً على كل حالة على حدة.\n\n4. التوصيل\nنقوم بالتوصيل للمناطق الموضحة داخل التطبيق. أوقات التوصيل هي تقديرات وللأغراض التوضيحية فقط.\n\n5. الملكية الفكرية\nجميع المحتويات والشعارات والصور في هذا التطبيق هي ملك لـ قهوة رواق ومحمية بموجب القوانين.\n\n----------------\n\nسياسة الخصوصية\n\n1. المعلومات التي نجمعها\nنقوم بجمع المعلومات الشخصية اللازمة لإتمام طلباتك، مثل الاسم، رقم الهاتف، البريد الإلكتروني، وعنوان التوصيل.\n\n2. كيفية استخدام بياناتك\n• لمعالجة وتوصيل طلباتك.\n• لتحسين وظائف التطبيق وتجربة المستخدم.\n• لإرسال العروض الترويجية (بموافقتك فقط).\n\n3. مشاركة المعلومات\nنحن لا نبيع بياناتك الشخصية. نشارك المعلومات فقط مع الأطراف الثالثة الضرورية لتشغيل الخدمة.</string>
+    <string name="message_sent_failed">لم يتم إرسال الرسالة</string>
+
+    <string name="email">بريدك الإلكتروني</string>
+    <string name="email_placeholder">example@mail.com</string>
+
+    <string name="message">تعليقك</string>
+    <string name="message_placeholder">اكتب رسالتك هنا...</string>
+    <string name="coffee_unbrewed">قهوة خام</string>
+    <string name="coffee_ready">قهوة جاهزة للشرب</string>
+    <string name="all_coffee">جميع أنواع القهوة</string>
+    <string name="special_offers">العروض الخاصة</string>
+    <string name="empty_products">لا توجد منتجات</string>
+    <string name="options_select_one">الخيارات ( اختر 1 )</string>
+
+
+    <string name="send">إرسال</string>
+    <string name="as_usual">طلبك كالعادة</string>
+    <string name="branches">الفروع</string>
+    <string name="contact_us">اتصل بنا</string>
+    <string name="work_time">مواعيد العمل</string>
+    <string name="no_schedule_available">لا توجد مواعيد متاحة</string>
+    <string name="available_all_day">متاح ٢٤ ساعة</string>
+    <string name="add_new_car">اضف سيارة جديدة</string>
+    <string name="no_cars_to_display">لا يوجد سيارات لعرضها</string>
+    <string name="order_from_this_branch">إستلام من هذا الفرع</string>
+    <string name="no_branches_to_display">لا يوجد فروع لعرضها</string>
+
+    <string name="select_brand">اختر الماركة</string>
+    <string name="select_color">اختر اللون</string>
+    <string name="enter_plate_number">أدخل رقم اللوحة</string>
+    <string name="plate_number">رقم اللوحة</string>
+
+    <string name="pickup_from_branch">استلام من الفرع</string>
+    <string name="car_pickup">استلام من السيارة</string>
+    <string name="no_products_available">لا توجد منتجات متاحة</string>
+
+    <string name="opens">يفتح</string>
+    <string name="closes">يغلق</string>
+    <string name="retry">إعادة المحاولة</string>
+
+
+    <string name="onboarding_title_1">اكتشــف عالـــــم *القهــــــــــــوة*\nالحقيقي والمميز</string>
+    <string name="onboarding_desc_1">مختارات مميزة من أجود أنواع القهوة المحمصة بعناية، توصل لحد باب بيتك</string>
+
+    <string name="onboarding_title_2">*نكهـــــــــــــة* تفـــرق من أول\nرشفـــــة</string>
+    <string name="onboarding_desc_2">تذوق الجودة في كل رشفة مع طرق التحضير المميزة لدينا.</string>
+
+    <string name="onboarding_title_3">اطلبهـــــا… *واستمتع* بهـــــا</string>
+    <string name="onboarding_desc_3">انضم إلى مجتمع رواق واستمتع بمكافآت حصرية.</string>
+
+    <!-- Cart -->
+    <string name="checkout">الدفع</string>
+    <string name="checkout_order">تأكيد الطلب</string>
+
+    <!-- Sections -->
+    <string name="add_more">إضافة المزيد</string>
+    <string name="cart_empty">سلة التسوق فارغة</string>
+
+    <string name="order_notes">ملاحظات الطلب</string>
+    <string name="order_notes_hint">هل لديك ملاحظات خاصة على الطلب؟</string>
+
+    <string name="enter_coupon">أدخل كود الخصم</string>
+    <string name="apply">تطبيق</string>
+
+    <string name="payment_details">تفاصيل الدفع</string>
+    <string name="sub_total">المجموع الفرعي</string>
+    <string name="total_amount">المبلغ الإجمالي</string>
+    <string name="vat_included">شامل ضريبة القيمة المضافة *</string>
+
+    <string name="vat_number">الرقم الضريبي : %1$s</string>
+    <string name="view_certificate">عرض الشهادة</string>
+
+    <string name="use_points">استخدم رصيد النقاط ( %1$d نقطة )</string>
+
+    <string name="online_payment">الدفع الإلكتروني</string>
+
+    <!-- Common -->
+    <string name="currency_sar">ر.س</string>
+    <string name="remove">إزالة</string>
+    <string name="add">إضافة</string>
+
+
+    <string name="login_now">سجل الدخول الأن</string>
+    <string name="country_name">مصر</string>
+    <string name="country_code">20+</string>
+    <string name="phone_number">رقم الهاتف</string>
+    <string name="continue_as_guest">الدخول كذائر</string>
+    <string name="login">تسجيل دخول</string>
+    <string name="delete">حذف</string>
+    <string name="send_otp_to_your_phone">تم إرسال رمز التحقق إلي هاتفك</string>
+    <string name="enter_your_verification_code">أدخل رمز التحقق المرسل إليك</string>
+    <string name="resend_code">إعادة إرسال الرمز</string>
+    <string name="confirm">تأكيد</string>
+    <string name="request_done">سيتم التواصل معكم من خلال خدمة العملاء خلال 24 ساعة من وقت الطلب</string>
+    <string name="create_account">إنشاء حساب</string>
+    <string name="confirm_password">تأكيد الرقم السري</string>
+    <string name="device">جهاز</string>
+    <string name="cash">كاش</string>
+    <string name="collecting_request_done">تم طلب التحصيل</string>
+    <string name="maintenance_request_done">تم طلب الصيانة</string>
+    <string name="confirm_order">تأكيد الطلب</string>
+    <string name="please_enter_valid_location">من فضلك أدخل عنوان صحيح</string>
+    <string name="about_aqua">أعرف عن أكوا</string>
+    <string name="active">نشط</string>
+    <string name="request_maintenance">طلب صيانة</string>
+    <string name="request_collecting">طلب تحصيل</string>
+    <string name="installation_date">تاريخ التركيب</string>
+    <string name="next_maintenance_date">الصيانة القادمة</string>
+    <string name="idle">خامل</string>
+    <string name="other_phone_number">رقم هاتف أخر</string>
+    <string name="detailed_location">العنوان بالتفصيل</string>
+    <string name="enter_location">أدخل العنوان</string>
+    <string name="installment">تقسيط</string>
+    <string name="full_name">الاسم الثلاثي</string>
+    <string name="update_user">تحديث البيانات</string>
+    <string name="update_user_data">يمكنك تحديث البيانات بسهولة</string>
+    <string name="no_devices_to_display">لا يوجد لديك أجهزة لعضرها</string>
+    <string name="enter_full_name">أدخل إسمك الثلاثي</string>
+    <string name="please_enter_full_name">من فضلك أدخل إسمك الثلاثي</string>
+    <string name="passwords_do_not_match">الرقم السري غير مطابق</string>
+    <string name="auth_code_title">رمز المصادقة</string>
+    <string name="enter_code_message">برجاء إدخال الرمز المرسل على رقم هاتفك</string>
+    <string name="discover_purity">اكتشف نقاء كل قطرة</string>
+    <string name="start_now">ابدأ الآن</string>
+    <string name="aqua_products">منتجات أكوا</string>
+    <string name="product_details">تفاصيل المنتج</string>
+    <string name="make_order">طلب المنتج</string>
+    <string name="error">حدث خطأ ما!</string>
+    <string name="welcome">مرحبا بك في رواق</string>
+    <string name="receiving_method">طريقة الاستلام</string>
+    <string name="temporarily_closed">مغلق مؤقتًا</string>
+    <string name="coming_soon">قريبًا</string>
+    <string name="username_required">اسم المستخدم مطلوب</string>
+
+    <string name="enter_your_phone_number">أدخل رقم الهاتف (يبدأ بـ 5)</string>
+    <string name="enter_your_password">أدخل الرقم السري</string>
+    <string name="password">الرقم السري</string>
+    <string name="forget_password">نسيت الرقم السري؟</string>
+    <string name="enter_valid_phone_number">من فضلك ادخل رقم هاتف صحيح</string>
+    <string name="enter_valid_password">يجب أن تحتوي كلمة المرور على أحرف وأرقام</string>
+    <string name="create_new_account">إنشاء حساب جديد</string>
+    <string name="fresh_start">ابدأ كل يوم بنقاء جديد</string>
+    <string name="smart_purification">تنقية ذكية لحياة صحية</string>
+    <string name="verify">تأكيد</string>
+    <string name="did_not_receive_code">لم تستلم الرمز؟</string>
+    <string name="resend">إعادة الإرسال</string>
+    <string name="send_otp_code">إرسال الكود</string>
+    <string name="please_enter_new_password">برجاء إدخال الرقم السري الجديد</string>
+    <string name="good_morning">صباح الخير</string>
+    <string name="good_evening">مساء الخير</string>
+    <string name="resend_timer">إعادة الإرسال خلال %1$d:%2$s</string>
+    <string name="no_internet_title">عفواً! يبدو أنك غير متصل بالإنترنت.</string>
+    <string name="no_internet_content">تحقق من اتصالك وحاول مرة أخرى</string>
+    <string name="unknown_error_title">خطأ غير معروف</string>
+    <string name="unknown_error_description">حدث خطأ غير معروف. يرجى المحاولة مرة أخرى.</string>
+    <string name="error_invalid_credentials_title">بيانات اعتماد غير صحيحة.</string>
+    <string name="error_invalid_credentials_description">يرجى التحقق من اسم المستخدم وكلمة المرور الخاصة بك.</string>
+    <string name="continue_with_google">دخول بواسطة جوجل</string>
+    <string name="add_new_location">إضافة عنوان جديد</string>
+    <string name="on_boarding_desc_1">لأن صحة عائلتك تستحق الأفضل، اختر تنقية المياه الذكية.. الحل الأمثل للحفاظ على صحة من تحب.</string>
+    <string name="on_boarding_desc_2">اجعل الماء النظيف أسلوب حياة… تقنية تنقية متطورة تمنحك راحة البال مع كل رشفة.</string>
+    <string name="on_boarding_desc_3">فلاتر مصممة خصيصًا لتلبية احتياجاتك لضمان مياه نقية على الدوام.\n\n</string>
+    <string name="next">التالي</string>
+    <string name="success">تهانيا</string>
+    <string name="error_invalid_mobile_number">رقم الجوال غير صالح</string>
+    <string name="error_invalid_password">كلمة المرور غير صحيحة</string>
+    <string name="error_invalid_otp">رمز التحقق غير صحيح</string>
+    <string name="reset_forgot_password">نسيت الرقم السري</string>
+    <string name="enter_mobile_number_message">أدخل رقم الهاتف المحمول المرتبط بحسابك وسيتم إرسال رمز التحقق إلى رقمك</string>
+    <string name="error_user_is_blocked">تم حظر حسابك</string>
+    <string name="error_too_many_requests">محاولات كثيرة، يرجى المحاولة لاحقًا</string>
+    <string name="error_otp_expired">انتهت صلاحية رمز التحقق</string>
+    <string name="error_phone_exists">رقم الجوال مسجل مسبقًا</string>
+    <string name="error_username_exists">اسم المستخدم مسجل مسبقًا</string>
+
+    <string name="error_incorrect_password">كلمة المرور غير صحيحة</string>
+    <string name="error_no_network">لا يوجد اتصال بالإنترنت</string>
+    <string name="error_invalid_credentials">بيانات تسجيل الدخول غير صحيحة</string>
+
+    <string name="error_invalid_request">طلب غير صالح</string>
+    <string name="error_something_went_wrong">حدث خطأ ما</string>
+
+    <string name="please_enter_valid_street">من فضلك أدخل اسم الشارع صحيح</string>
+    <string name="please_enter_valid_city">من فضلك أدخل اسم المدينة</string>
+    <string name="please_enter_valid_government">من فضلك اختر محافظة</string>
+    <string name="please_enter_valid_building">من فضلك أدخل رقم العمارة</string>
+    <string name="please_enter_valid_apartment">من فضلك أدخل رقم الشقة</string>
+    <string name="no_current_locations_founded">لا يوجد عنوان حالي</string>
+    <string name="the_street">الشارع</string>
+    <string name="building">العمارة</string>
+    <string name="governorate">المحافظة</string>
+    <string name="city">المدينة</string>
+    <string name="apartment">الشقة</string>
+    <string name="save">حفظ</string>
+    <string name="edit_location">تعديل العنوان</string>
+    <string name="add_location">أضف عنوان</string>
+    <string name="finish">إنهاء</string>">
+    <string name="current_location">العنوان الحالي</string>">
+    <string name="skip">تخطي</string>
+    <string name="wrong_phone_number">رقم الهاتف غير صحيح</string>
+    <string name="search_here">إبحث هنا</string>
+    <string name="offers_and_discount">العروض والخصومات</string>
+    <string name="products">المنتجات</string>
+    <string name="filters">فلاتر مياه</string>
+    <string name="candles">شمعات</string>
+    <string name="separate_pieces">قطع منفصلة</string>
+    <string name="accessories">إكسسوارات</string>
+    <string name="home_screen">الرئيسية</string>
+    <string name="services_screen">الخدمات</string>
+    <string name="profile_screen">حسابي</string>
+    <string name="more_screen">المزيد</string>
+    <string name="my_orders">طلباتي</string>
+    <string name="my_services">خدماتي</string>
+    <string name="my_filter">أجهزتي</string>
+    <string name="my_invoice">فواتيري</string>
+    <string name="saved_locations">العنواين المحفوظة</string>
+    <string name="support">الدعم الفني</string>
+    <string name="logout">تسجيل الخروج</string>
+    <string name="developed_by">تم التطوير بواسطة شركة </string>
+    <string name="aqua_software">AQUA SOFTWARE</string>
+    <string name="terms_and_conditions">الشروط والاحكام</string>
+    <string name="privacy_policy">سياسة الخصوصية</string>
+    <string name="about_app">عن التطبيق</string>
+    <string name="rate_app">قيم التطبيق</string>
+    <string name="share_app">شارك التطبيق</string>
+    <string name="aqua_filter">فلتر أكوا</string>
+    <string name="price">السعر</string>
+    <string name="product_description">وصف المنتج</string>
+    <string name="users_count">من المستخدمين</string>
+    <string name="shipping">رسوم الشحن + التركيب</string>
+    <string name="origin">المنشأ</string>
+    <string name="product_name">إسم الجهاز</string>
+    <string name="product_price">سعر الجهاز</string>
+    <string name="see_more"> رؤية المزيد...</string>
+    <string name="see_less"> رؤية الأقل...</string>
+    <string name="call_to_order_product">طلب المنتج</string>
+    <string name="notifications">الإشعارات</string>
+    <string name="production_capacity">السعة الإنتاجية</string>
+    <string name="buy_now">شراء الان</string>
+    <string name="add_to_cart">اضف الي العربة</string>
+    <string name="product_feature">مميزات المنتج</string>
+    <string name="features">المميزات</string>
+    <string name="empty_notifications">لا يوجد إشعارات الأن</string>
+    <string name="product_specification">المواصفات الفنية</string>
+    <string name="details">التفاصيل</string>
+    <string name="dimensions">الأبعاد</string>
+    <string name="username">الاسم الرباعي</string>
+    <string name="order_date">تاريخ الطلب</string>
+
+    <string name="please_enter_valid_name">من فضلك ادخل الاسم الرباعي</string>
+    <string name="type">النوع</string>
+    <string name="copy">نسخ</string>
+    <string name="just_now">الآن</string>
+    <string name="minutes">دقائق</string>
+    <string name="days">أيام</string>
+    <string name="one_hour">ساعة واحدة</string>
+    <string name="one_day">يوم واحد</string>
+    <string name="hours">ساعات</string>
+    <string name="payment_accounts">حسابات الدفع</string>
+    <string name="vodafone_cash">فودافون كاش</string>
+    <string name="from_now">من الآن</string>
+    <string name="time_ago">منذ %1$s</string>
+    <string name="time_from_now">بعد %1$s</string>
+    <string name="ago">منذ</string>
+    <string name="pay_from_instapay">تحويل من انستاباي إلي حساب بنكي</string>
+    <string name="the_bank">البنك</string>
+    <string name="account_number">رقم الحساب</string>
+    <string name="receiver_name">إسم المستفيد</string>
+    <string name="weight">الوزن</string>
+    <string name="name">الإسم</string>
+    <string name="address">العنوان</string>
+    <string name="discover_products">إستكشف المنتجات</string>
+    <string name="no_orders_to_view">لا يوجد لديك طلبات لعرضها</string>
+    <string name="order_confirmed">تم تأكيد الطلب</string>
+    <string name="make_all_read">قراءة الكل</string>
+    <string name="no_service_to_view">لا يوجد لديك خدمات لعرضها</string>
+    <string name="power_supply">التغذية الكهربائية</string>
+    <string name="done">تم</string>
+    <string name="amount">العدد</string>
+    <string name="one_device_price">سعر الجهاز الواحد</string>
+    <string name="total">الإجمالي</string>
+    <string name="no_invoice_to_display">لا يوجد لديك فواتير لعرضها</string>
+
+    <string name="all_notifications_read">تم قراءة كل الإشعارات</string>
+    <string name="product_specification_for">المواصفات الفنية لـ </string>
+    <string name="order_time">وقت الطلب</string>
+    <string name="order_code">كود الطلب</string>
+    <string name="order_details">تفاصيل الطلب</string>
+    <string name="service_time">وقت الخدمة</string>
+    <string name="service_code">كود الخدمة</string>
+    <string name="service_details">تفاصيل الخدمة</string>
+    <string name="current_orders">الطلبات الحالية</string>
+    <string name="previous_orders">الطلبات السابقة</string>
+    <string name="current_services">الخدمات الحالية</string>
+    <string name="previous_services">الخدمات السابقة</string>
+    <string name="shipping_address">عنوان الشحن</string>
+    <string name="change_location">تغير العنوان</string>
+    <string name="change">تغير</string>
+    <string name="total_due">إجمالي المستحق</string>
+    <string name="payment_method">طرق الدفع</string>
+    <string name="egyptian_bound">ج . م</string>
+    <string name="governorates_array">Governorates</string>
+    <string-array name="egypt_governorates">
+        <item>القاهرة</item>
+        <item>الجيزة</item>
+        <item>الإسكندرية</item>
+        <item>القليوبية</item>
+        <item>الأقصر</item>
+        <item>أسوان</item>
+        <item>أسيوط</item>
+        <item>البحيرة</item>
+        <item>بني سويف</item>
+        <item>بورسعيد</item>
+        <item>جنوب سيناء</item>
+        <item>الدقهلية</item>
+        <item>دمياط</item>
+        <item>السويس</item>
+        <item>الشرقية</item>
+        <item>الغربية</item>
+        <item>الفيوم</item>
+        <item>قنا</item>
+        <item>كفر الشيخ</item>
+        <item>مطروح</item>
+        <item>المنوفية</item>
+        <item>المنيا</item>
+        <item>الوادي الجديد</item>
+        <item>شمال سيناء</item>
+        <item>الإسماعيلية</item>
+        <item>البحر الأحمر</item>
+        <item>سوهاج</item>
+    </string-array>
+    <string name="privacy_policy_desc">أن يكون المستخدم ذا أهلية قانوينة كاملة للتعاقد والتعامل, يجب على المستخدم توفير معلومات صحيحة ودقيقة عند التسجيل وتحمل مسؤولية حماية بيانات الدخول. لا يتحمل التطبيق مسؤولية أي عيوب أو أضرار ناتجة عن سوء الاستخدام ,جميع المحتويات الموجودة على التطبيق من صور ونصوص وتصاميم محمية بحقوق الطبع والنشر ولا يجوز نسخها أو إعادة استخدامها لأي غرض تجاري دون إذن مسبق.</string>
+    <string name="about_app_desc">أن يكون المستخدم ذا أهلية قانوينة كاملة للتعاقد والتعامل, يجب على المستخدم توفير معلومات صحيحة ودقيقة عند التسجيل وتحمل مسؤولية حماية بيانات الدخول. لا يتحمل التطبيق مسؤولية أي عيوب أو أضرار ناتجة عن سوء الاستخدام ,جميع المحتويات الموجودة على التطبيق من صور ونصوص وتصاميم محمية بحقوق الطبع والنشر ولا يجوز نسخها أو إعادة استخدامها لأي غرض تجاري دون إذن مسبق.</string>
+    <string name="terms_and_conditions_desc">أن يكون المستخدم ذا أهلية قانوينة كاملة للتعاقد والتعامل, يجب على المستخدم توفير معلومات صحيحة ودقيقة عند التسجيل وتحمل مسؤولية حماية بيانات الدخول. لا يتحمل التطبيق مسؤولية أي عيوب أو أضرار ناتجة عن سوء الاستخدام ,جميع المحتويات الموجودة على التطبيق من صور ونصوص وتصاميم محمية بحقوق الطبع والنشر ولا يجوز نسخها أو إعادة استخدامها لأي غرض تجاري دون إذن مسبق.
+</string>
+</resources>

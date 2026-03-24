@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "140508213759",
+    "firebase_url": "https://shop-3b436-default-rtdb.firebaseio.com",
+    "project_id": "shop-3b436",
+    "storage_bucket": "shop-3b436.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140508213759:android:3066c81cd4a8c633d4f7ca",
+        "android_client_info": {
+          "package_name": "com.example.firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDamN7Jvs_VSYHurUOvAGNnIbYwCu_EHSM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140508213759:android:880b741859176ba1d4f7ca",
+        "android_client_info": {
+          "package_name": "com.khater.rwaq"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDamN7Jvs_VSYHurUOvAGNnIbYwCu_EHSM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

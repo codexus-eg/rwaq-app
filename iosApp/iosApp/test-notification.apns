@@ -1,0 +1,9 @@
+{
+    "Simulator Target Bundle": "com.khater.rwaq",
+    "aps": {
+        "alert": {
+            "title": "Test Notification",
+            "body": "This is a test of the notifications in the ilS simulator."
+        }
+    }
+}

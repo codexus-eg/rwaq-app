@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="rwaq">Rwaq cafe</string>
+
+    <string name="reward">Rewards</string>
+    <string name="pick_up_from_branch">Pick-up</string>
+    <string name="drive_thru">Drive Thru</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="choose_branch">Choose branch</string>
+    <string name="cart">Cart</string>
+    <string name="select_branch">Select branch</string>
+    <string name="failed_to_load_branches">Failed to load branches</string>
+
+    <string name="reward_discount">Reward Discount</string>
+    <string name="please_choose_car">Please choose car</string>
+    <string name="choose_car">choose car</string>
+    <string name="coffee_unbrewed">Unbrewed Coffee</string>
+    <string name="coffee_ready">Ready-to-Drink</string>
+    <string name="all_coffee">All Coffee</string>
+    <string name="special_offers">Special Offers</string>
+    <string name="empty_products">No products available</string>
+    <string name="choose">Choose</string>
+    <string name="status_pending">Pending</string>
+    <string name="status_completed">Completed</string>
+    <string name="status_cancelled">Cancelled</string>
+    <string name="status_unknown">Unknown</string>
+    <string name="order_items_count">Order (%1$s)</string>
+    <string name="item_total">Item total: %1$s</string>
+    <string name="insufficient_points_message">Insufficient points. You need %1$d points but have %2$d.</string>
+
+    <string name="out_of_stock_title">Out of Stock</string>
+    <string name="out_of_stock_message">%1$s is currently out of stock</string>
+
+    <string name="added_to_cart_title">Added to Cart</string>
+    <string name="added_to_cart_message">%1$s has been added to your cart</string>
+    <string name="reward_redeemed_with_points_message">Reward Redeemed! %1$d points used. Balance: %2$d</string>
+
+    <!-- Reward Redeemed simple -->
+    <string name="reward_redeemed_message">Reward Redeemed!</string>
+    <string name="insufficient_points_title">Insufficient Points</string>
+
+    <!-- Redeem Failed -->
+    <string name="redeem_reward_failed_message">Failed to redeem reward</string>
+    <!-- Error -->
+    <string name="error_title">Error</string>
+    <string name="add_to_cart_error_message">Failed to add item to cart</string>
+
+
+    <string name="status_processing">Processing</string>
+    <string name="coffee_tools">Coffee tools</string>
+    <string name="cashback">Cashback</string>
+
+    <string name="work_time">Work time</string>
+    <string name="no_schedule_available">No schedule available</string>
+    <string name="add_new_car">Add new car</string>
+    <string name="retry">Retry</string>
+    <string name="extensions">Extensions</string>
+    <string name="max_count">Max Count</string>
+    <string name="back">Back</string>
+    <string name="are_you_sure_you_want_to_logout">Are you sure you want to logout?</string>
+    <string name="wallet">Cash back</string>
+    <string name="my_points">My Points</string>
+    <string name="you_have_reach_max_count_of_this_extension">You have reach max count of this extension</string>
+    <string name="pickup_from_branch">Pickup from Branch</string>
+    <string name="car_pickup">Car Pickup</string>
+    <string name="no_products_available">No products available</string>
+    <string name="point">Point</string>
+    <string name="as_usual">As usual</string>
+    <string name="branches">Branches</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="language">Language</string>
+    <string name="email_required">Email is required</string>
+    <string name="email_invalid">Invalid email format</string>
+    <string name="message_required">Message is required</string>
+    <string name="message_sent_success">Your message has been sent successfully</string>
+    <string name="select_brand">Select Brand</string>
+    <string name="select_color">Select Color</string>
+    <string name="enter_plate_number">Enter Plate Number</string>
+    <string name="plate_number">Plate Number</string>
+    <string name="message_sent_failed">Message could not be sent</string>
+    <string name="options_select_one">Options ( Select 1 )</string>
+
+
+    <string name="contact_us_title">Contact us</string>
+
+    <string name="email">Email</string>
+    <string name="email_placeholder">example@mail.com</string>
+
+    <string name="message">Message</string>
+    <string name="message_placeholder">Write your message here...</string>
+
+    <string name="send">Send</string>
+
+    <string name="no_cars_to_display">No cars to display</string>
+    <string name="no_branches_to_display">No Branches to display</string>
+
+    <string name="available_all_day">Available 24 hours</string>
+    <string name="order_from_this_branch">Order from this branch</string>
+    <string name="opens">Opens</string>
+    <string name="closes">Closes</string>
+
+    <string name="distance_from_you">%1$.1f km away from you</string>
+
+
+    <!-- Cart -->
+    <string name="checkout">Checkout</string>
+    <string name="checkout_order">Checkout Order</string>
+
+    <!-- Sections -->
+     <string name="add_more">Add More</string>
+    <string name="cart_empty">Your cart is empty</string>
+
+    <string name="order_notes">Order Notes</string>
+    <string name="order_notes_hint">Do you have special notes on the request?</string>
+
+    <string name="enter_coupon">Enter coupon code</string>
+    <string name="apply">Apply</string>
+
+    <string name="payment_details">Payment Details</string>
+    <string name="sub_total">Sub-total</string>
+    <string name="total_amount">Total Amount</string>
+    <string name="vat_included">VAT included *</string>
+
+    <string name="vat_number">Vat Number : %1$s</string>
+    <string name="view_certificate">View Certificate</string>
+
+    <string name="use_points">Use your points balance ( %1$d Point )</string>
+
+    <string name="online_payment">Online Payment</string>
+
+    <!-- Common -->
+    <string name="currency_sar">SAR</string>
+     <string name="remove">Remove</string>
+    <string name="add">Add</string>
+
+
+
+    <string name="onboarding_title_1">Discover the real world of *Coffee*</string>
+    <string name="onboarding_desc_1">Premium selections from the finest coffee types, delivered to your door with care.</string>
+
+    <string name="onboarding_title_2">Flavor that makes a difference</string>
+    <string name="onboarding_desc_2">Taste the quality in every sip with our distinct brewing methods.</string>
+
+    <string name="onboarding_title_3">Start your journey today</string>
+    <string name="onboarding_desc_3">Join the Rwaq community and enjoy exclusive rewards.</string>
+
+
+
+
+    <string name="login_now">Login Now</string>
+    <string name="country_name">Egypt</string>
+    <string name="country_code">+20</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="continue_as_guest">Continue as Guest</string>
+    <string name="login">Login</string>
+    <string name="delete">Delete</string>
+    <string name="send_otp_to_your_phone">A verification code has been sent to your phone</string>
+    <string name="enter_your_verification_code">Enter the verification code sent to you</string>
+    <string name="resend_code">Resend Code</string>
+    <string name="confirm">Confirm</string>
+    <string name="create_account">Create Account</string>
+    <string name="no_devices_to_display">No devices to display</string>
+    <string name="make_order">Make Order</string>
+    <string name="device">Device</string>
+    <string name="continue_with_google">Continue with Google</string>
+    <string name="discover_purity">Discover the purity of every drop</string>
+    <string name="start_now">Start Now</string>
+    <string name="no_internet_title">Oops! It looks like you're offline.</string>
+    <string name="no_internet_content">Check your connection and try again</string>
+    <string name="unknown_error_title">Unknown error</string>
+    <string name="unknown_error_description">An unknown error occurred. Please try again.</string>
+    <string name="error_invalid_credentials_title">Wrong credentials.</string>
+    <string name="error_invalid_credentials_description">Please check your username and password.</string>
+    <string name="add_new_location">Add New Address</string>
+    <string name="welcome">Welcome to Rwaq</string>
+    <string name="cash">Cash</string>
+    <string name="other_phone_number">Other Phone Number</string>
+    <string name="detailed_location">Detailed Location</string>
+    <string name="enter_location">Enter Location</string>
+    <string name="confirm_order">Confirm order</string>
+    <string name="about_aqua">About Aqua</string>
+    <string name="receiving_method">Receiving Method</string>
+    <string name="temporarily_closed">Temporarily Closed</string>
+    <string name="coming_soon">Coming Soon</string>
+    <string name="username_required">Username is required</string>
+    <string name="update_user">Update user data</string>
+    <string name="update_user_data">You can update your data easy</string>
+
+    <string name="active">Active</string>
+    <string name="idle">Idle</string>
+    <string name="collecting_request_done">Collecting request done</string>
+    <string name="maintenance_request_done">Maintenance request done</string>
+    <string name="request_done">You will be contacted by customer service within 24 hours of placing your order.</string>
+    <string name="installation_date">Installation date</string>
+    <string name="next_maintenance_date">Next maintenance date</string>
+    <string name="request_maintenance">Request maintenance</string>
+    <string name="request_collecting">Request collecting</string>
+    <string name="please_enter_valid_location">Please enter valid location</string>
+    <string name="installment">Installment</string>
+    <string name="reset_forgot_password">Forgot password</string>
+    <string name="send_otp_code">Send Code</string>
+    <string name="please_enter_new_password">Please enter your new password</string>
+    <string name="enter_mobile_number_message">Enter the mobile number associated with your account, and a verification code will be sent to your number.</string>
+    <string name="enter_your_phone_number">Enter phone number (starts with 5)</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="password">Password</string>
+    <string name="full_name">Full name</string>
+    <string name="enter_full_name">Enter your full name</string>
+    <string name="auth_code_title">Authentication Code</string>
+    <string name="enter_code_message">Please enter the code sent to your phone number</string>
+    <string name="please_enter_full_name">Please enter your full name</string>
+    <string name="forget_password">Forget password?</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="enter_valid_phone_number">Please enter valid phone number.</string>
+    <string name="enter_valid_password">Password must contain letters and digits.</string>
+    <string name="create_new_account">Create new account.</string>
+    <string name="error">opps! Something went wrong</string>
+    <string name="success">Congratulations</string>
+    <string name="fresh_start">Start every day with purity</string>
+    <string name="smart_purification">Smart purification for a healthy life</string>
+    <string name="verify">Verify</string>
+    <string name="did_not_receive_code">Didn't receive the code?</string>
+    <string name="resend">Resend</string>
+    <string name="resend_timer">Resend in %1$d:%2$s</string>
+    <string name="error_invalid_mobile_number">Invalid mobile number</string>
+    <string name="error_invalid_password">Invalid password</string>
+    <string name="error_invalid_otp">Invalid OTP code</string>
+    <string name="good_morning">Good morning</string>
+    <string name="good_evening">Good evening</string>
+    <string name="error_user_is_blocked">Your account is blocked</string>
+    <string name="error_too_many_requests">Too many attempts, please try again later</string>
+    <string name="error_otp_expired">OTP code has expired</string>
+    <string name="error_phone_exists">Phone number already exists</string>
+    <string name="error_username_exists">Username already exists</string>
+    <string name="aqua_products">Aqua products</string>
+
+    <string name="error_incorrect_password">Incorrect password</string>
+    <string name="error_no_network">No internet connection</string>
+    <string name="error_invalid_credentials">Invalid login credentials</string>
+
+    <string name="error_invalid_request">Invalid request</string>
+    <string name="error_something_went_wrong">Something went wrong</string>
+    <string name="on_boarding_desc_1">Because your family’s health deserves the best, choose smart water purification — the ideal solution to protect those you love.</string>
+
+    <string name="on_boarding_desc_2">Make clean water a way of life… advanced purification technology that gives you peace of mind with every sip.</string>
+
+    <string name="on_boarding_desc_3">Filters specially designed to meet your needs and ensure pure water at all times.\n\n</string>
+
+    <string name="next">Next</string>
+    <string name="please_enter_valid_street">Please enter a valid street name</string>
+    <string name="please_enter_valid_city">Please enter a valid city name</string>
+    <string name="please_enter_valid_government">Please select a governorate</string>
+    <string name="please_enter_valid_building">Please enter a valid building number</string>
+    <string name="please_enter_valid_apartment">Please enter a valid apartment number</string>
+    <string name="no_current_locations_founded">No current addresses found</string>
+    <string name="the_street">Street</string>
+    <string name="building">Building</string>
+    <string name="governorate">Governorate</string>
+    <string name="city">City</string>
+    <string name="apartment">Apartment</string>
+    <string name="save">Save</string>
+    <string name="edit_location">Edit Address</string>
+    <string name="add_location">Add Address</string>
+    <string name="finish">Finish</string>
+    <string name="current_location">Current Address</string>
+    <string name="skip">Skip</string>
+    <string name="wrong_phone_number">Invalid phone number</string>
+    <string name="search_here">Search here</string>
+    <string name="offers_and_discount">Offers and Discounts</string>
+    <string name="products">Products</string>
+    <string name="filters">Water Filters</string>
+    <string name="candles">Cartridges</string>
+    <string name="separate_pieces">Separate Parts</string>
+    <string name="accessories">Accessories</string>
+    <string name="home_screen">Home</string>
+    <string name="services_screen">Services</string>
+    <string name="profile_screen">My Account</string>
+    <string name="more_screen">More</string>
+    <string name="my_orders">My Orders</string>
+    <string name="my_services">My Services</string>
+    <string name="my_filter">My Devices</string>
+    <string name="my_invoice">My Invoices</string>
+    <string name="saved_locations">Saved Addresses</string>
+    <string name="support">Customer Support</string>
+    <string name="logout">Logout</string>
+    <string name="developed_by">Developed by</string>
+    <string name="aqua_software">AQUA SOFTWARE</string>
+    <string name="terms_and_conditions">Terms and Conditions</string>
+    <string name="profile_language_english">English</string>
+    <string name="profile_language_arabic">Arabic</string>
+
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="about_app">About the App</string>
+    <string name="rate_app">Rate the App</string>
+    <string name="share_app">Share the App</string>
+    <string name="aqua_filter">Aqua Filter</string>
+    <string name="price">Price</string>
+    <string name="product_description">Product Description</string>
+    <string name="users_count">From Users</string>
+    <string name="shipping">Shipping + Installation Fees</string>
+    <string name="origin">Origin</string>
+    <string name="copy">Copy</string>
+    <string name="vodafone_cash">Vodafone Cash</string>
+    <string name="just_now">Just now</string>
+    <string name="minutes">Minutes</string>
+    <string name="days">Days</string>
+    <string name="hours">Hours</string>
+    <string name="one_hour">One hour</string>
+    <string name="one_day">One day</string>
+    <string name="from_now">From now</string>
+    <string name="ago">ago</string>
+    <string name="amount">Amount</string>
+    <string name="total">Total</string>
+    <string name="one_device_price">One Device Price</string>
+    <string name="no_invoice_to_display">No invoices to display</string>
+    <string name="order_date">Order date</string>
+    <string name="time_ago">%1$s ago</string>
+    <string name="time_from_now">%1$s from now</string>
+    <string name="pay_from_instapay">Pay from Instapay</string>
+    <string name="payment_accounts">Payment accounts</string>
+    <string name="product_details">Product details</string>
+    <string name="production_capacity">Production Capacity</string>
+    <string name="buy_now">Buy Now</string>
+    <string name="add_to_cart">Add to Cart</string>
+    <string name="product_feature">Product Features</string>
+    <string name="the_bank">The bank</string>
+    <string name="account_number">Account number</string>
+    <string name="receiver_name">Receiver name</string>
+    <string name="features">Features</string>
+    <string name="product_specification">Technical Specifications</string>
+    <string name="details">Details</string>
+    <string name="dimensions">Dimensions</string>
+    <string name="username">Full Name</string>
+    <string name="please_enter_valid_name">Please enter your full name</string>
+    <string name="type">Type</string>
+     <string name="weight">Weight</string>
+    <string name="product_name">Product name</string>
+    <string name="product_price">Product price</string>
+    <string name="see_more"> See More...</string>
+    <string name="see_less"> See Less...</string>
+    <string name="call_to_order_product">Make Order</string>
+    <string name="notifications">Notifications</string>
+    <string name="name">Name</string>
+    <string name="empty_notifications">No notifications yet!</string>
+    <string name="address">Address</string>
+    <string name="discover_products">Discover Products</string>
+    <string name="no_orders_to_view">You have no orders to display</string>
+    <string name="no_service_to_view">You have no services to display</string>
+    <string name="order_confirmed">Order confirmed</string>
+    <string name="power_supply">Power Supply</string>
+    <string name="make_all_read">Make all read</string>
+    <string name="done">Done</string>
+    <string name="all_notifications_read">All notification read</string>
+    <string name="product_specification_for">Technical specifications for </string>
+    <string name="order_time">Order Time</string>
+    <string name="order_code">Order Code</string>
+    <string name="order_details">Order Details</string>
+    <string name="service_time">Service Time</string>
+    <string name="service_code">Service Code</string>
+    <string name="service_details">Service Details</string>
+    <string name="current_orders">Current Orders</string>
+    <string name="previous_orders">Previous Orders</string>
+    <string name="current_services">Current Services</string>
+    <string name="previous_services">Previous Services</string>
+    <string name="shipping_address">Shipping Address</string>
+    <string name="change_location">Change Address</string>
+    <string name="change">Change</string>
+    <string name="total_due">Total Due</string>
+    <string name="payment_method">Payment Methods</string>
+    <string name="egyptian_bound">L.E</string>
+    <string name="privacy_policy_content">Terms of Service\n\n1. Introduction\nWelcome to RWAQ Coffee. By using our application, you agree to these terms.\n\n2. Services &amp; Accounts\n• Eligibility: You must be at least 18 years old to use our services.\n• Account: You are responsible for maintaining the confidentiality of your account information.\n\n3. Orders &amp; Payments\n• Payment: We accept various payment methods including credit cards and digital wallets.\n• Pricing: All prices are subject to change without prior notice.\n• Refunds: Refund requests are processed on a case-by-case basis.\n\n4. Delivery\nWe provide delivery to specific areas mentioned in the app. Delivery times are estimates and not guaranteed.\n\n5. Intellectual Property\nAll content, logos, and graphics on this app are the property of RWAQ Coffee.\n\n----------------\n\nPrivacy Policy\n\n1. Information We Collect\nWe collect personal information necessary to process your orders, such as your name, phone number, email, and delivery address.\n\n2. How We Use Your Data\n• To process and deliver your orders.\n• To improve our app functionality.\n• To send promotional offers (only with your consent).\n\n3. Data Sharing\nWe do not sell your personal data. We only share necessary details with third parties essential for service delivery.</string>
+    <string-array name="egypt_governorates">
+        <item>Cairo</item>
+        <item>Giza</item>
+        <item>Alexandria</item>
+        <item>Qalyubia</item>
+        <item>Luxor</item>
+        <item>Aswan</item>
+        <item>Assiut</item>
+        <item>Beheira</item>
+        <item>Beni Suef</item>
+        <item>Port Said</item>
+        <item>South Sinai</item>
+        <item>Dakahlia</item>
+        <item>Damietta</item>
+        <item>Suez</item>
+        <item>Sharqia</item>
+        <item>Gharbia</item>
+        <item>Fayoum</item>
+        <item>Qena</item>
+        <item>Kafr El-Sheikh</item>
+        <item>Matrouh</item>
+        <item>Monufia</item>
+        <item>Minya</item>
+        <item>New Valley</item>
+        <item>North Sinai</item>
+        <item>Ismailia</item>
+        <item>Red Sea</item>
+        <item>Sohag</item>
+    </string-array>
+
+    <string name="privacy_policy_desc">The user must have full legal capacity to contract and interact. Users must provide accurate and truthful information when registering and are responsible for protecting their login data. The application is not responsible for any damage or misuse. All content, including images, text, and designs, is protected by copyright and may not be copied or reused for any commercial purpose without prior permission.</string>
+
+    <string name="about_app_desc">The user must have full legal capacity to contract and interact. Users must provide accurate and truthful information when registering and are responsible for protecting their login data. The application is not responsible for any damage or misuse. All content, including images, text, and designs, is protected by copyright and may not be copied or reused for any commercial purpose without prior permission.</string>
+
+    <string name="terms_and_conditions_desc">The user must have full legal capacity to contract and interact. Users must provide accurate and truthful information when registering and are responsible for protecting their login data. The application is not responsible for any damage or misuse. All content, including images, text, and designs, is protected by copyright and may not be copied or reused for any commercial purpose without prior permission.</string>
+</resources>
