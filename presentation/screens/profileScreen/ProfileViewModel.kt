@@ -191,10 +191,6 @@ class ProfileViewModel(
 
 
     override fun onOptionSelected(option: ProfileOption) {
-        if (state.value.isGuest && option != ProfileOption.LANGUAGE && option != ProfileOption.PRIVACY && option != ProfileOption.CONTACT && option != ProfileOption.SHARE_APP && option != ProfileOption.BRANCHES) {
-            updateState { it.copy(showGuestDialog = true) }
-            return
-        }
         when (option) {
             ProfileOption.WALLET -> {}
             ProfileOption.POINTS -> { /* Navigate to Points History */
@@ -293,12 +289,12 @@ class ProfileViewModel(
        sendNewEffect(ProfileUiEffect.NavigateBack)
     }
 
-    override fun onClickLogin() {
+    fun onClickLogin() {
         updateState { it.copy(showGuestDialog = false) }
         sendNewEffect(ProfileUiEffect.NavigateToLogin)
     }
 
-    override fun onDismissGuestDialog() {
+    fun onDismissGuestDialog() {
         updateState { it.copy(showGuestDialog = false) }
         sendNewEffect(ProfileUiEffect.NavigateBack)
     }

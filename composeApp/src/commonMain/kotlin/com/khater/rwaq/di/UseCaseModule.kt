@@ -6,6 +6,7 @@ import com.khater.rwaq.domain.useCases.GetAllProductsUseCase
 import com.khater.rwaq.domain.useCases.GetUserUseCase
 import com.khater.rwaq.domain.useCases.ManageCartUseCase
 import com.khater.rwaq.domain.useCases.SendContactMessageUseCase
+import com.khater.rwaq.domain.useCases.auth.DeleteAccountUseCase
 import com.khater.rwaq.domain.useCases.auth.LoginUseCase
 import com.khater.rwaq.domain.useCases.auth.LogoutUseCase
 import com.khater.rwaq.domain.useCases.auth.OtpUseCase
@@ -36,4 +37,5 @@ val useCaseModule = module {
     factoryOf(::LogoutUseCase)
     factoryOf(::GetUserUseCase)
     factoryOf(::UpdateUserUseCase)
+    factoryOf(::DeleteAccountUseCase)
 }

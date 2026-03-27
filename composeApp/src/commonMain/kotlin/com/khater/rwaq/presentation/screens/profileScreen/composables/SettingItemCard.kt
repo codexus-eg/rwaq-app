@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.khater.rwaq.designSystem.theme.theme.Theme
 import com.khater.rwaq.presentation.composables.rippleIndication
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import rwaq.composeapp.generated.resources.Res
 import rwaq.composeapp.generated.resources.logo
@@ -41,6 +42,7 @@ fun SettingItemCard(
     textColor: Color = Theme.colorScheme.primary.primary,
     containerColor: Color = Theme.colorScheme.brand.onBrand,
     shape: Shape = RoundedCornerShape(Theme.spacing._12),
+    icon: DrawableResource = Res.drawable.navigate_icon,
     onClick: () -> Unit,
 ) {
     val layoutDirection = LocalLayoutDirection.current
@@ -83,7 +85,7 @@ fun SettingItemCard(
         if (hasNavigationIcon){
 
             Icon(
-                painter = if (isLogout) painterResource(Res.drawable.logout) else painterResource(Res.drawable.navigate_icon),
+                painter = painterResource(icon),
                 contentDescription = settingName,
                 modifier = Modifier.size(24.dp).graphicsLayer {
                     if (layoutDirection == LayoutDirection.Ltr) {

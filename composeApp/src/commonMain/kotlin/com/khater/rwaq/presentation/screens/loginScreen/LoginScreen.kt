@@ -44,6 +44,7 @@ import rwaq.composeapp.generated.resources.forget_password
 import rwaq.composeapp.generated.resources.login
 import rwaq.composeapp.generated.resources.rwaq_logo
 import rwaq.composeapp.generated.resources.welcome
+import rwaq.composeapp.generated.resources.continue_as_guest
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
@@ -65,6 +66,12 @@ fun LoginScreen(
 
             LoginUiEffect.NavigateBack -> {
                 navController.navigateUp()
+            }
+
+            LoginUiEffect.NavigateToHomeScreen -> {
+                navController.navigate(Screen.HomeScreen) {
+                    popUpTo(Screen.LoginScreen) { inclusive = true }
+                }
             }
         }
     }
@@ -138,6 +145,15 @@ fun LoginScreenContent(
 //            )
 
             Spacer(modifier = Modifier.weight(1f))
+            
+            TextButton(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                text = stringResource(Res.string.continue_as_guest),
+                onClick = interactionListener::onClickGuestMode,
+                style = Theme.typography.title.medium,
+                textDecoration = TextDecoration.Underline,
+            )
+
             PrimaryButton(
                 modifier = Modifier
                     .fillMaxWidth()

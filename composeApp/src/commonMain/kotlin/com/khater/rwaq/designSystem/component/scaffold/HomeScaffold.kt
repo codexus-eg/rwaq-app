@@ -12,8 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
-import com.khater.rwaq.designSystem.theme.color.scheme.ColorScheme
 import com.khater.rwaq.designSystem.theme.theme.Theme
 import com.khater.rwaq.presentation.composables.DialogContainer
 import com.khater.rwaq.presentation.composables.SnackBarContainer
@@ -27,8 +25,9 @@ internal fun HomeScaffold(
     dialogState: DialogState = DialogState(),
     modifier: Modifier = Modifier,
     hasStatusBarColor: Boolean = false,
-    containerBackground:Color = Theme.colorScheme.brand.onBrand,
+    containerBackground: Color = Theme.colorScheme.brand.onBrand,
     topBar: @Composable () -> Unit = {},
+    overlays: ScaffoldScope.() -> Unit = {},
     content: @Composable ColumnScope.() -> Unit,
 ) {
     RwaqScaffold(
@@ -38,6 +37,7 @@ internal fun HomeScaffold(
             dialog(dialogState.isVisible) {
                 DialogContainer(dialogState)
             }
+            overlays()
         }) {
         Box {
             Column(

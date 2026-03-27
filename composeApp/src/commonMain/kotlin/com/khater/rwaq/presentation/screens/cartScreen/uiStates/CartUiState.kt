@@ -28,6 +28,8 @@ data class CartUiState(
     val isWorkTimeOverlayVisible: Boolean = false,
     val selectedLocation: LocationUiState = LocationUiState(),
     val selectedWorkTime: List<BranchWorkTimeUiState> = emptyList(),
+    val isGuest: Boolean = false,
+    val showGuestDialog: Boolean = false,
 
     // --- NEW FIELDS FOR BRANCH/CAR SELECTION ---
     val isCheckoutSheetVisible: Boolean = false, // To open the Branch Selection Sheet

@@ -57,6 +57,10 @@ class LoginViewModel(
         sendNewEffect(LoginUiEffect.NavigateBack)
     }
 
+    override fun onClickGuestMode() {
+        sendNewEffect(LoginUiEffect.NavigateToHomeScreen)
+    }
+
 
     override fun onClickLogin() {
         if (validateInputs()) {

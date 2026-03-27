@@ -13,6 +13,8 @@
     <string name="select_branch">Select branch</string>
     <string name="failed_to_load_branches">Failed to load branches</string>
 
+    <string name="are_you_sure_delete_account">Are you sure you want to delete your account?</string>
+    <string name="delete_account">Delete Account</string>
     <string name="reward_discount">Reward Discount</string>
     <string name="please_choose_car">Please choose car</string>
     <string name="choose_car">choose car</string>

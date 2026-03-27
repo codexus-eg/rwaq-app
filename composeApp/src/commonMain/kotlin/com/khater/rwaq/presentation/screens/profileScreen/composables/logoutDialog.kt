@@ -15,6 +15,7 @@ import com.khater.rwaq.designSystem.component.dialog.BasicDialog
 import com.khater.rwaq.designSystem.component.scaffold.ScaffoldScope
 import com.khater.rwaq.designSystem.component.text.Text
 import com.khater.rwaq.designSystem.theme.theme.Theme
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import rwaq.composeapp.generated.resources.Res
 import rwaq.composeapp.generated.resources.are_you_sure_you_want_to_logout
@@ -62,6 +63,56 @@ fun ScaffoldScope.logoutDialog(
         ) {
             Text(
                 text = stringResource(Res.string.are_you_sure_you_want_to_logout),
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.primary.primary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth().padding(vertical = Theme.spacing._12)
+            )
+        }
+    }
+}
+
+
+fun ScaffoldScope.confirmationDialog(
+    isVisible: Boolean,
+    isLoading: Boolean,
+    title: StringResource,
+    confirmButtonText:  StringResource,
+    onConfirmClick: () -> Unit,
+    onDismissDialog: () -> Unit,
+) {
+    dialog(isVisible) {
+        BasicDialog(
+            isVisible = isVisible,
+            onDismiss = onDismissDialog,
+            onCancelClick = onDismissDialog,
+            actionButtons = {
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(top = Theme.spacing._24, bottom = Theme.spacing._8),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
+                ) {
+                    OutlinedButton(
+                        text = stringResource(Res.string.back),
+                        onClick = onDismissDialog,
+                        modifier = Modifier.weight(1f).height(45.dp),
+                        style = Theme.typography.body.medium
+                    )
+                    PrimaryButton(
+                        text = stringResource(confirmButtonText),
+                        onClick = onConfirmClick,
+                        modifier = Modifier.weight(1f).height(45.dp),
+                        containerColor = Theme.colorScheme.error,
+                        isLoading = isLoading,
+                        isEnabled = !isLoading,
+                        style = Theme.typography.body.medium
+                    )
+                }
+            }
+        ) {
+            Text(
+                text = stringResource(title),
                 style = Theme.typography.title.small,
                 color = Theme.colorScheme.primary.primary,
                 textAlign = TextAlign.Center,

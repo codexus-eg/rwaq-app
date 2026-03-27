@@ -47,4 +47,7 @@ interface CartInteractionListener {
     fun onClickWorkTimeButton(branchId: String)
     fun onCloseWorkTimeBottomSheet()
 
+    fun onClickLogin()
+    fun onDismissGuestDialog()
+
 }

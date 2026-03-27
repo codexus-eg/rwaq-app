@@ -25,6 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamglin.composeshadow.dropShadow
+import com.khater.rwaq.designSystem.component.button.PrimaryButton
+import com.khater.rwaq.designSystem.component.dialog.BasicDialog
+import com.khater.rwaq.designSystem.component.dialog.Dialog
 import com.khater.rwaq.designSystem.component.scaffold.HomeScaffold
 import com.khater.rwaq.designSystem.component.scaffold.RwaqScaffold
 import com.khater.rwaq.designSystem.theme.theme.Theme
@@ -38,7 +41,9 @@ import com.khater.rwaq.presentation.screens.profileScreen.composables.ProfileSec
 import com.khater.rwaq.presentation.screens.profileScreen.composables.SettingItemCard
 import com.khater.rwaq.presentation.screens.profileScreen.composables.SettingsGroup
 import com.khater.rwaq.presentation.screens.profileScreen.composables.WalletSection
+import com.khater.rwaq.presentation.screens.profileScreen.composables.confirmationDialog
 import com.khater.rwaq.presentation.screens.profileScreen.composables.logoutDialog
+import com.khater.rwaq.presentation.screens.profileScreen.uiState.ProfileDialogType
 import com.khater.rwaq.presentation.screens.profileScreen.uiState.ProfileInteractionListener
 import com.khater.rwaq.presentation.screens.profileScreen.uiState.ProfileOption
 import com.khater.rwaq.presentation.screens.profileScreen.uiState.ProfileUiEffect
@@ -53,14 +58,20 @@ import org.koin.compose.koinInject
 
 import org.koin.compose.viewmodel.koinViewModel
 import rwaq.composeapp.generated.resources.Res
+import rwaq.composeapp.generated.resources.are_you_sure_delete_account
+import rwaq.composeapp.generated.resources.are_you_sure_you_want_to_logout
 import rwaq.composeapp.generated.resources.checkout
 import rwaq.composeapp.generated.resources.contact_us
 import rwaq.composeapp.generated.resources.currency_sar
+import rwaq.composeapp.generated.resources.delete
+import rwaq.composeapp.generated.resources.delete_account
 import rwaq.composeapp.generated.resources.logout
 import rwaq.composeapp.generated.resources.profile_image
 import rwaq.composeapp.generated.resources.profile_screen
 import rwaq.composeapp.generated.resources.wallet
 import rwaq.composeapp.generated.resources.welcome
+import rwaq.composeapp.generated.resources.login
+import rwaq.composeapp.generated.resources.rwaq_logo
 
 @Composable
 fun ProfileScreen(appStoreManager: AppStoreManager = koinInject(),viewModel: ProfileViewModel = koinViewModel()) {
@@ -100,6 +111,10 @@ fun ProfileScreen(appStoreManager: AppStoreManager = koinInject(),viewModel: Pro
 
             ProfileUiEffect.ShareApp -> {
                 appStoreManager.shareApp(state.userId)
+            }
+
+            ProfileUiEffect.NavigateToLogin -> {
+                controller.navigate(Screen.LoginScreen)
             }
         }
     }
@@ -145,33 +160,78 @@ fun ProfileContent(state: ProfileUiState, interaction: ProfileInteractionListene
             },
 
             overlays = {
-                logoutDialog(
-                    showLogoutDialog = state.isDialogVisible,
+                val dialogTitle = when (state.activeDialog) {
+                    ProfileDialogType.DELETE_ACCOUNT ->  Res.string.are_you_sure_delete_account  // Add to strings
+                    else ->  Res.string.are_you_sure_you_want_to_logout
+                }
+
+                val confirmText = when (state.activeDialog) {
+                    ProfileDialogType.DELETE_ACCOUNT ->  Res.string.delete_account
+                    else -> Res.string.logout
+                }
+
+                confirmationDialog(
+                    isVisible = state.isDialogVisible,
                     isLoading = state.isLoading,
-                    onDismissDialog = interaction::toggleDialog,
-                    onLogoutClick = interaction::onLogout,
+                    title = dialogTitle,
+                    confirmButtonText = confirmText,
+                    onConfirmClick = {
+                        if (state.activeDialog == ProfileDialogType.DELETE_ACCOUNT) interaction.onDeleteAccount()
+                        else interaction.onLogout()
+                    },
+                    onDismissDialog = { interaction.toggleDialog(ProfileDialogType.NONE) }
                 )
+                dialog(state.showGuestDialog) {
+                    BasicDialog(
+                        isVisible = state.showGuestDialog,
+                        onDismiss = interaction::onDismissGuestDialog,
+                        onCancelClick = interaction::onDismissGuestDialog,
+                        actionButtons = {
+                            PrimaryButton(
+                                text = stringResource(Res.string.login),
+                                onClick = interaction::onClickLogin,
+                                modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._16)
+                            )
+                        }
+                    ) {
+                        Dialog(
+                            title = stringResource(Res.string.login),
+                            message = stringResource(Res.string.welcome),
+                            icon = painterResource(Res.drawable.rwaq_logo)
+                        )
+                    }
+                }
+//                logoutDialog(
+//                    showLogoutDialog = state.isDialogVisible,
+//                    isLoading = state.isLoading,
+//                    onDismissDialog = interaction::toggleDialog,
+//                    onLogoutClick = interaction::onLogout,
+//                )
             }
         ) {
+
+
 
             Column(modifier = Modifier.padding(all = 12.dp).verticalScroll(rememberScrollState())) {
 
                 ProfileSection(
                     painter = painterResource(Res.drawable.profile_image),
-                    username = state.userName,
+                    username = if (state.isGuest) stringResource(Res.string.welcome) else state.userName,
                     phoneNumber = state.phoneNumber,
                     isVipUser = state.isVipUser,
                     modifier = Modifier.padding(vertical = Theme.spacing._12)
                 )
 
-                WalletSection(
-                    modifier = Modifier.fillMaxWidth(),
-                    balance = state.balance,
-                    points = state.points,
-                    onWalletClick = { interaction.onOptionSelected(ProfileOption.WALLET) },
-                    onPointsClick = { interaction.onOptionSelected(ProfileOption.POINTS) }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+                if (!state.isGuest) {
+                    WalletSection(
+                        modifier = Modifier.fillMaxWidth(),
+                        balance = state.balance,
+                        points = state.points,
+                        onWalletClick = { interaction.onOptionSelected(ProfileOption.WALLET) },
+                        onPointsClick = { interaction.onOptionSelected(ProfileOption.POINTS) }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
 
                 // Menu Section
                 SettingsGroup(
@@ -179,31 +239,77 @@ fun ProfileContent(state: ProfileUiState, interaction: ProfileInteractionListene
                     onItemClick = { interaction.onOptionSelected(it.option) }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                SettingItemCard(
-                    settingName = stringResource(Res.string.logout),
-                    textColor = Theme.colorScheme.error,
-                    isLogout = true,
-                    settingSubName = null,
-                    modifier = Modifier.padding(bottom = PADDING_BOTTOM_WITH_NAV_VISIBLE.dp)
-                        .dropShadow(
-                            shape = RoundedCornerShape(16.dp),
-                            color = Color(0xFF001E14).copy(0.04f),
-                            blur = 20.dp,
-                            offsetY = 2.dp,
-                            offsetX = 0.dp
-                        ),
-                    onClick = interaction::toggleDialog
-                )
+//                SettingItemCard(
+//                    settingName = stringResource(Res.string.logout),
+//                    textColor = Theme.colorScheme.error,
+//                    isLogout = true,
+//                    settingSubName = null,
+//                    modifier = Modifier
+//                        .dropShadow(
+//                            shape = RoundedCornerShape(16.dp),
+//                            color = Color(0xFF001E14).copy(0.04f),
+//                            blur = 20.dp,
+//                            offsetY = 2.dp,
+//                            offsetX = 0.dp
+//                        ),
+//                    onClick = interaction::toggleDialog
+//                )
+                if (!state.isGuest) {
+                    SettingItemCard(
+                        settingName = stringResource(Res.string.logout),
+                        textColor = Theme.colorScheme.error,
+                        isLogout = true,
+                        settingSubName = null,
+                        modifier = Modifier
+                            .dropShadow(
+                                shape = RoundedCornerShape(16.dp),
+                                color = Color(0xFF001E14).copy(0.04f),
+                                blur = 20.dp,
+                                offsetY = 2.dp,
+                                offsetX = 0.dp
+                            ),
+                        onClick = { interaction.toggleDialog(ProfileDialogType.LOGOUT) }
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    SettingItemCard(
+                        settingName = stringResource(Res.string.delete_account), // "Delete Account"
+                        textColor = Theme.colorScheme.error.copy(alpha = 0.7f),
+                        isLogout = true,
+                        modifier = Modifier.padding(bottom = PADDING_BOTTOM_WITH_NAV_VISIBLE.dp)
+                            .dropShadow(
+                                shape = RoundedCornerShape(16.dp),
+                                color = Color(0xFF001E14).copy(0.04f),
+                                blur = 20.dp,
+                                offsetY = 2.dp,
+                                offsetX = 0.dp
+                            ),
+                        settingSubName = null,
+                        icon = Res.drawable.delete,
+                        onClick = { interaction.toggleDialog(ProfileDialogType.DELETE_ACCOUNT) }
+                    )
+                } else {
+                    PrimaryButton(
+                        text = stringResource(Res.string.login),
+                        onClick = interaction::onClickLogin,
+                        modifier = Modifier.fillMaxWidth().padding(bottom = PADDING_BOTTOM_WITH_NAV_VISIBLE.dp)
+                    )
+                }
+               // here i need to add delete account
             }
         }
 
         BackHandler(
-            enabled = state.languageDialogUiState.isVisible
+            enabled = state.languageDialogUiState.isVisible || state.showGuestDialog
         ) {
             when {
+                state.showGuestDialog -> interaction.onDismissGuestDialog()
                 state.languageDialogUiState.isVisible -> interaction.onDismissLanguageDialog()
             }
         }
+        
+
         AnimatedVisibility(
             visible = state.languageDialogUiState.isVisible,
             enter = slideInVertically(initialOffsetY = { it }),

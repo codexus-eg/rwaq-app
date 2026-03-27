@@ -7,6 +7,7 @@ import com.khater.rwaq.data.dto.user.UserResponseDto
 interface UserRemoteDataSource {
     suspend fun sendContactUsMessage(request: ContactUsRequest)
     suspend fun getUser(): UserResponseDto
+    suspend fun deleteAccount()
     suspend fun updateUserData(username: String,email: String)
 
 }

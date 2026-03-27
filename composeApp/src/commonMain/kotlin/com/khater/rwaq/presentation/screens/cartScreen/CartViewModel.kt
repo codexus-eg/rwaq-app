@@ -11,6 +11,7 @@ import com.khater.rwaq.data.dto.order.OrderItemRequest
 import com.khater.rwaq.domain.entities.car.Car
 import com.khater.rwaq.domain.entities.order.Order
 import com.khater.rwaq.domain.entities.order.OrderExtension
+import com.khater.rwaq.domain.repository.authentication.AuthenticationRepository
 import com.khater.rwaq.domain.useCases.CreateOrderUseCase
 import com.khater.rwaq.domain.useCases.GetAllBranchesUseCase
 import com.khater.rwaq.domain.useCases.ManageCartUseCase
@@ -36,6 +37,7 @@ import com.swmansion.kmpmaps.core.MapPlatform
 import com.swmansion.kmpmaps.core.MapProperties
 import io.github.tbib.klocation.KLocationService
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import rwaq.composeapp.generated.resources.Res
@@ -51,16 +53,25 @@ class CartViewModel(
     private val manageCartUseCase: ManageCartUseCase,
     private val createOrderUseCase: CreateOrderUseCase,
     private val getAllBranchesUseCase: GetAllBranchesUseCase,
+    private val authenticationRepository: AuthenticationRepository,
 ) : BaseViewModel<CartUiState, CartScreenUIEffect>(CartUiState()),
     CartInteractionListener {
     private val locationService =  KLocationService()
 
     init {
+        checkAuthentication()
         subscribeToOrders()
         getAllBranches()
         collectAllCars()
         getUserLocation()
        }
+
+    private fun checkAuthentication() {
+        viewModelScope.launch {
+            val isLoggedIn = authenticationRepository.isUserLoggedIn().first()
+            updateState { it.copy(isGuest = !isLoggedIn, showGuestDialog = !isLoggedIn) }
+        }
+    }
 
     private fun getUserLocation() {
         tryToExecute(
@@ -365,7 +376,7 @@ class CartViewModel(
 
             AddCarStep.SELECT_COLOR -> if (currentState.selectedCarColor != null) updateState {
                 it.copy(
-                    addCarStep = AddCarStep.ENTER_NUMBER
+                    addCarStep = AddCarStep.SELECT_COLOR
                 )
             }
 
@@ -523,6 +534,16 @@ class CartViewModel(
     }
 
     override fun onBack() {
+        sendNewEffect(CartScreenUIEffect.NavigateBack)
+    }
+
+    override fun onClickLogin() {
+        updateState { it.copy(showGuestDialog = false) }
+        sendNewEffect(CartScreenUIEffect.NavigateToLogin)
+    }
+
+    override fun onDismissGuestDialog() {
+        updateState { it.copy(showGuestDialog = false) }
         sendNewEffect(CartScreenUIEffect.NavigateBack)
     }
 }

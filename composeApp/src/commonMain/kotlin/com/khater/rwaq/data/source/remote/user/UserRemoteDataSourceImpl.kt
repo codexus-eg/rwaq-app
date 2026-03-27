@@ -3,11 +3,17 @@ package com.khater.rwaq.data.source.remote.user
 import com.khater.rwaq.data.dto.user.ContactUsRequest
 import com.khater.rwaq.data.dto.user.UpdateUserRequestDto
 import com.khater.rwaq.data.dto.user.UserResponseDto
+import com.khater.rwaq.data.repository.authentication.AuthenticationRepositoryImpl.Companion.LOGOUT_ENDPOINT
+import com.khater.rwaq.data.util.deleteJson
 import com.khater.rwaq.data.util.getJson
+import com.khater.rwaq.data.util.invalidateAuthTokens
+import com.khater.rwaq.data.util.postEmpty
 import com.khater.rwaq.data.util.postJson
+import com.khater.rwaq.data.util.putAccessToken
 import com.khater.rwaq.data.util.putEmail
 import com.khater.rwaq.data.util.putJson
 import com.khater.rwaq.data.util.putPhoneNumber
+import com.khater.rwaq.data.util.putRefreshToken
 import com.khater.rwaq.data.util.putUsername
 import com.khater.rwaq.data.util.safeWrapper
 import com.russhwolf.settings.ExperimentalSettingsApi
@@ -30,6 +36,17 @@ class UserRemoteDataSourceImpl(
             )
         }
     }
+
+    override suspend fun deleteAccount() {
+        httpClient.deleteJson(GET_USER_ENDPOINT)
+        try {
+            httpClient.invalidateAuthTokens()
+        } catch (_: Exception) {
+        }
+        clearAuthTokens()
+        clearAuthCredential()
+    }
+
     override suspend fun getUser(): UserResponseDto {
         return safeWrapper {
              httpClient.getJson<UserResponseDto>(GET_USER_ENDPOINT)
@@ -52,6 +69,16 @@ class UserRemoteDataSourceImpl(
         settings.putEmail(email)
     }
 
+    private suspend fun clearAuthTokens() {
+        settings.putAccessToken("")
+        settings.putRefreshToken("")
+    }
+
+    private suspend fun clearAuthCredential() {
+        settings.putUsername("")
+        settings.putPhoneNumber("")
+        settings.putEmail("")
+    }
     companion object {
         const val CONTACT_US_ENDPOINT = "api/contact"
         const val GET_USER_ENDPOINT = "api/users/profile" // Replace with your actual endpoint

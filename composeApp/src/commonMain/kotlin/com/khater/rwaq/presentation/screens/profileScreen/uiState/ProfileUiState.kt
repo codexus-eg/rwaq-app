@@ -37,11 +37,13 @@ data class ProfileUiState(
     val snackBar: SnackBarState = SnackBarState(),
     val error: String? = null,
     val errorMessage: String? = null,
-
+    val activeDialog: ProfileDialogType = ProfileDialogType.NONE,
     val dialogState: DialogState = DialogState(),
     val isDialogVisible: Boolean = false,
     val balance: Double = 0.00, // Using Double for currency (e.g., 10.50)
     val points: Int = 0,
+    val isGuest: Boolean = false,
+    val showGuestDialog: Boolean = false,
     // Menu Section defaults (Using Res.string.orders, etc.)
     val menuSection: List<SettingItem> = listOf(
         SettingItem(Res.string.my_orders, option = ProfileOption.ORDERS),
@@ -63,3 +65,7 @@ data class LanguageDialogUiState(
     val selectedAppLanguage: AppLanguage = AppLanguage.DEFAULT,
     val options: List<AppLanguage> = AppLanguage.entries.filterNot { it == AppLanguage.DEFAULT },
 )
+
+enum class ProfileDialogType {
+    LOGOUT, DELETE_ACCOUNT, NONE
+}

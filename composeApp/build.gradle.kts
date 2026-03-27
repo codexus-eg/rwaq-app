@@ -131,8 +131,8 @@ kotlin {
 android {
     namespace = "com.khater.rwaq"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
+    ndkVersion = "26.1.10909125"
+     defaultConfig {
         applicationId = "com.khater.rwaq"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
@@ -142,6 +142,9 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+        jniLibs {
+            useLegacyPackaging = false
         }
     }
     buildTypes {
@@ -157,6 +160,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
 }
 ksp {
     arg("KOIN_CONFIG_CHECK", "true")

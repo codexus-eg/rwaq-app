@@ -53,6 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.khater.rwaq.designSystem.component.button.PrimaryButton
+import com.khater.rwaq.designSystem.component.dialog.BasicDialog
+import com.khater.rwaq.designSystem.component.dialog.Dialog
 import com.khater.rwaq.designSystem.component.indicator.DotsProgressIndicator
 import com.khater.rwaq.designSystem.component.scaffold.HomeScaffold
 import com.khater.rwaq.designSystem.component.text.Text
@@ -62,6 +64,7 @@ import com.khater.rwaq.presentation.composables.EmptyOrErrorContent
 import com.khater.rwaq.presentation.composables.EventHandler
 import com.khater.rwaq.presentation.composables.RwaqBackButton
 import com.khater.rwaq.presentation.composables.RwaqTopBar
+import com.khater.rwaq.presentation.navigation.Screen
 import com.khater.rwaq.presentation.screens.branchScreen.components.AddCarWizardBottomSheet
 import com.khater.rwaq.presentation.screens.branchScreen.components.AttachmentsBottomSheet
 import com.khater.rwaq.presentation.screens.branchScreen.components.SelectCarBottomSheet
@@ -109,6 +112,9 @@ import rwaq.composeapp.generated.resources.reward_discount
 import rwaq.composeapp.generated.resources.something_went_wrong
 import rwaq.composeapp.generated.resources.sub_total
 import rwaq.composeapp.generated.resources.total_amount
+import rwaq.composeapp.generated.resources.login
+import rwaq.composeapp.generated.resources.welcome
+import rwaq.composeapp.generated.resources.rwaq_logo
 
 
 @Composable
@@ -125,6 +131,9 @@ fun CartScreen(
             CartScreenUIEffect.NavigateToExternalMap,
                 -> {
                 urlHandler.openUri("${String.MapsUrl}${effect.location.latitude},${effect.location.longitude}")
+            }
+            CartScreenUIEffect.NavigateToLogin -> {
+                controller.navigate(Screen.LoginScreen)
             }
         }
     }
@@ -147,9 +156,10 @@ fun CartContent(state: CartUiState, interactionListener: CartInteractionListener
 
     BackHandler(
         enabled = state.isWorkTimeOverlayVisible || state.isSelectCarBottomSheetVisible ||
-                state.isCarDetailsBottomSheetVisible
+                state.isCarDetailsBottomSheetVisible || state.showGuestDialog
     ) {
         when {
+            state.showGuestDialog -> interactionListener.onDismissGuestDialog()
             state.isSelectCarBottomSheetVisible -> interactionListener.onCloseSelectCar()
             state.isWorkTimeOverlayVisible -> interactionListener.onCloseWorkTimeBottomSheet()
             state.isCarDetailsBottomSheetVisible -> interactionListener.onCloseCarDetails()
@@ -190,6 +200,28 @@ fun CartContent(state: CartUiState, interactionListener: CartInteractionListener
                     isCenterAligned = true,
                 )
             },
+            overlays = {
+                dialog(state.showGuestDialog) {
+                    BasicDialog(
+                        isVisible = state.showGuestDialog,
+                        onDismiss = interactionListener::onDismissGuestDialog,
+                        onCancelClick = interactionListener::onDismissGuestDialog,
+                        actionButtons = {
+                            PrimaryButton(
+                                text = stringResource(Res.string.login),
+                                onClick = interactionListener::onClickLogin,
+                                modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._16)
+                            )
+                        }
+                    ) {
+                        Dialog(
+                            title = stringResource(Res.string.login),
+                            message = stringResource(Res.string.welcome),
+                            icon = painterResource(Res.drawable.rwaq_logo)
+                        )
+                    }
+                }
+            }
         ) {
             when {
                 state.isLoading -> {

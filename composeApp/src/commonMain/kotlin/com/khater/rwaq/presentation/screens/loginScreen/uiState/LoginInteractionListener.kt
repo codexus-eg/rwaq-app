@@ -5,7 +5,8 @@ interface LoginInteractionListener {
     fun onPasswordChanged(password: String)
     fun onPasswordVisibilityToggled()
     fun onClickLogin()
-     fun onClickForgetPassword()
+    fun onClickForgetPassword()
     fun onClickBack()
+    fun onClickGuestMode()
 
 }

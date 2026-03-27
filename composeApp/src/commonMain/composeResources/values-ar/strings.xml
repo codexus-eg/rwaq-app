@@ -16,6 +16,9 @@
     <string name="reward_discount">خصم المكافأة</string>
     <string name="failed_to_load_branches">فشل في تحميل الفروع</string>
 
+    <string name="are_you_sure_delete_account">هل أنت متأكد أنك تريد حذف حسابك؟</string>
+    <string name="delete_account">حذف الحساب</string>
+
     <string name="status_completed">مكتمل</string>
     <string name="status_cancelled">ملغى</string>
     <string name="status_unknown">غير معروف</string>

@@ -4,7 +4,6 @@ import com.khater.rwaq.domain.entities.product.Product
 import com.khater.rwaq.presentation.model.SnackBarState
 import com.khater.rwaq.presentation.screens.productScreen.uiState.ProductDetailsUiState
 import com.khater.rwaq.presentation.screens.productScreen.uiState.ProductUiModel
-import org.jetbrains.compose.resources.StringResource
 
 data class RewardsUiState(
     val isLoading: Boolean = false,
@@ -17,5 +16,5 @@ data class RewardsUiState(
     val uiProducts: List<ProductUiModel> = emptyList(),
     val selectedProductDetails: ProductDetailsUiState? = null,
     val isDetailsVisible: Boolean = false,
-
-    )
+    val isGuest: Boolean = false,
+)

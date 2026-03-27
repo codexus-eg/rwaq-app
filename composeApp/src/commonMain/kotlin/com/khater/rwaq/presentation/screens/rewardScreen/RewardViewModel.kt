@@ -1,13 +1,12 @@
 package com.khater.rwaq.presentation.screens.rewardScreen
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key.Companion.R
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.khater.rwaq.data.dto.product.toDetailsUiState
-import com.khater.rwaq.data.dto.product.toUiModel
 import com.khater.rwaq.domain.entities.order.Order
 import com.khater.rwaq.domain.entities.order.OrderExtension
+import com.khater.rwaq.domain.repository.authentication.AuthenticationRepository
 import com.khater.rwaq.domain.useCases.GetAllProductsUseCase
 import com.khater.rwaq.domain.useCases.GetUserUseCase
 import com.khater.rwaq.domain.useCases.ManageCartUseCase
@@ -15,18 +14,16 @@ import com.khater.rwaq.presentation.base.BaseViewModel
 import com.khater.rwaq.presentation.mapper.handleDefaultException
 import com.khater.rwaq.presentation.mapper.mapDefaultErrorToMessage
 import com.khater.rwaq.presentation.model.SnackBarState
-import com.khater.rwaq.presentation.screens.homeScreen.uiStates.CategoryUi
 import com.khater.rwaq.presentation.screens.rewardScreen.uiState.RewardInteractionListener
 import com.khater.rwaq.presentation.screens.rewardScreen.uiState.RewardsUiEffect
 import com.khater.rwaq.presentation.screens.rewardScreen.uiState.RewardsUiState
 import com.khater.rwaq.presentation.util.LoginConstants.SNACK_BAR_DELAY
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.stringResource
 import rwaq.composeapp.generated.resources.Res
-import rwaq.composeapp.generated.resources.all_coffee
 import rwaq.composeapp.generated.resources.error
 import rwaq.composeapp.generated.resources.insufficient_points_message
 import rwaq.composeapp.generated.resources.insufficient_points_title
@@ -35,7 +32,6 @@ import rwaq.composeapp.generated.resources.out_of_stock_title
 import rwaq.composeapp.generated.resources.redeem_reward_failed_message
 import rwaq.composeapp.generated.resources.reward_redeemed_message
 import rwaq.composeapp.generated.resources.reward_redeemed_with_points_message
-import kotlin.collections.plus
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -43,15 +39,25 @@ class RewardViewModel(
     private val getAllProductsUseCase: GetAllProductsUseCase,
     private val getUserUseCase: GetUserUseCase,
     private val manageCartUseCase: ManageCartUseCase,
-
-    ) : BaseViewModel<RewardsUiState, RewardsUiEffect>(RewardsUiState()),
+    private val authenticationRepository: AuthenticationRepository,
+) : BaseViewModel<RewardsUiState, RewardsUiEffect>(RewardsUiState()),
     RewardInteractionListener {
 
 
     init {
-        getUser()
+        checkAuthenticationAndFetchData()
         fetchHomeData()
         subscribeToCart()
+    }
+
+    private fun checkAuthenticationAndFetchData() {
+        viewModelScope.launch {
+            val isLoggedIn = authenticationRepository.isUserLoggedIn().first()
+            updateState { it.copy(isGuest = !isLoggedIn) }
+            if (isLoggedIn) {
+                getUser()
+            }
+        }
     }
 
     private fun subscribeToCart() {
@@ -73,6 +79,7 @@ class RewardViewModel(
     }
 
     private fun getUser() {
+        if (currentState.isGuest) return
         tryToExecute(
             callee = { getUserUseCase() },
             onSuccess = { user ->
@@ -128,10 +135,14 @@ class RewardViewModel(
     }
 
     override fun onRefreshUserPoints() {
-        getUser()
+        if (!currentState.isGuest) {
+            getUser()
+        }
     }
     override fun onRetry() {
-        getUser()
+        if (!currentState.isGuest) {
+            getUser()
+        }
         fetchHomeData()
     }
 
@@ -140,6 +151,12 @@ class RewardViewModel(
     }
 
     override fun onProductClicked(productId: String) {
+        if (currentState.isGuest) {
+            // Optional: Maybe show a snackbar or just do nothing as requested "don't show dialog"
+            // The user didn't specify what to do if guest clicks a product in Reward Screen
+            // Usually rewards require points which a guest won't have.
+            return
+        }
         currentState.products.find { it.id == productId }?.let { product ->
             updateState { state ->
                 state.copy(

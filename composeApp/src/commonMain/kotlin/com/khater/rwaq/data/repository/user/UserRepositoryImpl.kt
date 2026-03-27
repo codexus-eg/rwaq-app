@@ -28,6 +28,10 @@ class UserRepositoryImpl(
 
     }
 
+    override suspend fun deleteAccount() {
+         remoteDataSource.deleteAccount()
+    }
+
     override suspend fun updateUserData(username: String, email: String) {
         remoteDataSource.updateUserData(username = username , email = email)
     }

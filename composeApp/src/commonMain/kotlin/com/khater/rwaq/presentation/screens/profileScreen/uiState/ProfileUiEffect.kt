@@ -9,5 +9,6 @@ sealed interface ProfileUiEffect {
     data object NavigateToOrders : ProfileUiEffect
     data object NavigateToUpdateUser : ProfileUiEffect
     data object ShareApp : ProfileUiEffect
+    data object NavigateToLogin : ProfileUiEffect
 
 }
