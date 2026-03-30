@@ -34,24 +34,13 @@ object AppInitializer : KoinComponent{
                         Logger.e("Failed to update FCM token: ${e.message}")
                     }
                 }
-                println("Push Notification onNewToken: $token")
-                logMessage("Push Notification onNewToken: $token")
-                Logger.i("Push Notification onNewToken: $token")
             }
 
             override fun onNotificationClicked(data: PayloadData) {
                 super.onNotificationClicked(data)
-                println("Notification clicked, Notification payloadData: $data")
-                logMessage("Notification clicked, Notification payloadData: $data")
-                Logger.i("Notification clicked, Notification payloadData: $data")
-
             }
             override fun onPayloadData(data: PayloadData) {
                 super.onPayloadData(data)
-                println("Push Notification payloadData: $data")
-                logMessage("Push Notification payloadData: $data")
-                Logger.i("Push Notification payloadData: $data")
-
             }
         })
     }

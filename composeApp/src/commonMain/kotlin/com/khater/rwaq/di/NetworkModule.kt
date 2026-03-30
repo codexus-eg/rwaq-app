@@ -11,7 +11,6 @@ import org.koin.core.qualifier.named
 
 @OptIn(ExperimentalSettingsApi::class)
 val networkModule = module {
-    // https://ecom.aqua-waterfilter.net:999/api/products/1
     single(named(CHAT_JSON)) {
         Json {
             ignoreUnknownKeys = true
@@ -19,10 +18,6 @@ val networkModule = module {
             isLenient = true
         }
     }
-
-    "https://rwaq-b04b189d2e97.herokuapp.com/"
-
-    "http://192.168.234.127:3006/"
 
     single<HttpClient> {
         provideHttpClient(
