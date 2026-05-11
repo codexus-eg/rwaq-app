@@ -39,7 +39,8 @@ data class HomeUiState(
     val otherSections: Map<String, List<Product>> = emptyMap(),
 
     // Section 4: Machines
-    val machineProducts: List<Product> = emptyList()
+    val machineProducts: List<Product> = emptyList(),
+    val addingProductId: String? = null
 )
 
 

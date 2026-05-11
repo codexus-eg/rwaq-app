@@ -1,5 +1,6 @@
 package com.khater.rwaq.presentation.screens.profileScreen.composables
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -68,16 +69,20 @@ fun ProfileSection(
             verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
             horizontalAlignment = Alignment.Start
         ) {
+            if (username.isNotBlank())
              Text(
                 text = username,
                 style = Theme.typography.title.small,
                 color = Theme.colorScheme.primary.primary,
+                 modifier = Modifier.animateContentSize()
             )
              Text(
                 text = phoneNumber,
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.secondary.secondary,
-            )
+                 modifier = Modifier.animateContentSize()
+
+             )
         }
 
 

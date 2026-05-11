@@ -30,6 +30,11 @@ fun RewardProductFooter(
 
 // Logic: Button is enabled ONLY if User Points >= Price
     val isRedeemEnabled =  points >= currentPrice
+    val maxRewardQuantity = if (details.calculatedSingleUnitTestPrice > 0.0) {
+        (points / details.calculatedSingleUnitTestPrice).toInt()
+    } else {
+        Int.MAX_VALUE
+    }
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -37,6 +42,7 @@ fun RewardProductFooter(
     ) {
         QuantitySelector(
             count = details.productQuantity,
+            maxCount = maxRewardQuantity,
             onDecrease = { listener.onQuantityChange(-1) },
             onIncrease = { listener.onQuantityChange(1) },
             isBig = true
@@ -46,6 +52,7 @@ fun RewardProductFooter(
             text = "${stringResource(Res.string.add)}  ${details.calculatedTotalPrice} ${stringResource(Res.string.currency_sar)} ",
             onClick = listener::onAddToCart,
             isEnabled = isRedeemEnabled,
+            isLoading = details.isAddingToCart,
             modifier = Modifier
                 .weight(1f)
                 .height(50.dp)

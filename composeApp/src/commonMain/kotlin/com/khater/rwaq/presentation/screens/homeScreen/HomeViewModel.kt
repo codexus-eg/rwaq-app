@@ -6,11 +6,14 @@ import co.touchlab.kermit.Logger
 import com.khater.rwaq.data.dto.product.toDetailsUiState
 import com.khater.rwaq.data.dto.product.toUiModel
 import com.khater.rwaq.data.util.username
+import com.khater.rwaq.data.dto.cart.AddToCartRequestDto
 import com.khater.rwaq.domain.entities.order.Order
 import com.khater.rwaq.domain.entities.order.OrderExtension
 import com.khater.rwaq.domain.entities.product.Product
+import com.khater.rwaq.domain.repository.authentication.AuthenticationRepository
 import com.khater.rwaq.domain.useCases.GetAllProductsUseCase
 import com.khater.rwaq.domain.useCases.ManageCartUseCase
+import com.khater.rwaq.domain.useCases.cart.AddToCartUseCase
 import com.khater.rwaq.presentation.base.BaseViewModel
 import com.khater.rwaq.presentation.mapper.handleDefaultException
 import com.khater.rwaq.presentation.mapper.mapDefaultErrorToMessage
@@ -21,6 +24,7 @@ import com.khater.rwaq.presentation.screens.homeScreen.uiStates.HomeUiEffect
 import com.khater.rwaq.presentation.screens.homeScreen.uiStates.HomeUiState
 import com.khater.rwaq.presentation.screens.productScreen.uiState.ProductDetailsUiState
 import com.khater.rwaq.presentation.util.LoginConstants.SNACK_BAR_DELAY
+import com.khater.rwaq.presentation.util.isLoginRequiredError
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.coroutines.FlowSettings
 import kotlinx.coroutines.delay
@@ -39,6 +43,7 @@ import rwaq.composeapp.generated.resources.error_title
 import rwaq.composeapp.generated.resources.max_count
 import rwaq.composeapp.generated.resources.out_of_stock_message
 import rwaq.composeapp.generated.resources.out_of_stock_title
+import rwaq.composeapp.generated.resources.please_login_first
 import rwaq.composeapp.generated.resources.special_offers
 import rwaq.composeapp.generated.resources.you_have_reach_max_count_of_this_extension
 import kotlin.time.Clock.System
@@ -49,10 +54,10 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalSettingsApi::class,ExperimentalTime::class)
 class HomeViewModel(
     private val getAllProductsUseCase: GetAllProductsUseCase,
-    private val manageCartUseCase: ManageCartUseCase,
+    private val addToCartUseCase: AddToCartUseCase,
+    private val authenticationRepository: AuthenticationRepository,
     private val settings: FlowSettings,
-
-    ) : BaseViewModel<HomeUiState, HomeUiEffect>(HomeUiState()),
+) : BaseViewModel<HomeUiState, HomeUiEffect>(HomeUiState()),
     HomeScreenInteractionListener {
      private var cachedProducts: List<Product> = emptyList()
     private var lastScrollRequest: Long = 0
@@ -307,113 +312,141 @@ private fun fetchHomeData() {
     @OptIn(ExperimentalUuidApi::class)
     override fun onAddToCart() {
         val details = state.value.selectedProductDetails ?: return
-        val orderExtensions = details.extensions
-            .filter { it.currentQty > 0 }
-            .map { uiExt ->
-                OrderExtension(
-                    id = uiExt.id,
-                    name = uiExt.name,
-                    price = uiExt.price,
-                    count = uiExt.currentQty,
-                    maxCount = uiExt.maxCount
-                )
-            }
-        val selectedSizeName = details.sizes
-            .find { it.id == details.selectedSizeId }?.name
-            ?: "Standard"
-
-        val newOrder = Order(
-            id = Uuid.random().toString(), // Generate unique ID for Local DB
-
-            name = details.name,
-            totalPrice = details.calculatedTotalPrice, // (Base + Exts) * Count
-            itemPrice = details.calculatedSingleUnitTestPrice, // Base Price per unit
-            count = details.productQuantity,
-            size = selectedSizeName,
-            extension = orderExtensions,
-
-            // --- NEW DATA FROM NAVIGATION ARGS ---
-            branchId = "", // Ensure branchId is inside Screen.ProductScreen
-            branchName = "",
-            isPickupFromBranch = false,
-            // If it is pickup from branch, we might not need car info,
-            // but we save it if provided.
-            carName = "",
-            carNumber = "",
-            carColor = Color.White,
-            imageUrl = details.imageUrl,
-            productId = details.id,
-            isReward = false
-        )
-
-        Logger.i("Aibviabvaaa$newOrder")
-
         viewModelScope.launch {
-            manageCartUseCase.insertOrder(newOrder)
+            if (isGuestUser()) {
+                showLoginRequiredSnackBar()
+                return@launch
+            }
 
-            // E. Close details and navigate back
-            onDismissDetails()
-            // sendNewEffect(ProductScreenUiEffect.NavigateBack)
+            addSelectedProductToCart(details)
         }
     }
+
     @OptIn(ExperimentalUuidApi::class)
     override fun onQuickAddToCart(productId: String) {
         val product = cachedProducts.find { it.id == productId } ?: return
 
-        // Don't allow adding out of stock items
-        if (!product.isInStock) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            if (isGuestUser()) {
+                showLoginRequiredSnackBar()
+                return@launch
+            }
+
+            if (!product.isInStock) {
                 showSnackBar(
                     title = getString(Res.string.out_of_stock_title),
-                    message = getString(Res.string.out_of_stock_message,product.name),
+                    message = getString(Res.string.out_of_stock_message, product.name),
                     isSuccess = false
                 )
+                return@launch
             }
-            return
+
+            quickAddProductToCart(product)
         }
+    }
 
-        // Create a basic order with default values
-        // No size selection, no extensions, quantity = 1
-        val finalPrice = (product.basePrice - product.discount).coerceAtLeast(0.0)
+    private fun addSelectedProductToCart(details: ProductDetailsUiState) {
+        val orderExtensions = details.extensions
+            .filter { it.currentQty > 0 }
+            .map { uiExt ->
+                AddToCartRequestDto.CartExtensionDto(
+                    extensionId = uiExt.id,
+                    name = uiExt.name,
+                    nameAr = uiExt.name,
+                    price = uiExt.price,
+                    quantity = uiExt.currentQty
+                )
+            }
 
-        val newOrder = Order(
-            id = Uuid.random().toString(),
-            name = product.name,
-            totalPrice = finalPrice,
-            itemPrice = finalPrice,
-            count = 1, // Default quantity
-            size = "Standard", // Default size
-            extension = emptyList(), // No extensions
-            branchId = "",
-            branchName = "",
-            isPickupFromBranch = false,
-            carName = "",
-            carNumber = "",
-            carColor = Color.White,
-            imageUrl = product.imageUrl,
-            productId = product.id,
-            isReward = false
+        val selectedSize = details.sizes.find { it.id == details.selectedSizeId }
+
+        val request = AddToCartRequestDto(
+            productId = details.id,
+            quantity = details.productQuantity,
+            size = selectedSize?.name ?: "Standard",
+            sizeId = details.selectedSizeId ?: "",
+            isRewardItem = false,
+            extensions = orderExtensions
         )
 
-        viewModelScope.launch {
-            try {
-                manageCartUseCase.insertOrder(newOrder)
-
-                // Show success feedback
+        tryToExecute(
+            callee = { addToCartUseCase(request) },
+            onSuccess = {
+                updateState { it.copy(selectedProductDetails = it.selectedProductDetails?.copy(isAddingToCart = false)) }
+                onDismissDetails()
                 showSnackBar(
                     title = getString(Res.string.added_to_cart_title),
-                    message = getString(Res.string.added_to_cart_message,product.name),
+                    message = getString(Res.string.added_to_cart_message, details.name),
+                    isSuccess = true
+                )
+            },
+            onError = { error ->
+                updateState { it.copy(selectedProductDetails = it.selectedProductDetails?.copy(isAddingToCart = false)) }
+                showAddToCartError(error)
+            },
+            onStart = {
+                updateState {
+                    it.copy(
+                        selectedProductDetails = it.selectedProductDetails?.copy(
+                            isAddingToCart = true
+                        )
+                    )
+                }
+            },
+            onFinish = { }
+        )
+    }
+
+    private fun quickAddProductToCart(product: Product) {
+        val request = AddToCartRequestDto(
+            productId = product.id,
+            quantity = 1,
+            size = "Standard",
+            sizeId = "",
+            isRewardItem = false,
+            extensions = emptyList()
+        )
+
+        tryToExecute(
+            callee = { addToCartUseCase(request) },
+            onSuccess = {
+                showSnackBar(
+                    title = getString(Res.string.added_to_cart_title),
+                    message = getString(Res.string.added_to_cart_message, product.name),
                     isSuccess = true,
-                    durationMillis = 2000 // Show for 2 seconds
+                    durationMillis = 2000
                 )
-            } catch (e: Exception) {
-                 showSnackBar(
-                    title = getString(Res.string.error_title),
-                    message = getString(Res.string.add_to_cart_error_message),
-                    isSuccess = false
-                )
-            }
-        }
+            },
+            onError = { error ->
+                updateState { it.copy(selectedProductDetails = it.selectedProductDetails?.copy(isAddingToCart = false)) }
+                showAddToCartError(error)
+            },
+            onStart = { updateState { it.copy(addingProductId = product.id) } },
+            onFinish = { updateState { it.copy(addingProductId = null) } }
+        )
+    }
+
+    private suspend fun isGuestUser(): Boolean =
+        !authenticationRepository.isUserLoggedIn().first()
+
+    private suspend fun showLoginRequiredSnackBar() {
+        showSnackBar(
+            title = getString(Res.string.error_title),
+            message = getString(Res.string.please_login_first),
+            isSuccess = false
+        )
+    }
+
+    private suspend fun showAddToCartError(error: Throwable) {
+        showSnackBar(
+            title = getString(Res.string.error_title),
+            message = if (error.isLoginRequiredError()) {
+                getString(Res.string.please_login_first)
+            } else {
+                error.message ?: getString(Res.string.add_to_cart_error_message)
+            },
+            isSuccess = false
+        )
     }
 
 

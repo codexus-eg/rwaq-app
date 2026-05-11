@@ -131,6 +131,7 @@ fun PagedDataDto<ProductDto>.toPagedListOfProducts(): PagedData<Product> {
     return PagedData(
         data = data.toListOfProducts(),
         totalItems = totalItems,
-        isLastPage = pageNumber >= totalPages
+        isLastPage = pageNumber >= totalPages,
+        userPoints = userPoints
     )
 }

@@ -58,7 +58,8 @@ fun provideHttpClient(
                 Json {
                     ignoreUnknownKeys = true
                     isLenient = true
-                    explicitNulls = false
+                    explicitNulls = true
+                    encodeDefaults = true
                 })
         }
 
@@ -70,18 +71,34 @@ fun provideHttpClient(
         install(plugin = Auth) {
             bearer {
                 loadTokens {
-                    BearerTokens(
-                        accessToken = settings.accessToken.first(),
-                        refreshToken = settings.refreshToken.first()
-                    )
+                    val accessToken = settings.accessToken.first()
+                    val refreshToken = settings.refreshToken.first()
+                    if (accessToken.isBlank() || refreshToken.isBlank()) {
+                        null
+                    } else {
+                        BearerTokens(
+                            accessToken = accessToken,
+                            refreshToken = refreshToken
+                        )
+                    }
 
                 }
                 refreshTokens {
-                    refreshToken()
-                    BearerTokens(
-                        accessToken = settings.accessToken.first(),
-                        refreshToken = settings.refreshToken.first()
-                    )
+                    if (settings.refreshToken.first().isBlank()) {
+                        null
+                    } else {
+                        refreshToken()
+                        val accessToken = settings.accessToken.first()
+                        val refreshToken = settings.refreshToken.first()
+                        if (accessToken.isBlank() || refreshToken.isBlank()) {
+                            null
+                        } else {
+                            BearerTokens(
+                                accessToken = accessToken,
+                                refreshToken = refreshToken
+                            )
+                        }
+                    }
                 }
                 sendWithoutRequest { request ->
                     val path = request.url.encodedPath.removePrefix("/")
@@ -111,4 +128,3 @@ fun provideHttpClient(
 }
 private const val LOGIN_ENDPOINT = "login"
 private const val TIME_OUT_INTERVAL_MILLI = 15_000L
-

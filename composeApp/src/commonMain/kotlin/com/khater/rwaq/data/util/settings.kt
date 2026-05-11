@@ -50,9 +50,17 @@ suspend fun FlowSettings.putEmail(value: String) {
     putString(EMAIL, value)
 }
 
+internal val FlowSettings.userPoints: Flow<Int>
+    get() = getIntFlow(USER_POINTS, 0)
+
+suspend fun FlowSettings.putUserPoints(value: Int) {
+    putInt(USER_POINTS, value)
+}
+
 private const val USER_NAME = "user_name"
 private const val PHONE_NUMBER = "phone_number"
 private const val ACCESS_TOKEN = "access_token"
 private const val REFRESH_TOKEN = "refresh_token"
 private const val FCM_TOKEN = "fcm_token"
 private const val EMAIL = "email"
+private const val USER_POINTS = "user_points"

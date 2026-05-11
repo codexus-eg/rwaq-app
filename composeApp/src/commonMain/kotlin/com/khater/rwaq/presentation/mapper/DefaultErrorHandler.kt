@@ -14,7 +14,7 @@ fun handleDefaultException(
         is NoNetworkException -> DefaultScreenErrorState.NoNetwork
         is UnAuthorizedException -> DefaultScreenErrorState.UnAuthorized
         is ServerErrorException -> DefaultScreenErrorState.ServerError
-        is InvalidRequestException -> DefaultScreenErrorState.InvalidRequest
+        is InvalidRequestException -> DefaultScreenErrorState.InvalidRequest(exception.message)
         is TooManyRequestsException -> DefaultScreenErrorState.TooManyRequests
         else -> DefaultScreenErrorState.SomethingWentWrong(exception.message)
     }

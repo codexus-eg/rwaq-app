@@ -7,7 +7,7 @@ import co.touchlab.kermit.Logger
 import com.khater.rwaq.data.dto.order.CreateOrderRequest
 import com.khater.rwaq.data.dto.order.OrderExtensionRequest
 import com.khater.rwaq.data.dto.order.OrderItemRequest
- import com.khater.rwaq.domain.entities.branch.Branch
+import com.khater.rwaq.domain.entities.branch.Branch
 import com.khater.rwaq.domain.entities.car.Car
 import com.khater.rwaq.domain.entities.order.Order
 import com.khater.rwaq.domain.entities.order.OrderExtension
@@ -32,19 +32,22 @@ import com.khater.rwaq.presentation.screens.cartScreen.uiStates.CartUiState
 import com.khater.rwaq.presentation.screens.cartScreen.uiStates.OrderLocation
 import com.khater.rwaq.presentation.screens.cartScreen.uiStates.PaymentMethod
 import com.khater.rwaq.presentation.util.LoginConstants.SNACK_BAR_DELAY
-import com.swmansion.kmpmaps.core.Coordinates
-import com.swmansion.kmpmaps.core.MapPlatform
-import com.swmansion.kmpmaps.core.MapProperties
-import io.github.tbib.klocation.KLocationService
+import com.khater.rwaq.presentation.util.isOnlinePaymentCheckoutError
+import dev.jordond.compass.geolocation.Geolocator
+import dev.jordond.compass.geolocation.GeolocatorResult
+import dev.jordond.compass.geolocation.mobile
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import rwaq.composeapp.generated.resources.Res
 import rwaq.composeapp.generated.resources.choose_car
+import rwaq.composeapp.generated.resources.failed_checkout_online_payment
+import rwaq.composeapp.generated.resources.gps_required
 import rwaq.composeapp.generated.resources.max_count
 import rwaq.composeapp.generated.resources.no_branches_to_display
 import rwaq.composeapp.generated.resources.please_choose_car
+import rwaq.composeapp.generated.resources.please_enable_gps_to_use_drive_thru
 import rwaq.composeapp.generated.resources.you_have_reach_max_count_of_this_extension
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -56,7 +59,7 @@ class CartViewModel(
     private val authenticationRepository: AuthenticationRepository,
 ) : BaseViewModel<CartUiState, CartScreenUIEffect>(CartUiState()),
     CartInteractionListener {
-    private val locationService =  KLocationService()
+    private val geolocator = Geolocator.mobile()
 
     init {
         checkAuthentication()
@@ -64,61 +67,52 @@ class CartViewModel(
         getAllBranches()
         collectAllCars()
         getUserLocation()
-       }
+    }
 
-    private fun checkAuthentication() {
+    fun checkAuthentication() {
         viewModelScope.launch {
             val isLoggedIn = authenticationRepository.isUserLoggedIn().first()
+            Logger.i { "alwbvlaw $isLoggedIn" }
             updateState { it.copy(isGuest = !isLoggedIn, showGuestDialog = !isLoggedIn) }
         }
     }
 
     private fun getUserLocation() {
         tryToExecute(
-            callee = {
-                // 2. Call the suspend function from your new lib
-                locationService.getCurrentLocation()
-            },
-            onSuccess = { location ->
-                // 3. Update UI.
-                // NOTE: This lib returns coordinates. If you need a street address (e.g. "Cairo, Egypt"),
-                // you will need a separate Geocoder library.
-                val locationString = "${location.latitude}, ${location.longitude}"
+            callee = { geolocator.current() },
+            onSuccess = { result ->
+                when (result) {
+                    is GeolocatorResult.Success -> {
+                        val coordinates = result.data.coordinates
+                        val locationString = "${coordinates.latitude}, ${coordinates.longitude}"
 
-                updateState {
-                    it.copy(
-                        orderLocation = OrderLocation(
-                            latitude = location.latitude,
-                            longitude = location.longitude
-                        ),
-                        isLoading = false
-                    )
+                        updateState {
+                            it.copy(
+                                orderLocation = OrderLocation(
+                                    latitude = coordinates.latitude,
+                                    longitude = coordinates.longitude
+                                ),
+                                isLoading = false
+                            )
+                        }
+                        Logger.i { "locationaubvaooabbba $locationString" }
+                    }
+
+                    is GeolocatorResult.Error -> {
+                        Logger.i { "location ${result.message}" }
+                        updateState { it.copy(orderLocation = OrderLocation(), isLoading = false) }
+                    }
                 }
-                Logger.i { "location $locationString" }
             },
             onError = { error ->
-                // 4. Handle GPS off or Permission denied
-//                updateState { it.copy(isLoading = false) }
                 Logger.i { "location ${error.message}" }
-
-
-                // Optional: Check if error is due to GPS being disabled
-                // You might want to trigger the "Enable GPS" flow here if your lib supports it via exceptions
-//                viewModelScope.launch {
-//                    showSnackBar(
-//                        message = "Location error: ${error.message}",
-//                        isSuccess = false
-//                    )
-//                }
+                updateState { it.copy(orderLocation = OrderLocation(), isLoading = false) }
             }
         )
     }
 
-    // ... [Rest of your standard Cart logic: subscribeToOrders, etc.] ...
-
-    // To support the "Enable GPS" button from your UI, you might add this:
     fun enableGps() {
-        locationService.enableLocation()
+        getUserLocation()
     }
 
     // ... [Existing Cart Methods omitted for brevity - no changes] ...
@@ -133,7 +127,7 @@ class CartViewModel(
                 updateState {
                     it.copy(
                         orders = orders,
-                       // cartTotal = orders.sumOf { o -> o.totalPrice },
+                        // cartTotal = orders.sumOf { o -> o.totalPrice },
                         // Update the breakdown fields
                         subTotal = grossTotal,
                         rewardDiscount = rewardAmount,
@@ -148,7 +142,7 @@ class CartViewModel(
 
     override fun onIncreaseOrderCount(order: Order) {
         if (!order.isReward)
-        tryToExecute({ manageCartUseCase.increaseOrderCount(order) }, {}, {})
+            tryToExecute({ manageCartUseCase.increaseOrderCount(order) }, {}, {})
     }
 
     override fun onDecreaseOrderCount(order: Order) {
@@ -216,6 +210,7 @@ class CartViewModel(
             }
         )
     }
+
     override fun onRetryGetBranches() {
         getAllBranches()
     }
@@ -231,10 +226,15 @@ class CartViewModel(
         // But simplified: update flag, re-filter list
         updateState { it.copy(isDriveThru = isDriveThru) }
 
+        if (isDriveThru) {
+            enableGps()
+            // Opens the system dialog/settings to enable GPS
+            getUserLocation() // Attempts to fetch the coordinates
+        }
         // We need the full list to re-filter. In a real app, store 'allBranches' in state.
         // Here we call the usecase again or assume state.branches contained relevant ones.
         // Best practice: call getAllBranches again to be safe and clean.
-        getAllBranches()
+        filterBranchesAndMaintainSelection(currentState.allBranches)
     }
 
     private fun filterBranchesAndMaintainSelection(fetchedBranches: List<BranchUiState>) {
@@ -345,7 +345,7 @@ class CartViewModel(
                 selectedCarColor = null,
                 selectedCarColorName = null,
 
-            )
+                )
         }
     }
 
@@ -376,7 +376,7 @@ class CartViewModel(
 
             AddCarStep.SELECT_COLOR -> if (currentState.selectedCarColor != null) updateState {
                 it.copy(
-                    addCarStep = AddCarStep.SELECT_COLOR
+                    addCarStep = AddCarStep.ENTER_NUMBER
                 )
             }
 
@@ -424,6 +424,17 @@ class CartViewModel(
     override fun onPlaceOrder() {
         val currentState = state.value
         if (currentState.orders.isEmpty()) return
+
+        Logger.i { "locationavekjbjela ${currentState.orderLocation}" }
+        // 1. GPS CHECK FOR DRIVE THRU
+        if (currentState.isDriveThru && (currentState.orderLocation.latitude == 0.0 || currentState.orderLocation.longitude == 0.0)) {
+            enableGps() // Request system GPS
+            getUserLocation() // Attempt to fetch coordinates to update state
+
+
+            return // Stop execution until GPS is provided
+        }
+
 
         // DETERMINE EFFECTIVE BRANCH
         val effectiveBranch = if (currentState.isDriveThru) {
@@ -507,22 +518,66 @@ class CartViewModel(
         tryToExecute(
             onStart = { updateState { it.copy(isSendingOrderLoading = true) } },
             callee = { createOrderUseCase(requestBody) },
-            onSuccess = {
-                manageCartUseCase.clearCart(); updateState { it.copy(isSendingOrderLoading = false) }; sendNewEffect(
-                CartScreenUIEffect.NavigateBack
-            )
+            onSuccess = { response ->
+                Logger.i("response: $response")
+                val isOnline = requestBody.paymentMethod == PaymentMethod.ONLINE.name
+
+                if (isOnline && response.clientSecret.isNotEmpty()) {
+                    // ✅ Do NOT clear cart yet — wait for payment gateway result
+                    sendNewEffect(
+                        CartScreenUIEffect.NavigateToPayment(
+                            clientSecret = response.clientSecret,
+                            publicKey = response.publicKey
+                        )
+                    )
+                } else {
+                    // ✅ CASH — order is confirmed server-side, safe to clear now
+                    viewModelScope.launch { manageCartUseCase.clearCart() }
+                    sendNewEffect(CartScreenUIEffect.NavigateBack)
+                }
+//                manageCartUseCase.clearCart()
+//                updateState { it.copy(isSendingOrderLoading = false) }
+//                if (requestBody.paymentMethod == PaymentMethod.ONLINE.name && response.clientSecret.isNotEmpty()) {
+//                    sendNewEffect(
+//                        CartScreenUIEffect.NavigateToPayment(
+//                            clientSecret = response.clientSecret,
+//                            publicKey = response.publicKey
+//                        )
+//                    )
+//                } else {
+//                    sendNewEffect(CartScreenUIEffect.NavigateBack)
+//                }
             },
             onError = { e ->
+                val errorMessage = if (
+                    requestBody.paymentMethod == PaymentMethod.ONLINE.name &&
+                    e.isOnlinePaymentCheckoutError()
+                ) {
+                    getString(Res.string.failed_checkout_online_payment)
+                } else {
+                    e.message
+                }
                 updateState {
                     it.copy(
                         isSendingOrderLoading = false,
-                        sendingOrderError = e.message
+                        sendingOrderError = errorMessage
                     )
                 }
+                showSnackBar(
+                    message = errorMessage ?: getString(Res.string.failed_checkout_online_payment),
+                    isSuccess = false
+                )
             }
         )
     }
 
+    fun onPaymentFinished() {
+        viewModelScope.launch {
+            manageCartUseCase.clearCart()
+            sendNewEffect(CartScreenUIEffect.NavigateBack)
+        }
+    }
+    
     private suspend fun showSnackBar(title: String? = null, message: String, isSuccess: Boolean) {
         updateState { it.copy(snackBar = SnackBarState(true, title, message, isSuccess)) }
         delay(SNACK_BAR_DELAY)

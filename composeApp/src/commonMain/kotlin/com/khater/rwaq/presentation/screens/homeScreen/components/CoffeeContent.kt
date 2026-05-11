@@ -293,7 +293,11 @@ fun CoffeeContent(
                         // Making the key unique per section fixes this.
 
                         Box(modifier = Modifier.animateItem()) {
-                            ProductItem(product = product, listener = listener)
+                            ProductItem(
+                                product = product,
+                                listener = listener,
+                                isAdding = state.addingProductId == product.id
+                            )
                         }
                     }
                 }

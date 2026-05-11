@@ -37,7 +37,7 @@ enum class NavigationBarItems(
         icon = Res.drawable.baseline_shopping_cart_24,
         fillIcon = Res.drawable.baseline_shopping_cart_24,
         title = Res.string.cart,
-        route = Screen.CartScreen
+        route = Screen.NewCartScreen
     ),
     Profile(
         icon = Res.drawable.fill_profile_icon,

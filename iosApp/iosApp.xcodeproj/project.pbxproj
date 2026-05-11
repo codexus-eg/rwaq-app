@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		17853E9F2F8F810C00A7D54B /* FirebaseDynamicLinks in Frameworks */ = {isa = PBXBuildFile; productRef = 17853E9E2F8F810C00A7D54B /* FirebaseDynamicLinks */; };
 		179E535C2F0119EC00DBBA35 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 179E535B2F0119EC00DBBA35 /* FirebaseAnalytics */; };
 		179E535E2F0119EC00DBBA35 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 179E535D2F0119EC00DBBA35 /* FirebaseAnalyticsCore */; };
 		179E53602F0119EC00DBBA35 /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = 179E535F2F0119EC00DBBA35 /* FirebaseAnalyticsIdentitySupport */; };
@@ -14,9 +15,26 @@
 		179E53642F0119EC00DBBA35 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 179E53632F0119EC00DBBA35 /* FirebaseCrashlytics */; };
 		179E53662F0119EC00DBBA35 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 179E53652F0119EC00DBBA35 /* FirebaseFirestore */; };
 		179E53682F0119EC00DBBA35 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 179E53672F0119EC00DBBA35 /* FirebaseMessaging */; };
+		17A9FFD82F9363A000AE30E1 /* PaymobSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17A9FFD62F93636000AE30E1 /* PaymobSDK.xcframework */; };
+		17A9FFD92F9363A000AE30E1 /* PaymobSDK.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 17A9FFD62F93636000AE30E1 /* PaymobSDK.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		17A9FFDA2F9363A000AE30E1 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				17A9FFD92F9363A000AE30E1 /* PaymobSDK.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		17A9FFD62F93636000AE30E1 /* PaymobSDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PaymobSDK.xcframework; sourceTree = "<group>"; };
 		AD16ABE1415174A97221E7E8 /* Rwaq.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rwaq.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -54,10 +72,12 @@
 				179E535C2F0119EC00DBBA35 /* FirebaseAnalytics in Frameworks */,
 				179E535E2F0119EC00DBBA35 /* FirebaseAnalyticsCore in Frameworks */,
 				179E53682F0119EC00DBBA35 /* FirebaseMessaging in Frameworks */,
+				17853E9F2F8F810C00A7D54B /* FirebaseDynamicLinks in Frameworks */,
 				179E53642F0119EC00DBBA35 /* FirebaseCrashlytics in Frameworks */,
 				179E53622F0119EC00DBBA35 /* FirebaseCore in Frameworks */,
 				179E53602F0119EC00DBBA35 /* FirebaseAnalyticsIdentitySupport in Frameworks */,
 				179E53662F0119EC00DBBA35 /* FirebaseFirestore in Frameworks */,
+				17A9FFD82F9363A000AE30E1 /* PaymobSDK.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +90,7 @@
 				3CB9B07D1273F2D12F3F59B4 /* Configuration */,
 				6023CCFBEF1839CA6F50461D /* iosApp */,
 				D1F7B8CDCBD257A56AAD198A /* Products */,
+				17A9FFD62F93636000AE30E1 /* PaymobSDK.xcframework */,
 			);
 			sourceTree = "<group>";
 		};
@@ -92,6 +113,7 @@
 				75C7DB1E58577BAE098433FE /* Sources */,
 				6A69722AEE4732C98124F532 /* Frameworks */,
 				723AB11B5F26FFBE7ADCF43D /* Resources */,
+				17A9FFDA2F9363A000AE30E1 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -109,6 +131,7 @@
 				179E53632F0119EC00DBBA35 /* FirebaseCrashlytics */,
 				179E53652F0119EC00DBBA35 /* FirebaseFirestore */,
 				179E53672F0119EC00DBBA35 /* FirebaseMessaging */,
+				17853E9E2F8F810C00A7D54B /* FirebaseDynamicLinks */,
 			);
 			productName = iosApp;
 			productReference = AD16ABE1415174A97221E7E8 /* Rwaq.app */;
@@ -203,7 +226,7 @@
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 9JUL8U6P92;
 				ENABLE_PREVIEWS = YES;
@@ -221,7 +244,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_IDENTIFIER)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -361,7 +384,7 @@
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 9JUL8U6P92;
 				ENABLE_PREVIEWS = YES;
@@ -379,7 +402,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_IDENTIFIER)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -416,12 +439,17 @@
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 12.7.0;
+				minimumVersion = 11.7.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		17853E9E2F8F810C00A7D54B /* FirebaseDynamicLinks */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 179E535A2F0119EC00DBBA35 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDynamicLinks;
+		};
 		179E535B2F0119EC00DBBA35 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 179E535A2F0119EC00DBBA35 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

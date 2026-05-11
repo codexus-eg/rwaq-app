@@ -8,6 +8,6 @@ import com.khater.rwaq.presentation.screens.splashScreen.SplashScreen
 
 fun NavGraphBuilder.rewardScreenRoute(){
     composable<Screen.RewardScreen>{
-        RewardScreen()
+        NewRewardScreen()
     }
 }

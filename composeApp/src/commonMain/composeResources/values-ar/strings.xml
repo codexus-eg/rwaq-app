@@ -15,13 +15,24 @@
     <string name="status_pending">قيد الانتظار</string>
     <string name="reward_discount">خصم المكافأة</string>
     <string name="failed_to_load_branches">فشل في تحميل الفروع</string>
-
+    <string name="gps_required">مطلوب تفعيل نظام تحديد الموقع (GPS)</string>
+    <string name="please_enable_gps_to_use_drive_thru">يرجى تفعيل نظام تحديد الموقع (GPS) لاستخدام خدمة الاستلام من السيارة</string>
+    <string name="location_permission_required">يرجى السماح بإذن الموقع لاستخدام خدمة الاستلام من السيارة</string>
+    <string name="location_permission_denied_forever">تم تعطيل إذن الموقع. فعّله من إعدادات التطبيق لاستخدام خدمة الاستلام من السيارة</string>
     <string name="are_you_sure_delete_account">هل أنت متأكد أنك تريد حذف حسابك؟</string>
     <string name="delete_account">حذف الحساب</string>
 
     <string name="status_completed">مكتمل</string>
+    <string name="status_confirmed">مؤكد</string>
     <string name="status_cancelled">ملغى</string>
+    <string name="status_rejected">مرفوض</string>
+
     <string name="status_unknown">غير معروف</string>
+    <string name="status_not_assigned">لم يتم التعيين</string>
+    <string name="status_assigned">تم التعيين</string>
+    <string name="status_shipped">تم التجهيز</string>
+    <string name="status_in_transit">في الطريق</string>
+    <string name="status_delivered">تم التسليم</string>
     <string name="order_items_count">الطلب (%1$s)</string>
     <string name="item_total">إجمالي الصنف: %1$s</string>
     <string name="status_processing">جاري التنفيذ</string>
@@ -45,6 +56,7 @@
 
     <string name="added_to_cart_title">تمت الإضافة إلى السلة</string>
     <string name="added_to_cart_message">تمت إضافة %1$s إلى سلتك</string>
+    <string name="please_login_first">يرجى تسجيل الدخول أولاً</string>
 
     <!-- Error -->
     <string name="error_title">خطأ</string>
@@ -123,6 +135,7 @@
     <!-- Cart -->
     <string name="checkout">الدفع</string>
     <string name="checkout_order">تأكيد الطلب</string>
+    <string name="failed_checkout_online_payment">فشل إتمام الطلب بالدفع الإلكتروني</string>
 
     <!-- Sections -->
     <string name="add_more">إضافة المزيد</string>
@@ -145,6 +158,13 @@
     <string name="use_points">استخدم رصيد النقاط ( %1$d نقطة )</string>
 
     <string name="online_payment">الدفع الإلكتروني</string>
+    <string name="pay_with_apple_pay">الدفع عبر Apple Pay</string>
+    <string name="payment_success_title">تم الدفع بنجاح</string>
+    <string name="payment_success_message">تم الدفع بنجاح وتم تأكيد طلبك.</string>
+    <string name="payment_failed_title">فشل الدفع</string>
+    <string name="payment_failed_message">لم نتمكن من إكمال عملية الدفع. يرجى المحاولة مرة أخرى أو اختيار طريقة دفع أخرى.</string>
+    <string name="payment_pending_title">الدفع قيد الانتظار</string>
+    <string name="payment_pending_message">عملية الدفع ما زالت قيد الانتظار. يرجى الانتظار أو المحاولة لاحقًا.</string>
 
     <!-- Common -->
     <string name="currency_sar">ر.س</string>
@@ -358,6 +378,15 @@
     <string name="order_time">وقت الطلب</string>
     <string name="order_code">كود الطلب</string>
     <string name="order_details">تفاصيل الطلب</string>
+    <string name="order_type">نوع الطلب</string>
+    <string name="payment_status">حالة الدفع</string>
+    <string name="delivery_status">حالة التوصيل</string>
+    <string name="assigned_driver">السائق المعيّن</string>
+    <string name="order_address">عنوان الطلب</string>
+    <string name="car_details">تفاصيل السيارة</string>
+    <string name="branch_label">الفرع</string>
+    <string name="notes_label">الملاحظات</string>
+    <string name="reward_item">منتج مكافأة</string>
     <string name="service_time">وقت الخدمة</string>
     <string name="service_code">كود الخدمة</string>
     <string name="service_details">تفاصيل الخدمة</string>

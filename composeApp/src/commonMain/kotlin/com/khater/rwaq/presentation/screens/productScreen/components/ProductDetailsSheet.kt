@@ -110,7 +110,7 @@ private fun ProductDetailsContent(
                 .height(220.dp)
                 .fillMaxWidth()
                 .padding(horizontal = 30.dp),
-            contentScale = ContentScale.Inside
+            contentScale = ContentScale.Crop
         )
         Column(
             modifier = Modifier

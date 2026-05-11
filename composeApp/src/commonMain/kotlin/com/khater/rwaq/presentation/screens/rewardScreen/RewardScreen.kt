@@ -11,6 +11,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
@@ -23,7 +26,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.khater.rwaq.designSystem.component.button.PrimaryButton
+import com.khater.rwaq.designSystem.component.dialog.BasicDialog
+import com.khater.rwaq.designSystem.component.dialog.Dialog
 import com.khater.rwaq.designSystem.component.indicator.DotsProgressIndicator
 import com.khater.rwaq.designSystem.component.scaffold.RwaqScaffold
 import com.khater.rwaq.designSystem.theme.theme.Theme
@@ -33,13 +38,8 @@ import com.khater.rwaq.presentation.composables.EventHandler
 import com.khater.rwaq.presentation.composables.RwaqBackButton
 import com.khater.rwaq.presentation.composables.RwaqTopBar
 import com.khater.rwaq.presentation.composables.SnackBarContainer
-import com.khater.rwaq.presentation.screens.homeScreen.components.CoffeeContent
-import com.khater.rwaq.presentation.screens.productScreen.components.CategoryHeader
-import com.khater.rwaq.presentation.screens.productScreen.components.ProductDetailsSheet
-import com.khater.rwaq.presentation.screens.productScreen.components.ProductItem
-import com.khater.rwaq.presentation.screens.productScreen.uiState.ProductUiModel
+import com.khater.rwaq.presentation.navigation.Screen
 import com.khater.rwaq.presentation.screens.profileScreen.composables.SettingItemCard
-import com.khater.rwaq.presentation.screens.profileScreen.composables.logoutDialog
 import com.khater.rwaq.presentation.screens.rewardScreen.components.RewardProductDetailsSheet
 import com.khater.rwaq.presentation.screens.rewardScreen.components.RewardProductItem
 import com.khater.rwaq.presentation.screens.rewardScreen.uiState.RewardInteractionListener
@@ -52,22 +52,22 @@ import rwaq.composeapp.generated.resources.Res
 import rwaq.composeapp.generated.resources.currency_sar
 import rwaq.composeapp.generated.resources.empty_product
 import rwaq.composeapp.generated.resources.empty_products
-import rwaq.composeapp.generated.resources.profile_screen
+import rwaq.composeapp.generated.resources.login
 import rwaq.composeapp.generated.resources.reward
+import rwaq.composeapp.generated.resources.rwaq_logo
 import rwaq.composeapp.generated.resources.something_went_wrong
 import rwaq.composeapp.generated.resources.wallet
+import rwaq.composeapp.generated.resources.welcome
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun RewardScreen(rewardViewModel: RewardViewModel = koinViewModel()) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    // 1. Listen for when the user returns to this screen
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                // 2. Fetch the fresh points from the newly updated backend!
-                rewardViewModel.onRefreshUserPoints()
+                rewardViewModel.checkAuthenticationAndFetchData()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -82,6 +82,9 @@ fun RewardScreen(rewardViewModel: RewardViewModel = koinViewModel()) {
             is RewardsUiEffect.NavigateToProductDetails -> {}
             is RewardsUiEffect.NavigateBack -> {
                 controller.navigateUp()
+            }
+            is RewardsUiEffect.NavigateToLogin -> {
+                controller.navigate(Screen.LoginScreen)
             }
         }
     }
@@ -126,6 +129,31 @@ fun RewardContent(state: RewardsUiState, interactionListener: RewardInteractionL
                     },
                     isCenterAligned = true,
                 )
+            },
+            overlays = {
+                dialog(state.showGuestDialog) {
+                    BasicDialog(
+                        isVisible = state.showGuestDialog,
+                        onDismiss = { },
+                        onCancelClick = { },
+                        hasDismissButton = false,
+                        dismissOnBackPress = false,
+                        dismissOnClickOutside = false,
+                        actionButtons = {
+                            PrimaryButton(
+                                text = stringResource(Res.string.login),
+                                onClick = interactionListener::onClickLogin,
+                                modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._16)
+                            )
+                        }
+                    ) {
+                        Dialog(
+                            title = stringResource(Res.string.login),
+                            message = stringResource(Res.string.welcome),
+                            icon = painterResource(Res.drawable.rwaq_logo)
+                        )
+                    }
+                }
             }
         ) {
             Column(
@@ -179,6 +207,8 @@ fun RewardContent(state: RewardsUiState, interactionListener: RewardInteractionL
                     else -> {
                         RewardProductGrid(
                             products = state.products,
+                            points = state.points,
+                            addingProductId = state.addingProductId,
                             listener = interactionListener
                         )
                     }
@@ -199,6 +229,8 @@ fun RewardContent(state: RewardsUiState, interactionListener: RewardInteractionL
 @Composable
 fun RewardProductGrid(
     products: List<Product>,
+    points: Double,
+    addingProductId: String?,
     listener: RewardInteractionListener,
 ) {
     LazyVerticalGrid(
@@ -211,6 +243,8 @@ fun RewardProductGrid(
         items(products, key = { it.id }) { product ->
             RewardProductItem(
                 product = product,
+                points = points,
+                isAdding = addingProductId == product.id,
                 listener = listener
             )
         }

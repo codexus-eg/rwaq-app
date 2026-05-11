@@ -317,6 +317,7 @@ fun AddCarWizardBottomSheet(
                 textAlign = TextAlign.Start
             )
 
+            Logger.i { "ljevblejsbvjes ${step.name}" }
             Box() {
                 AnimatedContent(
                     targetState = step,

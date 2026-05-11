@@ -9,4 +9,5 @@ data class SplashUiState(
     val authFinished: Boolean = false,
     val isLoggedIn: Boolean? = null,
     val snackBar: SnackBarState = SnackBarState(),
+    val userId: String? = null
     )

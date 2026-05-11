@@ -1,5 +1,6 @@
 package com.khater.rwaq.di
 
+import com.khater.rwaq.presentation.util.ReferralManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

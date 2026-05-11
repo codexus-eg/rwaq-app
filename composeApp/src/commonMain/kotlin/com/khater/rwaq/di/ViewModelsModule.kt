@@ -8,11 +8,13 @@ import com.khater.rwaq.presentation.screens.contactUsScreen.ContactUsViewModel
 import com.khater.rwaq.presentation.screens.forgetPasswordScreen.ForgetPasswordViewModel
 import com.khater.rwaq.presentation.screens.homeScreen.HomeViewModel
 import com.khater.rwaq.presentation.screens.loginScreen.LoginViewModel
+import com.khater.rwaq.presentation.screens.newCartScreen.NewCartViewModel
 import com.khater.rwaq.presentation.screens.otpScreen.RegisterOtpViewModel
 import com.khater.rwaq.presentation.screens.productScreen.ProductViewModel
 import com.khater.rwaq.presentation.screens.profileScreen.ProfileViewModel
 import com.khater.rwaq.presentation.screens.registerScreen.RegisterViewModel
 import com.khater.rwaq.presentation.screens.resetPasswordScreen.ResetPasswordViewModel
+import com.khater.rwaq.presentation.screens.rewardScreen.NewRewardViewModel
 import com.khater.rwaq.presentation.screens.rewardScreen.RewardViewModel
 import com.khater.rwaq.presentation.screens.splashScreen.SplashScreenViewModel
 import com.khater.rwaq.presentation.screens.updateUserScreen.UpdateUserViewModel
@@ -39,4 +41,6 @@ val viewModelModule = module {
     viewModelOf(::OrderViewModel)
     viewModelOf(::UpdateUserViewModel)
     viewModelOf(::RewardViewModel)
+    viewModelOf(::NewRewardViewModel)
+    viewModelOf(::NewCartViewModel)
 }

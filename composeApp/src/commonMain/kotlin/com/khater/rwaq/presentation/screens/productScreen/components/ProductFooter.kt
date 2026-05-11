@@ -38,6 +38,7 @@ fun ProductFooter(
         PrimaryButton(
             text = "${stringResource(Res.string.add)}  ${details.calculatedTotalPrice} ${stringResource(Res.string.currency_sar)} ",
             onClick = listener::onAddToCart,
+            isLoading = details.isAddingToCart,
             modifier = Modifier
                 .weight(1f)
                 .height(50.dp)

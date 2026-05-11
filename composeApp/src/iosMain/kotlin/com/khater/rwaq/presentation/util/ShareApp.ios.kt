@@ -6,7 +6,7 @@ import platform.StoreKit.SKStoreReviewController
 
 
 // handle app ID when publish into app store
-private const val APP_STORE_ID = "YOUR_APP_ID"
+private const val APP_STORE_ID = "6761053148"
 
 actual class AppStoreManager {
 

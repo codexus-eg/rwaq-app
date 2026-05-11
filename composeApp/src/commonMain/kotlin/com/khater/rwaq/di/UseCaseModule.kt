@@ -6,6 +6,13 @@ import com.khater.rwaq.domain.useCases.GetAllProductsUseCase
 import com.khater.rwaq.domain.useCases.GetUserUseCase
 import com.khater.rwaq.domain.useCases.ManageCartUseCase
 import com.khater.rwaq.domain.useCases.SendContactMessageUseCase
+import com.khater.rwaq.domain.useCases.cart.ClearCartUseCase
+import com.khater.rwaq.domain.useCases.cart.GetCartUseCase
+import com.khater.rwaq.domain.useCases.cart.RemoveCartItemUseCase
+import com.khater.rwaq.domain.useCases.cart.UpdateCartItemUseCase
+import com.khater.rwaq.domain.useCases.cart.UpdateCartMetadataUseCase
+import com.khater.rwaq.domain.useCases.cart.CheckoutUseCase
+import com.khater.rwaq.domain.useCases.cart.AddToCartUseCase
 import com.khater.rwaq.domain.useCases.auth.DeleteAccountUseCase
 import com.khater.rwaq.domain.useCases.auth.LoginUseCase
 import com.khater.rwaq.domain.useCases.auth.LogoutUseCase
@@ -38,4 +45,11 @@ val useCaseModule = module {
     factoryOf(::GetUserUseCase)
     factoryOf(::UpdateUserUseCase)
     factoryOf(::DeleteAccountUseCase)
+    factoryOf(::GetCartUseCase)
+    factoryOf(::UpdateCartItemUseCase)
+    factoryOf(::RemoveCartItemUseCase)
+    factoryOf(::CheckoutUseCase)
+    factoryOf(::AddToCartUseCase)
+    factoryOf(::UpdateCartMetadataUseCase)
+    factoryOf(::ClearCartUseCase)
 }

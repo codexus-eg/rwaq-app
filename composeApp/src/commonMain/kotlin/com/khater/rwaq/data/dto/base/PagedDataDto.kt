@@ -14,5 +14,7 @@ data class PagedDataDto<T>(
     @SerialName("total")
     val totalItems: Int,
     @SerialName("pages")
-    val totalPages: Int
+    val totalPages: Int,
+    @SerialName("userPoints")
+    val userPoints: Int? = null
 )

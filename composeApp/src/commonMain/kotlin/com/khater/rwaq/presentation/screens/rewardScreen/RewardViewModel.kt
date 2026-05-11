@@ -1,15 +1,14 @@
 package com.khater.rwaq.presentation.screens.rewardScreen
 
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
-import co.touchlab.kermit.Logger
 import com.khater.rwaq.data.dto.product.toDetailsUiState
-import com.khater.rwaq.domain.entities.order.Order
-import com.khater.rwaq.domain.entities.order.OrderExtension
+import com.khater.rwaq.data.dto.cart.AddToCartRequestDto
 import com.khater.rwaq.domain.repository.authentication.AuthenticationRepository
 import com.khater.rwaq.domain.useCases.GetAllProductsUseCase
 import com.khater.rwaq.domain.useCases.GetUserUseCase
-import com.khater.rwaq.domain.useCases.ManageCartUseCase
+import com.khater.rwaq.domain.useCases.cart.AddToCartUseCase
+import com.khater.rwaq.domain.useCases.cart.GetCartUseCase
+import com.khater.rwaq.domain.util.InsufficientPointsException
 import com.khater.rwaq.presentation.base.BaseViewModel
 import com.khater.rwaq.presentation.mapper.handleDefaultException
 import com.khater.rwaq.presentation.mapper.mapDefaultErrorToMessage
@@ -31,102 +30,58 @@ import rwaq.composeapp.generated.resources.out_of_stock_message
 import rwaq.composeapp.generated.resources.out_of_stock_title
 import rwaq.composeapp.generated.resources.redeem_reward_failed_message
 import rwaq.composeapp.generated.resources.reward_redeemed_message
-import rwaq.composeapp.generated.resources.reward_redeemed_with_points_message
+import kotlin.math.ceil
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 class RewardViewModel(
     private val getAllProductsUseCase: GetAllProductsUseCase,
     private val getUserUseCase: GetUserUseCase,
-    private val manageCartUseCase: ManageCartUseCase,
+    private val getCartUseCase: GetCartUseCase,
+    private val addToCartUseCase: AddToCartUseCase,
     private val authenticationRepository: AuthenticationRepository,
 ) : BaseViewModel<RewardsUiState, RewardsUiEffect>(RewardsUiState()),
     RewardInteractionListener {
 
-
     init {
-        checkAuthenticationAndFetchData()
-        fetchHomeData()
-        subscribeToCart()
+        // We only fetch once on init or via checkAuthenticationAndFetchData triggered by screen
+        // In the new mechanism, points are handled by backend, but we still display them.
     }
 
-    private fun checkAuthenticationAndFetchData() {
-        viewModelScope.launch {
-            val isLoggedIn = authenticationRepository.isUserLoggedIn().first()
-            updateState { it.copy(isGuest = !isLoggedIn) }
-            if (isLoggedIn) {
-                getUser()
-            }
-        }
-    }
-
-    private fun subscribeToCart() {
-        tryToCollect(
-            collect = { manageCartUseCase() },
-            onCollect = { orders ->
-                // Sum up the points of all items in the cart that are rewards
-                val pendingPoints = orders.filter { it.isReward }.sumOf { it.totalPrice }
-
-                updateState { state ->
-                    state.copy(
-                        pendingRewardPoints = pendingPoints,
-                        // Automatically subtract cart points from server points
-                        points = (state.serverPoints - pendingPoints).coerceAtLeast(0.0)                    )
-                }
-            },
-            onError = { Logger.e("Failed to collect cart", it) }
-        )
-    }
-
-    private fun getUser() {
-        if (currentState.isGuest) return
+    fun checkAuthenticationAndFetchData() {
         tryToExecute(
-            callee = { getUserUseCase() },
-            onSuccess = { user ->
+            callee = {
+                val isLoggedIn = authenticationRepository.isUserLoggedIn().first()
+                if (isLoggedIn) getAllProductsUseCase(1, 50, true) else null
+            },
+            onSuccess = { productsResponse ->
                 updateState { state ->
-                    val actualServerPoints = user.points.toDouble()
+                    val isLoggedIn = productsResponse != null
+                    val actualServerPoints = productsResponse?.userPoints?.toDouble() ?: 0.0
                     state.copy(
-                        serverPoints = actualServerPoints, // Store the real backend value
-                        points = (actualServerPoints - state.pendingRewardPoints).coerceAtLeast(0.0)                    )
+                        isGuest = !isLoggedIn,
+                        showGuestDialog = !isLoggedIn,
+                        serverPoints = actualServerPoints,
+                        points = actualServerPoints,
+                        products = productsResponse?.data.orEmpty(),
+                        errorMessage = null
+                    )
                 }
             },
             onError = {
                 val mappedErrorMessage = mapErrorMessage(it)
                 val errorMessage = getString(mappedErrorMessage)
-                updateState { state -> state.copy(isLoading = false, errorMessage = errorMessage) }
+                updateState { state ->
+                    state.copy(errorMessage = if (state.products.isEmpty()) errorMessage else null)
+                }
                 showSnackBar(
                     title = getString(Res.string.error),
-                    message = getString(mapErrorMessage(it)),
+                    message = errorMessage,
                     isSuccess = false
                 )
-            }
+            },
+            onStart = { updateState { it.copy(isLoading = it.products.isEmpty(), errorMessage = null) } },
+            onFinish = { updateState { it.copy(isLoading = false) } }
         )
-    }
-
-    private fun fetchHomeData() {
-        updateState { it.copy(isLoading = true) }
-
-        viewModelScope.launch {
-            try {
-                // 1. Fetch Raw Data
-                val response = getAllProductsUseCase(1, 50, true) // Fetch enough items
-                val allData = response.data
-                Logger.i { "labwlaiv $allData" }
-
-                updateState {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = null,
-                        products = allData,
-                    )
-                }
-
-            } catch (e: Throwable) {
-                val mappedErrorMessage = mapErrorMessage(e)
-                val errorMessage = getString(mappedErrorMessage)
-                updateState { it.copy(isLoading = false, errorMessage = errorMessage) }
-            }
-        }
     }
 
     private fun mapErrorMessage(throwable: Throwable): StringResource {
@@ -135,28 +90,29 @@ class RewardViewModel(
     }
 
     override fun onRefreshUserPoints() {
-        if (!currentState.isGuest) {
-            getUser()
-        }
+        checkAuthenticationAndFetchData()
     }
+
     override fun onRetry() {
-        if (!currentState.isGuest) {
-            getUser()
-        }
-        fetchHomeData()
+        checkAuthenticationAndFetchData()
     }
 
     override fun onBack() {
         sendNewEffect(RewardsUiEffect.NavigateBack)
     }
 
+    override fun onClickLogin() {
+        updateState { it.copy(showGuestDialog = false) }
+        sendNewEffect(RewardsUiEffect.NavigateToLogin)
+    }
+
+    override fun onDismissGuestDialog() {
+        updateState { it.copy(showGuestDialog = false) }
+        sendNewEffect(RewardsUiEffect.NavigateBack)
+    }
+
     override fun onProductClicked(productId: String) {
-        if (currentState.isGuest) {
-            // Optional: Maybe show a snackbar or just do nothing as requested "don't show dialog"
-            // The user didn't specify what to do if guest clicks a product in Reward Screen
-            // Usually rewards require points which a guest won't have.
-            return
-        }
+        if (currentState.isGuest) return
         currentState.products.find { it.id == productId }?.let { product ->
             updateState { state ->
                 state.copy(
@@ -176,29 +132,21 @@ class RewardViewModel(
         val currentQty = details.productQuantity
         val newQty = currentQty + change
 
-        // 1. Prevent negative/zero quantity
         if (newQty < 1) return
 
-        // 2. Calculate Unit Price (Base + Size + Extensions)
-        // We use the existing calculated price logic from your details state
         val unitPrice = details.calculatedSingleUnitTestPrice
-
-        // 3. Calculate Projected Total Price
         val projectedTotalPrice = unitPrice * newQty
 
-        // 4. CHECK: Does user have enough points?
-        if (projectedTotalPrice > currentState.points) {
+        if (change > 0 && projectedTotalPrice > currentState.points) {
             viewModelScope.launch {
-                showSnackBar(
-                    title = "Limit Reached",
-                    message = "You only have ${currentState.points} points. Total cost would be $projectedTotalPrice.",
-                    isSuccess = false
+                showInsufficientPointsError(
+                    requiredPoints = projectedTotalPrice.toPoints(),
+                    availablePoints = currentState.points.toPoints()
                 )
             }
-            return // Stop execution, do not update state
+            return
         }
 
-        // 5. Update State if valid
         updateState { state ->
             state.copy(
                 selectedProductDetails = details.copy(
@@ -209,104 +157,85 @@ class RewardViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class, ExperimentalUuidApi::class)
+    @OptIn(ExperimentalUuidApi::class)
     override fun onAddToCart() {
         val details = currentState.selectedProductDetails ?: return
 
-        // Double check points before committing (safety check)
         if (details.calculatedTotalPrice > currentState.points) {
             viewModelScope.launch {
-                showSnackBar(
-                    title = getString(Res.string.insufficient_points_title),
-                    message = getString(
-                        Res.string.insufficient_points_message,
-                        details.calculatedTotalPrice.toInt(),
-                        currentState.points.toInt()
-                    ), isSuccess = false
+                showInsufficientPointsError(
+                    requiredPoints = details.calculatedTotalPrice.toPoints(),
+                    availablePoints = currentState.points.toPoints()
                 )
             }
             return
         }
 
-        val orderExtensions = details.extensions
+        val cartExtensions = details.extensions
             .filter { it.currentQty > 0 }
             .map { uiExt ->
-                OrderExtension(
-                    id = uiExt.id,
+                AddToCartRequestDto.CartExtensionDto(
+                    extensionId = uiExt.id,
                     name = uiExt.name,
+                    nameAr = uiExt.name,
                     price = uiExt.price,
-                    count = uiExt.currentQty,
-                    maxCount = uiExt.maxCount
+                    quantity = uiExt.currentQty
                 )
             }
 
-        val selectedSizeName = details.sizes
-            .find { it.id == details.selectedSizeId }?.name
-            ?: "Standard"
+        val selectedSize = details.sizes.find { it.id == details.selectedSizeId }
 
-        val newOrder = Order(
-            id = Uuid.random().toString(),
-            name = details.name,
-            totalPrice = details.calculatedTotalPrice,
-            itemPrice = details.calculatedSingleUnitTestPrice,
-            count = details.productQuantity,
-            size = selectedSizeName,
-            extension = orderExtensions,
-            branchId = "",
-            branchName = "",
-            isPickupFromBranch = false,
-            carName = "",
-            carNumber = "",
-            carColor = Color.White,
-            imageUrl = details.imageUrl,
+        val request = AddToCartRequestDto(
             productId = details.id,
-            isReward = true
+            quantity = details.productQuantity,
+            size = selectedSize?.name ?: "Default",
+            sizeId = details.selectedSizeId ?: "",
+            isRewardItem = true,
+            extensions = cartExtensions
         )
 
-        Logger.i("Adding Reward Order: $newOrder")
-
-        viewModelScope.launch {
-            try {
-                // 1. Save to Local Cart
-                manageCartUseCase.insertOrder(newOrder)
-
-//                // 2. Deduct Points Locally
-//                val usedPoints = details.calculatedTotalPrice
-//                val newPointBalance = currentState.points - usedPoints
-//
-//                updateState { state ->
-//                    state.copy(
-//                         points = newPointBalance, // Update UI Points immediately
-//                        isDetailsVisible = false  // Close the sheet
-//                    )
-//                }
-                updateState { state ->
-                    state.copy(
-                        isDetailsVisible = false  // Close the sheet
+        tryToExecute(
+            callee = { addToCartUseCase(request) },
+            onSuccess = { cart ->
+                updateState {
+                    val updatedPoints = cart.userPoints?.toDouble()
+                    it.copy(
+                        isDetailsVisible = false,
+                        serverPoints = updatedPoints ?: it.serverPoints,
+                        points = updatedPoints ?: it.points
                     )
                 }
-
-                showSnackBar(
-                    message = getString(Res.string.reward_redeemed_message),
-                    isSuccess = true
-                )
-
-            } catch (e: Exception) {
-                Logger.e("Failed to add reward", e)
-                showSnackBar(
-                    message = getString(Res.string.redeem_reward_failed_message),
-                    isSuccess = false
-                )
+                viewModelScope.launch {
+                    showSnackBar(
+                        message = getString(Res.string.reward_redeemed_message),
+                        isSuccess = true
+                    )
+                }
+            },
+            onError = { error ->
+                showRewardError(error)
+            },
+            onStart = {
+                updateState {
+                    it.copy(
+                        selectedProductDetails = it.selectedProductDetails?.copy(isAddingToCart = true)
+                    )
+                }
+            },
+            onFinish = {
+                updateState {
+                    it.copy(
+                        selectedProductDetails = it.selectedProductDetails?.copy(isAddingToCart = false)
+                    )
+                }
             }
-        }
+        )
     }
 
-    // Add this method to your existing HomeViewModel class
     @OptIn(ExperimentalUuidApi::class)
     override fun onQuickAddToCart(productId: String) {
         val product = currentState.products.find { it.id == productId } ?: return
 
-        // Don't allow adding out of stock items
         if (!product.isInStock) {
             viewModelScope.launch {
                 showSnackBar(
@@ -318,79 +247,94 @@ class RewardViewModel(
             return
         }
 
-        // Calculate final price (with discount applied)
-        val finalPrice = (product.basePrice - product.discount).coerceAtLeast(0.0)
-
-        // CRITICAL: Check if user has enough points
-        if (finalPrice > currentState.points) {
+        val selectedSize = product.sizes.firstOrNull()
+        val rewardCost = ((selectedSize?.price ?: product.basePrice) - product.discount).coerceAtLeast(0.0)
+        if (rewardCost > currentState.points) {
             viewModelScope.launch {
-                showSnackBar(
-                    message = getString(
-                        Res.string.insufficient_points_message,
-                        finalPrice.toInt(),
-                        currentState.points.toInt()
-                    ),
-                    isSuccess = false
+                showInsufficientPointsError(
+                    requiredPoints = rewardCost.toPoints(),
+                    availablePoints = currentState.points.toPoints()
                 )
             }
             return
         }
 
-        // Create reward order with default values
-        val newOrder = Order(
-            id = Uuid.random().toString(),
-            name = product.name,
-            totalPrice = finalPrice,
-            itemPrice = finalPrice,
-            count = 1, // Default quantity
-            size = "Standard", // Default size
-            extension = emptyList(), // No extensions
-            branchId = "",
-            branchName = "",
-            isPickupFromBranch = false,
-            carName = "",
-            carNumber = "",
-            carColor = Color.White,
-            imageUrl = product.imageUrl,
+        val request = AddToCartRequestDto(
             productId = product.id,
-            isReward = true // IMPORTANT: Mark as reward order
+            quantity = 1,
+            size = selectedSize?.name ?: "Default",
+            sizeId = selectedSize?.id ?: "",
+            isRewardItem = true,
+            extensions = emptyList()
         )
 
-        Logger.i("Quick Adding Reward Order: $newOrder")
-
-        viewModelScope.launch {
-            try {
-                // 1. Save to Local Cart
-                manageCartUseCase.insertOrder(newOrder)
-
-//                // 2. Deduct Points Locally
-//                val newPointBalance = currentState.points - finalPrice
-//
-//                updateState { state ->
-//                    state.copy(
-//                        points = newPointBalance // Update UI Points immediately
-//                    )
-//                }
-
-                // 3. Show success feedback with points info
-                showSnackBar(
-                    message = getString(
-                        Res.string.reward_redeemed_with_points_message,
-                        finalPrice.toInt(),
-                        currentState.points.toInt()
-                    ),
-                    isSuccess = true
-                )
-
-            } catch (e: Exception) {
-                Logger.e("QuickAddReward", e) { "Failed to redeem reward" }
-                showSnackBar(
-                    message = getString(Res.string.redeem_reward_failed_message),
-                    isSuccess = false
-                )
-            }
-        }
+        tryToExecute(
+            callee = { addToCartUseCase(request) },
+            onSuccess = { cart ->
+                updateState {
+                    val updatedPoints = cart.userPoints?.toDouble()
+                    it.copy(
+                        serverPoints = updatedPoints ?: it.serverPoints,
+                        points = updatedPoints ?: it.points
+                    )
+                }
+                viewModelScope.launch {
+                    showSnackBar(
+                        message = getString(Res.string.reward_redeemed_message),
+                        isSuccess = true
+                    )
+                }
+            },
+            onError = { error ->
+                showRewardError(error)
+            },
+            onStart = { updateState { it.copy(addingProductId = productId) } },
+            onFinish = { updateState { it.copy(addingProductId = null) } }
+        )
     }
+
+    private suspend fun showRewardError(error: Throwable) {
+        if (error is InsufficientPointsException) {
+            error.availablePoints?.let { points ->
+                updateState {
+                    it.copy(
+                        serverPoints = points.toDouble(),
+                        points = points.toDouble()
+                    )
+                }
+            }
+            showInsufficientPointsError(
+                requiredPoints = error.requiredPoints,
+                availablePoints = error.availablePoints,
+                fallbackMessage = error.message
+            )
+            return
+        }
+
+        showSnackBar(
+            message = error.message ?: getString(Res.string.redeem_reward_failed_message),
+            isSuccess = false
+        )
+    }
+
+    private suspend fun showInsufficientPointsError(
+        requiredPoints: Int?,
+        availablePoints: Int?,
+        fallbackMessage: String? = null,
+    ) {
+        val message = if (requiredPoints != null && availablePoints != null) {
+            getString(Res.string.insufficient_points_message, requiredPoints, availablePoints)
+        } else {
+            fallbackMessage ?: getString(Res.string.redeem_reward_failed_message)
+        }
+        showSnackBar(
+            title = getString(Res.string.insufficient_points_title),
+            message = message,
+            isSuccess = false
+        )
+    }
+
+    private fun Double.toPoints(): Int = ceil(this).toInt()
 
     private suspend fun showSnackBar(
         title: String? = null,
@@ -408,9 +352,7 @@ class RewardViewModel(
                 )
             )
         }
-
         delay(durationMillis)
-
         hideSnackBar()
     }
 
@@ -419,5 +361,4 @@ class RewardViewModel(
             oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false))
         }
     }
-
 }

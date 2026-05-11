@@ -16,12 +16,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamglin.composeshadow.dropShadow
@@ -75,7 +79,20 @@ import rwaq.composeapp.generated.resources.rwaq_logo
 
 @Composable
 fun ProfileScreen(appStoreManager: AppStoreManager = koinInject(),viewModel: ProfileViewModel = koinViewModel()) {
+    val lifecycleOwner = LocalLifecycleOwner.current
 
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.checkAuthentication()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
     val state = viewModel.state.collectAsStateWithLifecycle().value
     EventHandler(viewModel.effect) { effect, controller ->
         when (effect) {
@@ -184,8 +201,11 @@ fun ProfileContent(state: ProfileUiState, interaction: ProfileInteractionListene
                 dialog(state.showGuestDialog) {
                     BasicDialog(
                         isVisible = state.showGuestDialog,
-                        onDismiss = interaction::onDismissGuestDialog,
-                        onCancelClick = interaction::onDismissGuestDialog,
+                        onDismiss = { },
+                        onCancelClick = { },
+                        hasDismissButton = false,
+                        dismissOnBackPress = false,
+                        dismissOnClickOutside = false,
                         actionButtons = {
                             PrimaryButton(
                                 text = stringResource(Res.string.login),
@@ -301,10 +321,9 @@ fun ProfileContent(state: ProfileUiState, interaction: ProfileInteractionListene
         }
 
         BackHandler(
-            enabled = state.languageDialogUiState.isVisible || state.showGuestDialog
+            enabled = state.languageDialogUiState.isVisible
         ) {
             when {
-                state.showGuestDialog -> interaction.onDismissGuestDialog()
                 state.languageDialogUiState.isVisible -> interaction.onDismissLanguageDialog()
             }
         }

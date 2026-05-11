@@ -33,7 +33,6 @@ import com.khater.rwaq.presentation.navigation.Screen
 import com.khater.rwaq.presentation.screens.loginScreen.uiState.LoginInteractionListener
 import com.khater.rwaq.presentation.screens.loginScreen.uiState.LoginScreenState
 import com.khater.rwaq.presentation.screens.loginScreen.uiState.LoginUiEffect
-import dev.jordond.compass.geolocation.Geolocator
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel

@@ -12,6 +12,7 @@ import com.khater.rwaq.presentation.screens.forgetPasswordScreen.forgetPasswordS
 import com.khater.rwaq.presentation.screens.homeScreen.homeScreenRoute
 import com.khater.rwaq.presentation.screens.loginScreen.loginScreenRoute
 import com.khater.rwaq.presentation.screens.moreScreen.moreScreenRoute
+import com.khater.rwaq.presentation.screens.newCartScreen.newCartScreenRoute
 import com.khater.rwaq.presentation.screens.onBoardingScreen.onBoardingScreenRoute
 import com.khater.rwaq.presentation.screens.otpScreen.registerOtpScreenRoute
 import com.khater.rwaq.presentation.screens.privacyPolicyScreen.privacyPolicyScreenRoute
@@ -47,6 +48,7 @@ fun RwaqNavGraph(
         resetPasswordScreenRoute()
         rewardScreenRoute()
         cartScreenRoute()
+        newCartScreenRoute()
         contactUiScreenRoute()
         profileScreenRoute()
         moreScreenRoute()

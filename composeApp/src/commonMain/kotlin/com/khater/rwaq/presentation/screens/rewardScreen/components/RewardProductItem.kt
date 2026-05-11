@@ -31,12 +31,15 @@ import rwaq.composeapp.generated.resources.currency_sar
 @Composable
 fun RewardProductItem(
     product: Product,
-    listener: RewardInteractionListener
+    listener: RewardInteractionListener,
+    points: Double = Double.POSITIVE_INFINITY,
+    isAdding: Boolean = false,
 ) {
 
     // 1. Calculate Prices
     val hasDiscount = product.discount > 0
     val finalPrice = if (hasDiscount) (product.basePrice - product.discount) else product.basePrice
+    val canQuickAdd = product.isInStock && points >= finalPrice
 
     // Wrapper Box to handle Shadow independently
     Box(
@@ -75,10 +78,10 @@ fun RewardProductItem(
                     AsyncImage(
                         model = product.imageUrl,
                         contentDescription = product.name,
-                        contentScale = ContentScale.Fit,
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(8.dp)
+                            .clip(RoundedCornerShape(8.dp))
                     )
 
                     // Optional: Out of Stock Badge
@@ -142,25 +145,44 @@ fun RewardProductItem(
                   //  if (product.isInStock) {
                         Spacer(modifier = Modifier.weight(1f))
 
-                        IconButton(
-                            onClick = {
-                                listener.onQuickAddToCart(product.id)
-                            },
-                            modifier = Modifier.size(32.dp),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(Res.drawable.add_to_cart),
-                                contentDescription = "Add to Cart",
-                                tint = Color.White,
+                        if (isAdding) {
+                            Box(
                                 modifier = Modifier
                                     .size(32.dp)
                                     .background(
-                                        color = Theme.colorScheme.brand.brand,
+                                        color = Theme.colorScheme.brand.brand.copy(alpha = 0.5f),
                                         shape = RoundedCornerShape(8.dp)
-                                    )
-                                    .padding(5.dp)
-                            )
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(16.dp),
+                                    color = Color.White,
+                                    strokeWidth = 2.dp
+                                )
+                            }
+                        } else {
+                            IconButton(
+                                onClick = {
+                                    if (canQuickAdd) listener.onQuickAddToCart(product.id)
+                                },
+                                enabled = canQuickAdd,
+                                modifier = Modifier.size(32.dp),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(Res.drawable.add_to_cart),
+                                    contentDescription = "Add to Cart",
+                                    tint = Color.White,
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .background(
+                                            color = if (canQuickAdd) Theme.colorScheme.brand.brand else Color.LightGray,
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                        .padding(5.dp)
+                                )
+                            }
                         }
                    // }
                 }

@@ -42,6 +42,9 @@ sealed class Screen {
     data object CartScreen : Screen()
 
     @Serializable
+    data object NewCartScreen : Screen()
+
+    @Serializable
     data object InvoiceScreen : Screen()
     @Serializable
     data object PaymentMethodScreen : Screen()

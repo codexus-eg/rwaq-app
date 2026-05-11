@@ -22,6 +22,7 @@ import com.khater.rwaq.presentation.screens.profileScreen.uiState.ProfileUiEffec
 import com.khater.rwaq.presentation.screens.profileScreen.uiState.ProfileUiEffect.NavigateToBranches
 import com.khater.rwaq.presentation.screens.profileScreen.uiState.ProfileUiState
 import com.khater.rwaq.presentation.util.LoginConstants.SNACK_BAR_DELAY
+import com.khater.rwaq.presentation.util.isLoginRequiredError
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.coroutines.FlowSettings
 import kotlinx.coroutines.CoroutineDispatcher
@@ -34,6 +35,7 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import rwaq.composeapp.generated.resources.Res
 import rwaq.composeapp.generated.resources.error
+import rwaq.composeapp.generated.resources.please_login_first
 
 @OptIn(ExperimentalSettingsApi::class)
 class ProfileViewModel(
@@ -53,13 +55,24 @@ class ProfileViewModel(
         getAppSettings()
     }
 
-    private fun checkAuthentication() {
+    fun checkAuthentication() {
         viewModelScope.launch {
             val isLoggedIn = authenticationRepository.isUserLoggedIn().first()
             if (isLoggedIn) {
                 getUser()
+                updateState { it.copy(isGuest = false, showGuestDialog = false) }
             } else {
-                updateState { it.copy(isGuest = true, showGuestDialog = true) }
+                updateState {
+                    it.copy(
+                        isGuest = true,
+                        showGuestDialog = true,
+                        isLoading = false,
+                        userName = "",
+                        phoneNumber = "",
+                        points = 0,
+                        userId = ""
+                    )
+                }
             }
         }
     }
@@ -79,12 +92,31 @@ class ProfileViewModel(
                     )
                 }
             },
-            onError = {
-                showSnackBar(
-                    title = getString(Res.string.error),
-                    message = getString(mapErrorMessage(it)),
-                    isSuccess = false
-                )
+            onError = { error ->
+                if (error.isLoginRequiredError()) {
+                    updateState {
+                        it.copy(
+                            isGuest = true,
+                            showGuestDialog = true,
+                            isLoading = false,
+                            userName = "",
+                            phoneNumber = "",
+                            points = 0,
+                            userId = ""
+                        )
+                    }
+                    showSnackBar(
+                        title = getString(Res.string.error),
+                        message = getString(Res.string.please_login_first),
+                        isSuccess = false
+                    )
+                } else {
+                    showSnackBar(
+                        title = getString(Res.string.error),
+                        message = getString(mapErrorMessage(error)),
+                        isSuccess = false
+                    )
+                }
             }
         )
     }

@@ -4,6 +4,7 @@ import com.khater.rwaq.data.dto.order.CreateOrderRequest
 import com.khater.rwaq.domain.entities.order.NewOrder
 import com.khater.rwaq.domain.entities.order.Order
 import com.khater.rwaq.domain.entities.product.Product
+import com.khater.rwaq.domain.entities.order.OrderResponse
 import com.khater.rwaq.domain.model.PagedData
 import kotlinx.coroutines.flow.Flow
 
@@ -12,7 +13,7 @@ interface OrderRepository {
     suspend fun updateOrder(order: Order)
     suspend fun deleteOrderById(id: String)
     suspend fun clearCart()
-    suspend fun makeOrder(requestOrderRequest:CreateOrderRequest)
+    suspend fun makeOrder(requestOrderRequest:CreateOrderRequest): OrderResponse
     fun getAllOrders(): Flow<List<Order>>
     suspend fun getAllOrdersFromRemote(page: Int, pageSize: Int): PagedData<NewOrder>
 }

@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -36,6 +37,7 @@ import com.khater.rwaq.designSystem.component.scaffold.HomeScaffold
 import com.khater.rwaq.designSystem.theme.theme.Theme
 import com.khater.rwaq.presentation.composables.EmptyOrErrorContent
 import com.khater.rwaq.presentation.composables.EventHandler
+import com.khater.rwaq.presentation.composables.MapEmbedView
 import com.khater.rwaq.presentation.composables.RwaqBackButton
 import com.khater.rwaq.presentation.composables.RwaqTopBar
 import com.khater.rwaq.presentation.navigation.Screen
@@ -48,13 +50,7 @@ import com.khater.rwaq.presentation.screens.branchScreen.uiState.BranchScreenUiE
 import com.khater.rwaq.presentation.screens.branchScreen.uiState.BranchScreenUiState
 import com.khater.rwaq.presentation.screens.cartScreen.uiStates.CarColor
 import com.khater.rwaq.presentation.util.MapsUrl
-import com.swmansion.kmpmaps.core.CameraPosition
-import com.swmansion.kmpmaps.core.Coordinates
-import com.swmansion.kmpmaps.core.Map
-import com.swmansion.kmpmaps.core.MapProperties
-import com.swmansion.kmpmaps.core.MapTheme
-import com.swmansion.kmpmaps.core.MapType
-import com.swmansion.kmpmaps.core.MapUISettings
+import dev.jordond.compass.Coordinates
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -67,7 +63,9 @@ import rwaq.composeapp.generated.resources.something_went_wrong
 @Composable
 fun BranchScreen(branchViewModel: BranchViewModel = koinViewModel()) {
 
+
     val state = branchViewModel.state.collectAsStateWithLifecycle().value
+
     val urlHandler = LocalUriHandler.current
     EventHandler(branchViewModel.effect) { effect, controller ->
         when (effect) {
@@ -139,14 +137,14 @@ fun BranchContent(
     )
 
     // 2. Create the dynamic CameraPosition
-    // We use the animated values here so the map updates every frame
-    val animatedCameraPosition = CameraPosition(
-        coordinates = Coordinates(
-            latitude = animatedLat.toDouble(),
-            longitude = animatedLng.toDouble()
-        ),
-        zoom = 16f
-    )
+//    // We use the animated values here so the map updates every frame
+//    val animatedCameraPosition = CameraPosition(
+//        coordinates = Coordinates(
+//            latitude = animatedLat.toDouble(),
+//            longitude = animatedLng.toDouble()
+//        ),
+//        zoom = 16f
+//    )
     Box(
         modifier = Modifier.fillMaxSize().imePadding(),
         contentAlignment = Alignment.Center
@@ -201,27 +199,28 @@ fun BranchContent(
             Column(modifier = Modifier.fillMaxSize())
             {
 
-                Map(
-                    modifier = Modifier.fillMaxWidth()
-                        .fillMaxHeight(0.4f),
-                    properties = MapProperties(
-                        isMyLocationEnabled = true,
-                        mapType = MapType.NORMAL,
-                        mapTheme = MapTheme.LIGHT
-                    ),
-                    uiSettings = MapUISettings(
-                        myLocationButtonEnabled = true,
-                        compassEnabled = true
-                    ),
-                    cameraPosition = animatedCameraPosition,
-                    markers = state.markers,
-                    onMarkerClick = { marker ->
-                        println("Marker clicked: ${marker.title}")
-                    },
-                    onMapClick = { coordinates ->
-                        println("Map clicked at: ${coordinates.latitude}, ${coordinates.longitude}")
-                    }
-                )
+                MapEmbedView(latitude = animatedLat.toDouble(), longitude = animatedLng.toDouble())
+//                Map(
+//                    modifier = Modifier.fillMaxWidth()
+//                        .fillMaxHeight(0.4f),
+//                    properties = MapProperties(
+//                        isMyLocationEnabled = true,
+//                        mapType = MapType.NORMAL,
+//                        mapTheme = MapTheme.LIGHT
+//                    ),
+//                    uiSettings = MapUISettings(
+//                        myLocationButtonEnabled = true,
+//                        compassEnabled = true
+//                    ),
+//                    cameraPosition = animatedCameraPosition,
+//                    markers = state.markers,
+//                    onMarkerClick = { marker ->
+//                        println("Marker clicked: ${marker.title}")
+//                    },
+//                    onMapClick = { coordinates ->
+//                        println("Map clicked at: ${coordinates.latitude}, ${coordinates.longitude}")
+//                    }
+//                )
 
                 Column(
                     modifier = Modifier.fillMaxHeight()

@@ -28,9 +28,9 @@ fun BranchWorkTime.toUi() = BranchWorkTimeUiState(
     isAvailableAllDay = isAvailableAllDay
 )
 
-
-fun  LocationUiState .toMarker(branchName: String) = com.swmansion.kmpmaps.core.Marker(
-    coordinates = com.swmansion.kmpmaps.core.Coordinates(latitude = latitude, longitude = longitude),
-    title = branchName
-)
+//
+//fun  LocationUiState .toMarker(branchName: String) = com.swmansion.kmpmaps.core.Marker(
+//    coordinates = com.swmansion.kmpmaps.core.Coordinates(latitude = latitude, longitude = longitude),
+//    title = branchName
+//)
 

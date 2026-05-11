@@ -2,6 +2,7 @@ package com.khater.rwaq.data.source.remote.order
 
 import com.khater.rwaq.data.dto.base.PagedDataDto
 import com.khater.rwaq.data.dto.order.CreateOrderRequest
+import com.khater.rwaq.data.dto.order.CreateOrderResponseDto
 import com.khater.rwaq.data.dto.order.OrderDto
 import com.khater.rwaq.data.dto.order.toPagedListOfOrders
 import com.khater.rwaq.data.dto.product.ProductDto
@@ -23,9 +24,9 @@ class OrderRemoteDataSource(
     private val localizationService: LocalizationService
 ) : OrderDataSource {
 
-    override suspend fun makeOrder(requestOrderRequest: CreateOrderRequest) {
-        safeWrapper {
-            httpClient.postJson<CreateOrderRequest, Unit>(
+    override suspend fun makeOrder(requestOrderRequest: CreateOrderRequest): CreateOrderResponseDto {
+        return safeWrapper {
+            httpClient.postJson<CreateOrderRequest, CreateOrderResponseDto>(
                 path = MAKE_ORDER_ENDPOINT,
                 requestDto = requestOrderRequest,
             )

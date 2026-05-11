@@ -4,7 +4,7 @@ import coil3.ImageLoader
 import com.khater.rwaq.domain.repository.service.LocalizationService
 import com.khater.rwaq.presentation.util.AppLocalizer
 import com.khater.rwaq.presentation.util.AppStoreManager
-import io.github.tbib.klocation.KLocationService
+import com.khater.rwaq.presentation.util.ReferralHelper
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -22,6 +22,5 @@ actual val platformModule = module {
     ){
         AppStoreManager()
     }
-   //  single { KLocationService() }
-
+    factory { ReferralHelper() }
 }

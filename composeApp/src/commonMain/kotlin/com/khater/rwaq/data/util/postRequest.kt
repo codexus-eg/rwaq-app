@@ -17,11 +17,15 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 
 suspend inline fun <reified T, reified R> HttpClient.postJson(
-    requestDto: T,
     path: String,
+    requestDto: T,
+    headerParams: Map<String, String> = emptyMap(),
 ): R {
     val response = this.post {
         url(path)
+        headerParams.forEach { (key, value) ->
+            headers.append(key, value)
+        }
         contentType(ContentType.Application.Json)
         setBody(requestDto)
     }

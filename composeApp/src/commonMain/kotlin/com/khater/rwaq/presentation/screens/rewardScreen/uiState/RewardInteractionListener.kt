@@ -11,4 +11,6 @@ interface RewardInteractionListener {
 
     fun onQuickAddToCart(productId: String)
 
+    fun onClickLogin()
+    fun onDismissGuestDialog()
 }

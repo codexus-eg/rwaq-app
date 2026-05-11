@@ -4,7 +4,8 @@ package com.khater.rwaq.di
 import com.khater.rwaq.domain.repository.service.LocalizationService
 import com.khater.rwaq.presentation.util.AppLocalizer
 import com.khater.rwaq.presentation.util.AppStoreManager
-import io.github.tbib.klocation.KLocationService
+import com.khater.rwaq.presentation.util.ReferralHelper
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 actual val platformModule = module {
@@ -23,6 +24,5 @@ actual val platformModule = module {
             context = get()
         )
     }
-    //single { KLocationService() }
-
+    factory { ReferralHelper(context = androidContext()) }
 }

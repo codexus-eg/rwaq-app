@@ -18,7 +18,10 @@ val networkModule = module {
             isLenient = true
         }
     }
-
+    "https://credible-childhood-cod.ngrok-free.dev/"
+    "http://192.168.1.4:3013/"
+    "https://rwaq-b04b189d2e97.herokuapp.com/"
+    "http://192.168.234.127:3013/"
     single<HttpClient> {
         provideHttpClient(
             baseUrl = "https://rwaq-b04b189d2e97.herokuapp.com/",

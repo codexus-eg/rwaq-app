@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.khater.rwaq.designSystem.component.indicator.DotsProgressIndicator
+import com.khater.rwaq.designSystem.component.text.Text
 import com.khater.rwaq.designSystem.theme.theme.Theme
 import com.khater.rwaq.presentation.composables.EventHandler
 import com.khater.rwaq.presentation.navigation.Screen

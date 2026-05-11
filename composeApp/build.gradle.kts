@@ -1,3 +1,7 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
+import org.gradle.kotlin.dsl.implementation
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -57,6 +61,10 @@ kotlin {
             // Room DB
             implementation(libs.androidx.room.sqlite.wrapper)
 
+            //referral
+            implementation("com.android.installreferrer:installreferrer:2.2")
+
+            implementation("com.paymob.sdk:Paymob-SDK:1.8.1")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -69,13 +77,18 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
 
             // maps
-            implementation(libs.swmansion.kmpMaps.googleMaps)
-            implementation(libs.swmansion.kmpMaps.core)
+//            implementation(libs.swmansion.kmpMaps.googleMaps)
+//            implementation(libs.swmansion.kmpMaps.core)
 
 
-            implementation(libs.compass.geolocation)
+            // Geocoding
             implementation(libs.compass.geocoder)
-            implementation("io.github.the-best-is-best:klocation:1.0.7")
+            implementation(libs.compass.geocoder.mobile)
+
+            // Geolocation
+            implementation(libs.compass.geolocation)
+            implementation(libs.compass.geolocation.mobile)
+            implementation(libs.compass.permissions.mobile)
 
             api(libs.koin.core)
             api(libs.koin.annotations)
@@ -117,6 +130,7 @@ kotlin {
             implementation("org.jetbrains.compose.ui:ui-backhandler:1.9.0")
             implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
 
+            api("io.github.kevinnzou:compose-webview-multiplatform:2.0.3")
 
         }
         commonTest.dependencies {
@@ -160,6 +174,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildFeatures { dataBinding = true }
 
 }
 ksp {
@@ -176,4 +191,3 @@ dependencies {
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
 }
-

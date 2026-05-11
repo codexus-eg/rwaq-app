@@ -31,7 +31,8 @@ import rwaq.composeapp.generated.resources.plus
 @Composable
 fun ProductItem(
     product: Product,
-    listener: HomeScreenInteractionListener
+    listener: HomeScreenInteractionListener,
+    isAdding: Boolean = false
 ) {
     // 1. Calculate Prices
     val hasDiscount = product.discount > 0
@@ -74,10 +75,11 @@ fun ProductItem(
                     AsyncImage(
                         model = product.imageUrl,
                         contentDescription = product.name,
-                        contentScale = ContentScale.Fit,
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(8.dp)
+                          //  .padding(8.dp)
+                            .clip(RoundedCornerShape(8.dp))
                     )
 
                     // Optional: Out of Stock Badge
@@ -141,25 +143,43 @@ fun ProductItem(
 //                    if (product.isInStock) {
                         Spacer(modifier = Modifier.weight(1f))
 
-                        IconButton(
-                            onClick = {
-                                listener.onQuickAddToCart(product.id)
-                            },
-                            modifier = Modifier.size(32.dp),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(Res.drawable.add_to_cart),
-                                contentDescription = "Add to Cart",
-                                tint = Color.White,
+                        if (isAdding) {
+                            Box(
                                 modifier = Modifier
                                     .size(32.dp)
                                     .background(
-                                        color = Theme.colorScheme.brand.brand,
+                                        color = Theme.colorScheme.brand.brand.copy(alpha = 0.5f),
                                         shape = RoundedCornerShape(8.dp)
-                                    )
-                                    .padding(5.dp)
-                            )
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(16.dp),
+                                    color = Color.White,
+                                    strokeWidth = 2.dp
+                                )
+                            }
+                        } else {
+                            IconButton(
+                                onClick = {
+                                    listener.onQuickAddToCart(product.id)
+                                },
+                                modifier = Modifier.size(32.dp),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(Res.drawable.add_to_cart),
+                                    contentDescription = "Add to Cart",
+                                    tint = Color.White,
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .background(
+                                            color = Theme.colorScheme.brand.brand,
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                        .padding(5.dp)
+                                )
+                            }
                         }
 //                    }
                 }

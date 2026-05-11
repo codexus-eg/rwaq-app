@@ -4,9 +4,7 @@ import co.touchlab.kermit.Logger
 import com.khater.rwaq.domain.entities.branch.Branch
 import com.khater.rwaq.domain.useCases.GetAllBranchesUseCase
 import com.khater.rwaq.presentation.base.BaseViewModel
-import com.khater.rwaq.presentation.mapper.toMarker
 import com.khater.rwaq.presentation.mapper.toUi
-import com.khater.rwaq.presentation.screens.branchScreen.uiState.BranchScreenUiEffect
 import com.khater.rwaq.presentation.screens.branchScreen.uiState.LocationUiState
 import com.khater.rwaq.presentation.screens.branchesScreen.uiState.BranchesScreenInteractionListener
 import com.khater.rwaq.presentation.screens.branchesScreen.uiState.BranchesScreenUiEffect

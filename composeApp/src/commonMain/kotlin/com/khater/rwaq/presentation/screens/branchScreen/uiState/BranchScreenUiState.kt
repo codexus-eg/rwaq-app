@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.Color
 import com.khater.rwaq.domain.entities.branch.BranchStatus
 import com.khater.rwaq.domain.entities.car.Car
 import com.khater.rwaq.presentation.model.SnackBarState
-import com.swmansion.kmpmaps.core.Marker
 
 data class BranchScreenUiState(
     val isLoading: Boolean = false,
@@ -15,7 +14,7 @@ data class BranchScreenUiState(
     val isSelectCarBottomSheetVisible: Boolean = false,
     val branches: List<BranchUiState> = emptyList(),
     val selectedBranch: BranchUiState = BranchUiState(),
-    val markers: List<Marker> = emptyList(),
+//    val markers: List<Marker> = emptyList(),
     val isWorkTimeOverlayVisible: Boolean = false,
     val selectedLocation: LocationUiState = LocationUiState(),
     val selectedWorkTime: List<BranchWorkTimeUiState> = emptyList(),

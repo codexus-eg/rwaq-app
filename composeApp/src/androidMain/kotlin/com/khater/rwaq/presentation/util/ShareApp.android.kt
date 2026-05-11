@@ -38,7 +38,7 @@ actual class AppStoreManager(
                 type = "text/plain"
                 putExtra(
                     Intent.EXTRA_TEXT,
-                    "The best coffee app ever! Smarter shop. Better mode:\nhttps://rwaq-b04b189d2e97.herokuapp.com/redirect?userId=refer$userId"
+                    "The best coffee app ever! Smarter shop. Better mode:\nhttps://play.google.com/store/apps/details?id=$packageName"
                 )
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }

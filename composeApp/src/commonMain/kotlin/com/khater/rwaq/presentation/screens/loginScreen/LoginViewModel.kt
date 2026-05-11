@@ -61,7 +61,6 @@ class LoginViewModel(
         sendNewEffect(LoginUiEffect.NavigateToHomeScreen)
     }
 
-
     override fun onClickLogin() {
         if (validateInputs()) {
             tryToExecute(

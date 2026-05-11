@@ -1,10 +1,7 @@
 package com.khater.rwaq.presentation.screens.productScreen.uiState
 
-import androidx.compose.ui.graphics.Color
-import com.khater.rwaq.domain.entities.branch.BranchStatus
 import com.khater.rwaq.presentation.model.SnackBarState
 import com.khater.rwaq.presentation.screens.branchScreen.uiState.CarUiState
-import com.swmansion.kmpmaps.core.Marker
 
 data class ProductScreenUiState(
     val isLoading: Boolean = false,
@@ -57,7 +54,8 @@ data class ProductDetailsUiState(
     val calculatedSingleUnitTestPrice: Double,
     val calculatedTotalPrice: Double,
     val hasCashback: Boolean,
-    val cashBackAmount: Double
+    val cashBackAmount: Double,
+    val isAddingToCart: Boolean = false
 )
 
 data class ProductSizeUiModel(

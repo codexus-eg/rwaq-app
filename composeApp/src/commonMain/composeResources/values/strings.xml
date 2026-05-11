@@ -12,7 +12,10 @@
     <string name="cart">Cart</string>
     <string name="select_branch">Select branch</string>
     <string name="failed_to_load_branches">Failed to load branches</string>
-
+    <string name="gps_required">GPS is required</string>
+    <string name="please_enable_gps_to_use_drive_thru">Please enable GPS to use Drive Thru</string>
+    <string name="location_permission_required">Please allow location permission to use Drive Thru</string>
+    <string name="location_permission_denied_forever">Location permission is disabled. Enable it from app settings to use Drive Thru</string>
     <string name="are_you_sure_delete_account">Are you sure you want to delete your account?</string>
     <string name="delete_account">Delete Account</string>
     <string name="reward_discount">Reward Discount</string>
@@ -26,8 +29,16 @@
     <string name="choose">Choose</string>
     <string name="status_pending">Pending</string>
     <string name="status_completed">Completed</string>
+    <string name="status_confirmed">Confirmed</string>
+    <string name="status_rejected">Rejected</string>
+
     <string name="status_cancelled">Cancelled</string>
     <string name="status_unknown">Unknown</string>
+    <string name="status_not_assigned">Not assigned</string>
+    <string name="status_assigned">Assigned</string>
+    <string name="status_shipped">Shipped</string>
+    <string name="status_in_transit">In Transit</string>
+    <string name="status_delivered">Delivered</string>
     <string name="order_items_count">Order (%1$s)</string>
     <string name="item_total">Item total: %1$s</string>
     <string name="insufficient_points_message">Insufficient points. You need %1$d points but have %2$d.</string>
@@ -37,6 +48,7 @@
 
     <string name="added_to_cart_title">Added to Cart</string>
     <string name="added_to_cart_message">%1$s has been added to your cart</string>
+    <string name="please_login_first">Please login first</string>
     <string name="reward_redeemed_with_points_message">Reward Redeemed! %1$d points used. Balance: %2$d</string>
 
     <!-- Reward Redeemed simple -->
@@ -109,6 +121,7 @@
     <!-- Cart -->
     <string name="checkout">Checkout</string>
     <string name="checkout_order">Checkout Order</string>
+    <string name="failed_checkout_online_payment">Failed to checkout with online payment</string>
 
     <!-- Sections -->
      <string name="add_more">Add More</string>
@@ -131,6 +144,13 @@
     <string name="use_points">Use your points balance ( %1$d Point )</string>
 
     <string name="online_payment">Online Payment</string>
+    <string name="pay_with_apple_pay">Pay with Apple Pay</string>
+    <string name="payment_success_title">Payment completed</string>
+    <string name="payment_success_message">Your payment was successful and your order is confirmed.</string>
+    <string name="payment_failed_title">Payment failed</string>
+    <string name="payment_failed_message">We could not complete the payment. Please try again or choose another payment method.</string>
+    <string name="payment_pending_title">Payment pending</string>
+    <string name="payment_pending_message">Your payment is still pending. Please wait or try again later.</string>
 
     <!-- Common -->
     <string name="currency_sar">SAR</string>
@@ -360,6 +380,15 @@
     <string name="order_time">Order Time</string>
     <string name="order_code">Order Code</string>
     <string name="order_details">Order Details</string>
+    <string name="order_type">Order Type</string>
+    <string name="payment_status">Payment Status</string>
+    <string name="delivery_status">Delivery Status</string>
+    <string name="assigned_driver">Assigned Driver</string>
+    <string name="order_address">Order Address</string>
+    <string name="car_details">Car Details</string>
+    <string name="branch_label">Branch</string>
+    <string name="notes_label">Notes</string>
+    <string name="reward_item">Reward item</string>
     <string name="service_time">Service Time</string>
     <string name="service_code">Service Code</string>
     <string name="service_details">Service Details</string>

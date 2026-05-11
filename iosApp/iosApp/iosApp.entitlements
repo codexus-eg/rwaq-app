@@ -4,5 +4,9 @@
 <dict>
 	<key>aps-environment</key>
 	<string>production</string>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:rwaq-b04b189d2e97.herokuapp.com</string>
+	</array>
 </dict>
 </plist>

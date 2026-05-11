@@ -11,7 +11,6 @@ import com.khater.rwaq.domain.entities.branch.Location
 import com.khater.rwaq.domain.entities.car.Car
 import com.khater.rwaq.domain.useCases.GetAllBranchesUseCase
 import com.khater.rwaq.presentation.base.BaseViewModel
-import com.khater.rwaq.presentation.mapper.toMarker
 import com.khater.rwaq.presentation.mapper.toUi
 import com.khater.rwaq.presentation.model.SnackBarState
 import com.khater.rwaq.presentation.navigation.Screen
@@ -107,12 +106,12 @@ class BranchViewModel(
                     branch.toUi()
                 },
                 selectedBranch = newBranches.first().toUi(),
-                markers = newBranches.map { branch ->
-                    branch.toUi().branchLocation.toMarker(branch.branchName)
-                }
+//                markers = newBranches.map { branch ->
+//                    branch.toUi().branchLocation.toMarker(branch.branchName)
+//                }
             )
         }
-        Logger.i { "branch ${state.value.markers}" }
+//        Logger.i { "branch ${state.value.markers}" }
 
     }
 

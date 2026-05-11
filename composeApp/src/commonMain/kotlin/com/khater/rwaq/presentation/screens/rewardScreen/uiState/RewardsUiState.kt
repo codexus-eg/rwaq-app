@@ -6,7 +6,7 @@ import com.khater.rwaq.presentation.screens.productScreen.uiState.ProductDetails
 import com.khater.rwaq.presentation.screens.productScreen.uiState.ProductUiModel
 
 data class RewardsUiState(
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val errorMessage: String? = null,
     val snackBar: SnackBarState = SnackBarState(),
     val serverPoints: Double = 0.0,
@@ -17,4 +17,6 @@ data class RewardsUiState(
     val selectedProductDetails: ProductDetailsUiState? = null,
     val isDetailsVisible: Boolean = false,
     val isGuest: Boolean = false,
+    val showGuestDialog: Boolean = false,
+    val addingProductId: String? = null,
 )

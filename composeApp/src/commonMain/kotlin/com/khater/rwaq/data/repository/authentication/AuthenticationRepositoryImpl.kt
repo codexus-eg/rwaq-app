@@ -30,9 +30,9 @@ import com.mmk.kmpnotifier.notification.NotifierManager
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.coroutines.FlowSettings
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -197,7 +197,9 @@ class AuthenticationRepositoryImpl(
     }
 
     override fun isUserLoggedIn(): Flow<Boolean> =
-        settings.accessToken.map { token -> token.isNotBlank() }
+        settings.accessToken.combine(settings.refreshToken) { accessToken, refreshToken ->
+            accessToken.isNotBlank() && refreshToken.isNotBlank()
+        }
 
     private suspend fun saveAuthTokens(authenticationInfo: AuthenticationResponse) {
         settings.putAccessToken(authenticationInfo.accessToken)

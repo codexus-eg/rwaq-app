@@ -20,6 +20,7 @@ import com.khater.rwaq.designSystem.component.scaffold.HomeScaffold
 import com.khater.rwaq.designSystem.theme.theme.Theme
 import com.khater.rwaq.presentation.composables.EmptyOrErrorContent
 import com.khater.rwaq.presentation.composables.EventHandler
+import com.khater.rwaq.presentation.composables.MapEmbedView
 import com.khater.rwaq.presentation.navigation.Screen.BranchScreen
 import com.khater.rwaq.presentation.screens.homeScreen.components.CoffeeContent
  import com.khater.rwaq.presentation.screens.homeScreen.components.ProfileSection
@@ -105,8 +106,7 @@ fun HomeContent(
                     Theme.spacing._12,
                  )
             ) {
-
-                 when{
+                  when{
                     state.isLoading -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
                             DotsProgressIndicator(dotSize = 8.dp)
@@ -132,6 +132,7 @@ fun HomeContent(
                          )
                     }}
                     else ->{
+
                         CoffeeContent(state = state, listener = interactionListener,gridState)
                     }
                 }

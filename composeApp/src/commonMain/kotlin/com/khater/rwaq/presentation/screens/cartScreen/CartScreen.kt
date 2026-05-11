@@ -38,6 +38,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -50,7 +51,11 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import co.touchlab.kermit.Logger
 import coil3.compose.AsyncImage
 import com.khater.rwaq.designSystem.component.button.PrimaryButton
 import com.khater.rwaq.designSystem.component.dialog.BasicDialog
@@ -65,6 +70,7 @@ import com.khater.rwaq.presentation.composables.EventHandler
 import com.khater.rwaq.presentation.composables.RwaqBackButton
 import com.khater.rwaq.presentation.composables.RwaqTopBar
 import com.khater.rwaq.presentation.navigation.Screen
+import com.khater.rwaq.presentation.payment.rememberPaymobLauncher
 import com.khater.rwaq.presentation.screens.branchScreen.components.AddCarWizardBottomSheet
 import com.khater.rwaq.presentation.screens.branchScreen.components.AttachmentsBottomSheet
 import com.khater.rwaq.presentation.screens.branchScreen.components.SelectCarBottomSheet
@@ -121,8 +127,40 @@ import rwaq.composeapp.generated.resources.rwaq_logo
 fun CartScreen(
     cartViewModel: CartViewModel = koinViewModel(),
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                cartViewModel.checkAuthentication()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
     val state = cartViewModel.state.collectAsStateWithLifecycle().value
     val urlHandler = LocalUriHandler.current
+
+
+    // 👇 create the platform-specific launcher once
+    val paymentLauncher = rememberPaymobLauncher(
+        onSuccess = {
+            Logger.i("success")
+            cartViewModel.onPaymentFinished()   // ✅ clear cart + go back
+        },
+        onFailure = {
+            Logger.i("onFailure $it")
+            cartViewModel.onPaymentFinished()   // ✅ clear cart + go back
+        },
+        onPending = {
+            Logger.i("onPending")
+            cartViewModel.onPaymentFinished()   // ✅ clear cart + go back
+        },
+    )
+
 
     EventHandler(cartViewModel.effect) { effect, controller ->
         when (effect) {
@@ -132,8 +170,16 @@ fun CartScreen(
                 -> {
                 urlHandler.openUri("${String.MapsUrl}${effect.location.latitude},${effect.location.longitude}")
             }
+
             CartScreenUIEffect.NavigateToLogin -> {
                 controller.navigate(Screen.LoginScreen)
+            }
+
+            is CartScreenUIEffect.NavigateToPayment -> {
+                paymentLauncher.launch(
+                    clientSecret = effect.clientSecret,
+                    publicKey = effect.publicKey,
+                )
             }
         }
     }
@@ -156,10 +202,9 @@ fun CartContent(state: CartUiState, interactionListener: CartInteractionListener
 
     BackHandler(
         enabled = state.isWorkTimeOverlayVisible || state.isSelectCarBottomSheetVisible ||
-                state.isCarDetailsBottomSheetVisible || state.showGuestDialog
+                state.isCarDetailsBottomSheetVisible
     ) {
         when {
-            state.showGuestDialog -> interactionListener.onDismissGuestDialog()
             state.isSelectCarBottomSheetVisible -> interactionListener.onCloseSelectCar()
             state.isWorkTimeOverlayVisible -> interactionListener.onCloseWorkTimeBottomSheet()
             state.isCarDetailsBottomSheetVisible -> interactionListener.onCloseCarDetails()
@@ -204,8 +249,11 @@ fun CartContent(state: CartUiState, interactionListener: CartInteractionListener
                 dialog(state.showGuestDialog) {
                     BasicDialog(
                         isVisible = state.showGuestDialog,
-                        onDismiss = interactionListener::onDismissGuestDialog,
-                        onCancelClick = interactionListener::onDismissGuestDialog,
+                        onDismiss = { },
+                        onCancelClick = { },
+                        hasDismissButton = false,
+                        dismissOnBackPress = false,
+                        dismissOnClickOutside = false,
                         actionButtons = {
                             PrimaryButton(
                                 text = stringResource(Res.string.login),

@@ -1,5 +1,6 @@
 package com.khater.rwaq.presentation.screens.splashScreen
 
+import co.touchlab.kermit.Logger
 import com.khater.rwaq.domain.repository.authentication.AuthenticationRepository
 import com.khater.rwaq.presentation.base.BaseViewModel
 import com.khater.rwaq.presentation.mapper.handleAuthException
@@ -8,6 +9,7 @@ import com.khater.rwaq.presentation.model.SnackBarState
 import com.khater.rwaq.presentation.screens.splashScreen.uiState.SplashUiEffect
 import com.khater.rwaq.presentation.screens.splashScreen.uiState.SplashUiState
 import com.khater.rwaq.presentation.util.LoginConstants.SNACK_BAR_DELAY
+import com.khater.rwaq.presentation.util.ReferralManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -19,12 +21,31 @@ import org.jetbrains.compose.resources.getString
 class SplashScreenViewModel(
     private val authenticationRepository: AuthenticationRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val referralManager: ReferralManager,
 
     ) : BaseViewModel<SplashUiState, SplashUiEffect>(SplashUiState()) {
 
     init {
         runAnimationDelay()
         checkAuthenticationStatus()
+        checkReferral()
+    }
+
+    private fun checkReferral() {
+        tryToExecute(
+            callee = { referralManager.checkAndSubmitReferral() },
+            onSuccess = {userID ->
+                updateState { it.copy(userId = userID) }
+                Logger.i { "onSuccess" }
+            },
+            onError = {throwable ->
+                updateState { it.copy(userId =throwable.message ) }
+
+                Logger.i { "${throwable.message}" }
+
+            },
+            dispatcher = dispatcher
+        )
     }
 
     private fun checkAuthenticationStatus() {

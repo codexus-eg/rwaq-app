@@ -48,7 +48,7 @@ fun QuantitySelector(
                 contentDescription = "Minus amount",
                 tint = if (count > 0) Theme.colorScheme.primary.primary
                 else Theme.colorScheme.shadePrimary,
-                onClick = onDecrease,
+                onClick = { if (count > 1) onDecrease() },
                 modifier = Modifier.size(32.dp).clip(CircleShape)
             )
 
@@ -65,7 +65,7 @@ fun QuantitySelector(
             contentDescription = "Plus amount",
             tint = if (count < maxCount) Theme.colorScheme.primary.primary
                 else Theme.colorScheme.shadePrimary,
-            onClick = onIncrease,
+            onClick = { if (count < maxCount) onIncrease() },
             modifier = Modifier.size(32.dp).clip(CircleShape)
         )
 

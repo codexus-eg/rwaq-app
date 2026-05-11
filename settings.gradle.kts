@@ -3,6 +3,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
+        google()
         google {
             mavenContent {
                 includeGroupAndSubgroups("androidx")
@@ -12,6 +13,16 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven {
+            url = uri("https://maven.google.com/")
+            name = "Google"
+        }
+        maven {
+            url = rootProject.projectDir.toURI().resolve("libs")
+        }
+        maven {
+            url = uri("https://jitpack.io")
+        }
     }
 }
 
@@ -24,7 +35,14 @@ dependencyResolutionManagement {
                 includeGroupAndSubgroups("com.google")
             }
         }
+        google()
         mavenCentral()
+        maven {
+            url = rootProject.projectDir.toURI().resolve("libs")
+        }
+        maven {
+            url = uri("https://jitpack.io")
+        }
     }
 }
 
