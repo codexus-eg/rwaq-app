@@ -20,11 +20,8 @@ import com.khater.rwaq.designSystem.component.scaffold.HomeScaffold
 import com.khater.rwaq.designSystem.theme.theme.Theme
 import com.khater.rwaq.presentation.composables.EmptyOrErrorContent
 import com.khater.rwaq.presentation.composables.EventHandler
-import com.khater.rwaq.presentation.composables.MapEmbedView
 import com.khater.rwaq.presentation.navigation.Screen.BranchScreen
 import com.khater.rwaq.presentation.screens.homeScreen.components.CoffeeContent
- import com.khater.rwaq.presentation.screens.homeScreen.components.ProfileSection
-import com.khater.rwaq.presentation.screens.homeScreen.components.SearchBarSection
 import com.khater.rwaq.presentation.screens.homeScreen.uiStates.HomeScreenInteractionListener
 import com.khater.rwaq.presentation.screens.homeScreen.uiStates.HomeUiEffect
 import com.khater.rwaq.presentation.screens.homeScreen.uiStates.HomeUiState
@@ -156,7 +153,6 @@ fun HomeContent(
             onDismiss = interactionListener::onDismissDetails,
             listener = interactionListener
         )
-
 
     }
 }

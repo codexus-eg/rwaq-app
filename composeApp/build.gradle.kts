@@ -25,6 +25,7 @@ kotlin {
     }
     
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -32,7 +33,7 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
             //binaryOption("bundleId", "com.khater.rwaq")
-            export("io.github.mirzemehdi:kmpnotifier:1.6.0")
+            export("io.github.mirzemehdi:kmpnotifier:1.6.1")
         }
     }
     
@@ -57,6 +58,7 @@ kotlin {
 
             // Runtime
             implementation(libs.androidx.startup.runtime)
+            implementation("com.google.android.gms:play-services-location:21.3.0")
 
             // Room DB
             implementation(libs.androidx.room.sqlite.wrapper)
@@ -174,7 +176,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    buildFeatures { dataBinding = true }
+    buildFeatures {
+        dataBinding = true
+        buildConfig = true
+    }
 
 }
 ksp {
@@ -191,3 +196,4 @@ dependencies {
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
 }
+

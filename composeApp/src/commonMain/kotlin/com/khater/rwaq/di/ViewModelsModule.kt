@@ -1,5 +1,6 @@
 package com.khater.rwaq.di
 
+import com.khater.rwaq.presentation.AppViewModel
 import com.khater.rwaq.presentation.screens.orderScreen.OrderViewModel
 import com.khater.rwaq.presentation.screens.branchScreen.BranchViewModel
 import com.khater.rwaq.presentation.screens.branchesScreen.BranchesViewModel
@@ -25,6 +26,7 @@ import org.koin.dsl.module
 @OptIn(ExperimentalSettingsApi::class)
 val viewModelModule = module {
 
+    viewModelOf(::AppViewModel)
     viewModelOf(::SplashScreenViewModel)
     viewModelOf(::HomeViewModel)
     viewModelOf(::BranchViewModel)

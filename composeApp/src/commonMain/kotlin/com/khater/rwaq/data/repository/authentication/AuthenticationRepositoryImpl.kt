@@ -15,6 +15,7 @@ import com.khater.rwaq.data.util.invalidateAuthTokens
 import com.khater.rwaq.data.util.postEmpty
 import com.khater.rwaq.data.util.postJson
 import com.khater.rwaq.data.util.putAccessToken
+import com.khater.rwaq.data.util.putCartBadgeCount
 import com.khater.rwaq.data.util.putEmail
 import com.khater.rwaq.data.util.putFcmToken
 import com.khater.rwaq.data.util.putPhoneNumber
@@ -209,6 +210,7 @@ class AuthenticationRepositoryImpl(
     private suspend fun clearAuthTokens() {
         settings.putAccessToken("")
         settings.putRefreshToken("")
+        settings.putCartBadgeCount(0)
     }
 
     private suspend fun saveAuthCredential(username: String, phoneNumber: String, email: String) {

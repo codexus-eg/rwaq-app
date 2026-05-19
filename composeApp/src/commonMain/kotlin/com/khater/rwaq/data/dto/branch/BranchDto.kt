@@ -67,5 +67,3 @@ data class LocationDto(
         longitude = longitude ?: 0.0
     )
 }
-
-

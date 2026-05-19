@@ -49,7 +49,7 @@ fun provideHttpClient(
             url(baseUrl)
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
-          //  header("Accept-Language", acceptedLanguage)
+            header("Accept-Language", acceptedLanguage)
 
         }
 

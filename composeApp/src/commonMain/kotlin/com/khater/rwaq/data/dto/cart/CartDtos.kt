@@ -2,6 +2,8 @@ package com.khater.rwaq.data.dto.cart
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -74,6 +76,7 @@ data class UpdateCartItemRequestDto(
     val quantity: Int
 )
 
+@OptIn(ExperimentalSerializationApi::class)
 @Serializable
 data class UpdateCartMetadataRequestDto(
     @SerialName("notes")
@@ -81,19 +84,29 @@ data class UpdateCartMetadataRequestDto(
     @SerialName("pickupType")
     val pickupType: String = "BRANCH",
     @SerialName("branchId")
-    val branchId: String = "",
-    @SerialName("branchName")
-    val branchName: String = "",
-    @SerialName("branchNameAr")
-    val branchNameAr: String = "",
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val branchId: String? = null,
+    @SerialName("orderAddress")
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val orderAddress: String? = null,
     @SerialName("carName")
-    val carName: String = "",
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val carName: String? = null,
     @SerialName("carNumber")
-    val carNumber: String = "",
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val carNumber: String? = null,
     @SerialName("carColor")
-    val carColor: String = "",
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val carColor: String? = null,
     @SerialName("carColorName")
-    val carColorName: String = ""
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val carColorName: String? = null,
+    @SerialName("latitude")
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val latitude: Double? = null,
+    @SerialName("longitude")
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val longitude: Double? = null
 )
 
 @Serializable
@@ -102,29 +115,41 @@ data class ApplyCouponRequestDto(
     val couponCode: String
 )
 
+@OptIn(ExperimentalSerializationApi::class)
 @Serializable
 data class CheckoutRequestDto(
     @SerialName("paymentMethod")
     val paymentMethod: String = "ONLINE",
     @SerialName("onlinePaymentMethod")
-    val onlinePaymentMethod: String = "CARD",
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val onlinePaymentMethod: String? = null,
     @SerialName("pickupType")
     val pickupType: String = "BRANCH",
     @SerialName("branchId")
-    val branchId: String = "",
-    @SerialName("branchName")
-    val branchName: String = "",
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val branchId: String? = null,
+    @SerialName("orderAddress")
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val orderAddress: String? = null,
     @SerialName("carNumber")
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
     val carNumber: String? = null,
     @SerialName("carColor")
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
     val carColor: String? = null,
     @SerialName("carName")
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
     val carName: String? = null,
+    @SerialName("carColorName")
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val carColorName: String? = null,
     @SerialName("notes")
-    val notes: String? = null,
+    val notes: String = "",
     @SerialName("latitude")
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
     val latitude: Double? = null,
     @SerialName("longitude")
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
     val longitude: Double? = null
 )
 
@@ -152,10 +177,20 @@ data class CartData(
     val notes: String = "",
     @SerialName("pickupType")
     val pickupType: String = "BRANCH",
+    @SerialName("pickupTypeLabel")
+    val pickupTypeLabel: String = "",
     @SerialName("branchId")
     val branchId: String = "",
     @SerialName("branchName")
     val branchName: String = "",
+    @SerialName("orderAddress")
+    val orderAddress: String = "",
+    @SerialName("latitude")
+    val latitude: Double? = null,
+    @SerialName("longitude")
+    val longitude: Double? = null,
+    @SerialName("orderLocation")
+    val orderLocation: CartLocationDto? = null,
     @SerialName("carName")
     val carName: String = "",
     @SerialName("carNumber")
@@ -222,6 +257,14 @@ data class CartItem(
         val quantity: Int
     )
 }
+
+@Serializable
+data class CartLocationDto(
+    @SerialName("latitude")
+    val latitude: Double? = null,
+    @SerialName("longitude")
+    val longitude: Double? = null,
+)
 
 @Serializable
 data class CheckoutResponse(

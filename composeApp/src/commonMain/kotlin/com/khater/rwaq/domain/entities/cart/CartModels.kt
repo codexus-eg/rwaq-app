@@ -7,11 +7,16 @@ data class Cart(
     val totalQuantity: Int,
     val notes: String,
     val pickupType: String,
+    val pickupTypeLabel: String = "",
     val branchId: String,
     val branchName: String,
     val carName: String,
     val carNumber: String,
     val carColor: String,
+    val carColorName: String = "",
+    val orderAddress: String = "",
+    val latitude: Double? = null,
+    val longitude: Double? = null,
     val couponCode: String?,
     val userPoints: Int? = null
 )

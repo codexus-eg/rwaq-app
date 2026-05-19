@@ -34,14 +34,13 @@ import com.khater.rwaq.designSystem.component.indicator.DotsProgressIndicator
 import com.khater.rwaq.designSystem.theme.theme.Theme
 import com.khater.rwaq.designSystem.component.scaffold.HomeScaffold
 import com.khater.rwaq.presentation.composables.EventHandler
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.khater.rwaq.designSystem.component.dialog.BasicDialog
 import com.khater.rwaq.designSystem.component.dialog.Dialog
+import com.khater.rwaq.domain.location.NativeLocationSettings
 import com.khater.rwaq.presentation.util.Dimensions.PADDING_BOTTOM_WITH_NAV_VISIBLE
 import com.khater.rwaq.domain.entities.cart.CartItem
+import com.khater.rwaq.domain.model.PickupType
 import com.khater.rwaq.presentation.composables.EmptyOrErrorContent
 import com.khater.rwaq.presentation.composables.RwaqBackButton
 import com.khater.rwaq.presentation.composables.RwaqTopBar
@@ -58,8 +57,6 @@ import com.khater.rwaq.presentation.util.Dimensions
 import com.khater.rwaq.presentation.util.LocalNavigationProvider
 import com.khater.rwaq.presentation.util.MapsUrl
 import com.khater.rwaq.presentation.util.rippleClickable
-import dev.jordond.compass.permissions.LocationPermissionController
-import dev.jordond.compass.permissions.mobile.openSettings
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -70,23 +67,12 @@ import kotlin.math.ceil
 fun NewCartScreen(
     viewModel: NewCartViewModel = koinViewModel()
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                viewModel.checkAuthentication()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
     val state by viewModel.state.collectAsStateWithLifecycle()
     val urlHandler = LocalUriHandler.current
+
+    LaunchedEffect(Unit) {
+        viewModel.onScreenOpened()
+    }
 
     val paymentLauncher = com.khater.rwaq.presentation.payment.rememberPaymobLauncher(
         onSuccess = { viewModel.onPaymentSuccess() },
@@ -122,7 +108,7 @@ fun NewCartScreen(
 
             }
             NewCartUIEffect.OpenLocationSettings -> {
-                LocationPermissionController.openSettings()
+                NativeLocationSettings.openSettings()
             }
         }
     }
@@ -340,10 +326,10 @@ private fun NewCartContent(
                         SectionCard(title = stringResource(Res.string.receiving_method)) {
                             ReceivingOptionRow(
                                 title = stringResource(Res.string.pick_up_from_branch),
-                                isSelected = !state.isDriveThru,
-                                onClick = { listener.onOrderTypeChanged(false) }
+                                isSelected = state.isBranchPickup,
+                                onClick = { listener.onPickupTypeChanged(PickupType.BRANCH) }
                             )
-                            AnimatedVisibility(visible = !state.isDriveThru) {
+                            AnimatedVisibility(visible = state.isBranchPickup) {
                                 InlineBranchList(
                                     branches = state.allBranches.map { b ->
                                         com.khater.rwaq.presentation.screens.branchScreen.uiState.BranchUiState(
@@ -372,7 +358,7 @@ private fun NewCartContent(
                             ReceivingOptionRow(
                                 title = stringResource(Res.string.drive_thru),
                                 isSelected = state.isDriveThru,
-                                onClick = { listener.onOrderTypeChanged(true) }
+                                onClick = { listener.onPickupTypeChanged(PickupType.DRIVE_THRU) }
                             )
                             AnimatedVisibility(visible = state.isDriveThru) {
                                 Column {
@@ -447,6 +433,20 @@ private fun NewCartContent(
                                         }
                                     }
                                 }
+                            }
+
+                            HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray, modifier = Modifier.padding(vertical = 8.dp))
+
+                            ReceivingOptionRow(
+                                title = stringResource(Res.string.delivery),
+                                isSelected = state.isDelivery,
+                                onClick = { listener.onPickupTypeChanged(PickupType.DELIVERY) }
+                            )
+                            AnimatedVisibility(visible = state.isDelivery) {
+                                DeliveryDetails(
+                                    state = state,
+                                    listener = listener
+                                )
                             }
                         }
 
@@ -585,6 +585,67 @@ private fun NewCartContent(
                 }
             }
         }
+}
+
+@Composable
+private fun DeliveryDetails(
+    state: NewCartUiState,
+    listener: NewCartInteractionListener,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = if (state.isLocationObtained) {
+                    stringResource(Res.string.current_location_ready)
+                } else {
+                    stringResource(Res.string.add_location)
+                },
+                style = Theme.typography.body.small,
+                color = if (state.isLocationObtained) Color(0xFF3B7D5C) else Color.Gray,
+                modifier = Modifier.weight(1f)
+            )
+            TextButton(onClick = listener::onRetryCurrentLocation) {
+                Text(
+                    text = stringResource(Res.string.detect_current_location),
+                    style = Theme.typography.body.small,
+                    color = Theme.colorScheme.brand.brand
+                )
+            }
+        }
+
+        OutlinedTextField(
+            value = state.deliveryAddress,
+            onValueChange = listener::onDeliveryAddressChanged,
+            label = {
+                Text(
+                    text = stringResource(Res.string.delivery_address),
+                    style = Theme.typography.body.small
+                )
+            },
+            placeholder = {
+                Text(
+                    text = stringResource(Res.string.delivery_address_hint),
+                    color = Color.LightGray,
+                    style = Theme.typography.body.small
+                )
+            },
+            textStyle = Theme.typography.body.small,
+            modifier = Modifier.fillMaxWidth(),
+            minLines = 2,
+            shape = RoundedCornerShape(8.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = Color.LightGray,
+                focusedBorderColor = Theme.colorScheme.brand.brand
+            )
+        )
+    }
 }
 
 @Composable

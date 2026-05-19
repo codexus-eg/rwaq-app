@@ -10,6 +10,7 @@ import com.khater.rwaq.data.util.invalidateAuthTokens
 import com.khater.rwaq.data.util.postEmpty
 import com.khater.rwaq.data.util.postJson
 import com.khater.rwaq.data.util.putAccessToken
+import com.khater.rwaq.data.util.putCartBadgeCount
 import com.khater.rwaq.data.util.putEmail
 import com.khater.rwaq.data.util.putJson
 import com.khater.rwaq.data.util.putPhoneNumber
@@ -72,6 +73,7 @@ class UserRemoteDataSourceImpl(
     private suspend fun clearAuthTokens() {
         settings.putAccessToken("")
         settings.putRefreshToken("")
+        settings.putCartBadgeCount(0)
     }
 
     private suspend fun clearAuthCredential() {

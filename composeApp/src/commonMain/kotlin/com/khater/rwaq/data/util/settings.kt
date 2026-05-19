@@ -57,6 +57,13 @@ suspend fun FlowSettings.putUserPoints(value: Int) {
     putInt(USER_POINTS, value)
 }
 
+internal val FlowSettings.cartBadgeCount: Flow<Int>
+    get() = getIntFlow(CART_BADGE_COUNT, 0)
+
+suspend fun FlowSettings.putCartBadgeCount(value: Int) {
+    putInt(CART_BADGE_COUNT, value.coerceAtLeast(0))
+}
+
 private const val USER_NAME = "user_name"
 private const val PHONE_NUMBER = "phone_number"
 private const val ACCESS_TOKEN = "access_token"
@@ -64,3 +71,4 @@ private const val REFRESH_TOKEN = "refresh_token"
 private const val FCM_TOKEN = "fcm_token"
 private const val EMAIL = "email"
 private const val USER_POINTS = "user_points"
+private const val CART_BADGE_COUNT = "cart_badge_count"

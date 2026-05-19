@@ -3,10 +3,12 @@ package com.khater.rwaq.presentation.screens.orderScreen.uiState
 import androidx.compose.ui.graphics.Color
 import com.khater.rwaq.domain.entities.order.NewOrder
 import com.khater.rwaq.domain.entities.order.OrderItem
+import com.khater.rwaq.domain.model.PickupType
 import com.khater.rwaq.presentation.model.SnackBarState
 import org.jetbrains.compose.resources.StringResource
 import rwaq.composeapp.generated.resources.Res
 import rwaq.composeapp.generated.resources.drive_thru
+import rwaq.composeapp.generated.resources.delivery
 import rwaq.composeapp.generated.resources.pickup_from_branch
 import rwaq.composeapp.generated.resources.status_assigned
 import rwaq.composeapp.generated.resources.status_cancelled
@@ -29,7 +31,9 @@ data class OrderUiState(
 )
 
 fun NewOrder.toUiModel(): OrderUiModel {
-    val isDriveThru = isDriveThruOrder()
+    val orderType = resolveOrderType()
+    val isDriveThru = orderType == OrderTypeUi.DRIVE_THRU
+    val isDelivery = orderType == OrderTypeUi.DELIVERY
     val branchName = items.firstOrNull { it.branchName.isNotBlank() }?.branchName.orEmpty()
     val carSummary = listOfNotNull(
         carName,
@@ -46,8 +50,10 @@ fun NewOrder.toUiModel(): OrderUiModel {
         paymentMethod = this.paymentMethod.replace("_", " ").lowercase().capitalizeWords(),
         paymentStatus = PaymentStatusUi.fromString(this.paymentStatus),
         paymentStatusText = this.paymentStatus.statusLabel(),
-        orderType = if (isDriveThru) OrderTypeUi.DRIVE_THRU else OrderTypeUi.PICKUP,
+        orderType = orderType,
+        pickupTypeLabel = this.pickupTypeLabel.orEmpty(),
         isDriveThru = isDriveThru,
+        isDelivery = isDelivery,
         branchName = branchName,
         orderAddress = this.orderAddress.orEmpty(),
         customerName = this.customerName.orEmpty(),
@@ -120,8 +126,14 @@ private fun Double.toMoneyText(): String {
     }
 }
 
-private fun NewOrder.isDriveThruOrder(): Boolean {
+private fun NewOrder.resolveOrderType(): OrderTypeUi {
     val normalizedPickupType = pickupType.orEmpty().uppercase()
+    when (PickupType.from(normalizedPickupType)) {
+        PickupType.BRANCH -> if (normalizedPickupType == PickupType.BRANCH.name) return OrderTypeUi.PICKUP
+        PickupType.DRIVE_THRU -> return OrderTypeUi.DRIVE_THRU
+        PickupType.DELIVERY -> return OrderTypeUi.DELIVERY
+    }
+
     val hasCarDetails = listOf(carName, carNumber, carColor, carColorName)
         .any { !it.isNullOrBlank() }
     val itemHasCarDetails = items.any { item ->
@@ -132,14 +144,18 @@ private fun NewOrder.isDriveThruOrder(): Boolean {
     }
     val normalizedDeliveryStatus = deliveryStatus.uppercase()
 
-    return normalizedPickupType == "DRIVE_THRU" ||
+    return when {
         normalizedPickupType == "CAR_PICKUP" ||
-        items.any { !it.isPickupFromBranch } ||
-        hasCarDetails ||
-        itemHasCarDetails ||
+            items.any { !it.isPickupFromBranch } ||
+            hasCarDetails ||
+            itemHasCarDetails -> OrderTypeUi.DRIVE_THRU
+
         !orderAddress.isNullOrBlank() ||
-        !assignedDeliveryDriver.isNullOrBlank() ||
-        (normalizedDeliveryStatus.isNotBlank() && normalizedDeliveryStatus != "NOT_ASSIGNED")
+            !assignedDeliveryDriver.isNullOrBlank() ||
+            (normalizedDeliveryStatus.isNotBlank() && normalizedDeliveryStatus != "NOT_ASSIGNED") -> OrderTypeUi.DELIVERY
+
+        else -> OrderTypeUi.PICKUP
+    }
 }
 
 // --- Updated Data Classes ---
@@ -154,7 +170,9 @@ data class OrderUiModel(
     val paymentStatus: PaymentStatusUi = PaymentStatusUi.UNKNOWN,
     val paymentStatusText: String = "",
     val orderType: OrderTypeUi = OrderTypeUi.PICKUP,
+    val pickupTypeLabel: String = "",
     val isDriveThru: Boolean = false,
+    val isDelivery: Boolean = false,
     val branchName: String = "",
     val orderAddress: String = "",
     val customerName: String = "",
@@ -193,7 +211,8 @@ data class ExtensionUiModel(
 
 enum class OrderTypeUi(val label: StringResource, val color: Color) {
     PICKUP(Res.string.pickup_from_branch, Color(0xFF3B7D5C)),
-    DRIVE_THRU(Res.string.drive_thru, Color(0xFF2E8FBB))
+    DRIVE_THRU(Res.string.drive_thru, Color(0xFF2E8FBB)),
+    DELIVERY(Res.string.delivery, Color(0xFF8A5CF6))
 }
 
 enum class PaymentStatusUi(val color: Color) {

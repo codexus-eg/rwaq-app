@@ -1,5 +1,5 @@
 {
-    "Simulator Target Bundle": "com.khater.rwaq",
+    "Simulator Target Bundle": "com.hassan.rwaq",
     "aps": {
         "alert": {
             "title": "Test Notification",

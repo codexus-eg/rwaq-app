@@ -6,10 +6,12 @@ import com.khater.rwaq.data.dto.branch.BranchWorkTimeDto
 import com.khater.rwaq.data.dto.branch.LocationDto
 import com.khater.rwaq.data.util.getJson
 import com.khater.rwaq.data.util.safeWrapper
+import com.khater.rwaq.domain.repository.service.LocalizationService
 import io.ktor.client.HttpClient
 
 class BranchRemoteDataSource(
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
+    private val localizationService: LocalizationService
 ): BranchDataSource {
 
 
@@ -17,6 +19,9 @@ class BranchRemoteDataSource(
         val response = safeWrapper {
             httpClient.getJson<BaseResponse<List<BranchDto>>>(
                 path = BRANCHES_ENDPOINT,
+                headerParams = mapOf(
+                    ACCEPT_LANGUAGE to localizationService.getCurrentLanguage().iso
+                )
             )
         }
         return response.data
@@ -24,5 +29,6 @@ class BranchRemoteDataSource(
 
     companion object{
        const val BRANCHES_ENDPOINT = "api/branches"
+       const val ACCEPT_LANGUAGE = "Accept-Language"
     }
 }

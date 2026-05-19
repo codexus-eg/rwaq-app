@@ -1,18 +1,13 @@
 package com.khater.rwaq.presentation.screens.homeScreen
 
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
-import co.touchlab.kermit.Logger
 import com.khater.rwaq.data.dto.product.toDetailsUiState
 import com.khater.rwaq.data.dto.product.toUiModel
 import com.khater.rwaq.data.util.username
 import com.khater.rwaq.data.dto.cart.AddToCartRequestDto
-import com.khater.rwaq.domain.entities.order.Order
-import com.khater.rwaq.domain.entities.order.OrderExtension
 import com.khater.rwaq.domain.entities.product.Product
 import com.khater.rwaq.domain.repository.authentication.AuthenticationRepository
 import com.khater.rwaq.domain.useCases.GetAllProductsUseCase
-import com.khater.rwaq.domain.useCases.ManageCartUseCase
 import com.khater.rwaq.domain.useCases.cart.AddToCartUseCase
 import com.khater.rwaq.presentation.base.BaseViewModel
 import com.khater.rwaq.presentation.mapper.handleDefaultException
@@ -32,13 +27,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.stringResource
 import rwaq.composeapp.generated.resources.Res
 import rwaq.composeapp.generated.resources.add_to_cart_error_message
 import rwaq.composeapp.generated.resources.added_to_cart_message
 import rwaq.composeapp.generated.resources.added_to_cart_title
-import rwaq.composeapp.generated.resources.all_coffee
-import rwaq.composeapp.generated.resources.checkout_order
 import rwaq.composeapp.generated.resources.error_title
 import rwaq.composeapp.generated.resources.max_count
 import rwaq.composeapp.generated.resources.out_of_stock_message
@@ -48,8 +40,6 @@ import rwaq.composeapp.generated.resources.special_offers
 import rwaq.composeapp.generated.resources.you_have_reach_max_count_of_this_extension
 import kotlin.time.Clock.System
 import kotlin.time.ExperimentalTime
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalSettingsApi::class,ExperimentalTime::class)
 class HomeViewModel(
@@ -309,7 +299,6 @@ private fun fetchHomeData() {
         recalculatePrice(newDetails)
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     override fun onAddToCart() {
         val details = state.value.selectedProductDetails ?: return
         viewModelScope.launch {
@@ -322,7 +311,6 @@ private fun fetchHomeData() {
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     override fun onQuickAddToCart(productId: String) {
         val product = cachedProducts.find { it.id == productId } ?: return
 
@@ -605,6 +593,7 @@ private fun fetchHomeData() {
     override fun onRetry() {
         fetchHomeData()
     }
+
     companion object {
         const val PAGE_SIZE = 40
         const val INITIAL_PAGE = 1

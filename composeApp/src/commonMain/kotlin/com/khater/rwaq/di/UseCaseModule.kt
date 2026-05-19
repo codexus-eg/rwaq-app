@@ -6,8 +6,11 @@ import com.khater.rwaq.domain.useCases.GetAllProductsUseCase
 import com.khater.rwaq.domain.useCases.GetUserUseCase
 import com.khater.rwaq.domain.useCases.ManageCartUseCase
 import com.khater.rwaq.domain.useCases.SendContactMessageUseCase
+import com.khater.rwaq.domain.useCases.appVersion.CheckAppVersionUseCase
 import com.khater.rwaq.domain.useCases.cart.ClearCartUseCase
+import com.khater.rwaq.domain.useCases.cart.ClearCartBadgeCountUseCase
 import com.khater.rwaq.domain.useCases.cart.GetCartUseCase
+import com.khater.rwaq.domain.useCases.cart.ObserveCartBadgeCountUseCase
 import com.khater.rwaq.domain.useCases.cart.RemoveCartItemUseCase
 import com.khater.rwaq.domain.useCases.cart.UpdateCartItemUseCase
 import com.khater.rwaq.domain.useCases.cart.UpdateCartMetadataUseCase
@@ -32,6 +35,7 @@ val useCaseModule = module {
 
     factoryOf(::GetAllBranchesUseCase)
     factoryOf(::GetAllProductsUseCase)
+    factoryOf(::CheckAppVersionUseCase)
     factoryOf(::ManageCartUseCase)
     factoryOf(::CreateOrderUseCase)
     factoryOf(::SendContactMessageUseCase)
@@ -46,6 +50,8 @@ val useCaseModule = module {
     factoryOf(::UpdateUserUseCase)
     factoryOf(::DeleteAccountUseCase)
     factoryOf(::GetCartUseCase)
+    factoryOf(::ObserveCartBadgeCountUseCase)
+    factoryOf(::ClearCartBadgeCountUseCase)
     factoryOf(::UpdateCartItemUseCase)
     factoryOf(::RemoveCartItemUseCase)
     factoryOf(::CheckoutUseCase)

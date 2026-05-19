@@ -11,11 +11,16 @@ fun CartData.toDomain(userPoints: Int? = null): Cart = Cart(
     totalQuantity = totalQuantity,
     notes = notes,
     pickupType = pickupType,
+    pickupTypeLabel = pickupTypeLabel,
     branchId = branchId,
     branchName = branchName,
     carName = carName,
     carNumber = carNumber,
     carColor = carColor,
+    carColorName = carColorName,
+    orderAddress = orderAddress,
+    latitude = latitude ?: orderLocation?.latitude,
+    longitude = longitude ?: orderLocation?.longitude,
     couponCode = couponCode,
     userPoints = userPoints
 )

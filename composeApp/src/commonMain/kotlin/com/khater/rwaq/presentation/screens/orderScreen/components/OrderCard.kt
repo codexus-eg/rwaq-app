@@ -40,6 +40,7 @@ import com.khater.rwaq.designSystem.theme.theme.Theme
 import com.khater.rwaq.presentation.screens.cartScreen.components.SectionCard
 import com.khater.rwaq.presentation.screens.orderScreen.uiState.DeliveryStatusUi
 import com.khater.rwaq.presentation.screens.orderScreen.uiState.OrderItemUiModel
+import com.khater.rwaq.presentation.screens.orderScreen.uiState.OrderTypeUi
 import com.khater.rwaq.presentation.screens.orderScreen.uiState.OrderUiModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -93,9 +94,9 @@ fun OrderCard(
             ) {
                 MetaPill(
                     label = stringResource(Res.string.order_type),
-                    value = stringResource(order.orderType.label),
+                    value = order.pickupTypeLabel.ifBlank { stringResource(order.orderType.label) },
                     color = order.orderType.color,
-                    icon = if (order.isDriveThru) Res.drawable.pick_up_from_car else Res.drawable.pick_up_from_branch,
+                    icon = order.orderType.icon,
                     modifier = Modifier.weight(1f)
                 )
                 Column(horizontalAlignment = Alignment.End) {
@@ -126,11 +127,18 @@ fun OrderCard(
                 )
             }
 
-            if (order.isDriveThru) {
-                DeliveryTimeline(order.deliveryStatus)
-                DriveThruDetails(order)
-            } else {
-                PickupDetails(order)
+            when {
+                order.isDriveThru -> {
+                    DeliveryTimeline(order.deliveryStatus)
+                    DriveThruDetails(order)
+                }
+
+                order.isDelivery -> {
+                    DeliveryTimeline(order.deliveryStatus)
+                    DeliveryDetails(order)
+                }
+
+                else -> PickupDetails(order)
             }
 
             if (order.notes.isNotBlank()) {
@@ -156,6 +164,13 @@ fun OrderCard(
         }
     }
 }
+
+private val OrderTypeUi.icon: org.jetbrains.compose.resources.DrawableResource
+    get() = when (this) {
+        OrderTypeUi.PICKUP -> Res.drawable.pick_up_from_branch
+        OrderTypeUi.DRIVE_THRU -> Res.drawable.pick_up_from_car
+        OrderTypeUi.DELIVERY -> Res.drawable.ic_location
+    }
 
 @Composable
 private fun OrderHeader(order: OrderUiModel) {
@@ -251,6 +266,29 @@ private fun DriveThruDetails(order: OrderUiModel) {
             label = stringResource(Res.string.branch_label),
             value = order.branchName,
             icon = Res.drawable.pick_up_from_branch
+        )
+    }
+}
+
+@Composable
+private fun DeliveryDetails(order: OrderUiModel) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        DetailLine(
+            label = stringResource(Res.string.delivery_status),
+            value = stringResource(order.deliveryStatus.label),
+            valueColor = order.deliveryStatus.color
+        )
+        DetailLine(
+            label = stringResource(Res.string.assigned_driver),
+            value = order.assignedDeliveryDriver.ifBlank { stringResource(Res.string.status_not_assigned) }
+        )
+        DetailLine(
+            label = stringResource(Res.string.order_address),
+            value = order.orderAddress,
+            icon = Res.drawable.ic_location
         )
     }
 }

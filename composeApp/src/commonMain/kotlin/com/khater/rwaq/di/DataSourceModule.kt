@@ -1,5 +1,7 @@
 package com.khater.rwaq.di
 
+import com.khater.rwaq.data.source.remote.appVersion.AppVersionDataSource
+import com.khater.rwaq.data.source.remote.appVersion.AppVersionRemoteDataSource
 import com.khater.rwaq.data.source.remote.branch.BranchDataSource
 import com.khater.rwaq.data.source.remote.branch.BranchRemoteDataSource
 import com.khater.rwaq.data.source.remote.cart.CartDataSource
@@ -22,7 +24,8 @@ val dataSourceModule = module {
     single<FlowSettings> {
         (Settings() as ObservableSettings).toFlowSettings()
     }
-    single<BranchDataSource>{ BranchRemoteDataSource(get()) }
+    single<AppVersionDataSource>{ AppVersionRemoteDataSource(get(), get()) }
+    single<BranchDataSource>{ BranchRemoteDataSource(get(), get()) }
     single<CartDataSource>{ CartRemoteDataSource(get(),get()) }
     single<OrderDataSource>{ OrderRemoteDataSource(get(),get()) }
     single<ProductDataSource>{ ProductRemoteDataSource(get(),get()) }

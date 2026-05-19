@@ -2,6 +2,7 @@ package com.khater.rwaq.presentation.screens.newCartScreen.uiStates
 
 import com.khater.rwaq.domain.entities.branch.Branch
 import com.khater.rwaq.domain.entities.car.Car
+import com.khater.rwaq.domain.model.PickupType
 
 interface NewCartInteractionListener {
     fun onIncreaseQuantity(itemId: String, currentQuantity: Int)
@@ -11,7 +12,9 @@ interface NewCartInteractionListener {
 
     fun onBack()
     fun onOrderNotesChanged(notes: String)
-    fun onOrderTypeChanged(isDriveThru: Boolean)
+    fun onPickupTypeChanged(pickupType: PickupType)
+    fun onDeliveryAddressChanged(address: String)
+    fun onRetryCurrentLocation()
     fun onBranchSelected(branch: Branch)
     fun onClickWorkTimeButton(branch: Branch)
     fun onClickLocationButton(branch: Branch)

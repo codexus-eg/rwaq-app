@@ -38,6 +38,8 @@ data class OrderDto(
     val status: String = "",
     @SerialName("pickupType")
     val pickupType: String? = null,
+    @SerialName("pickupTypeLabel")
+    val pickupTypeLabel: String? = null,
     @SerialName("orderLocation")
     val orderLocation: OrderLocationDto? = null,
     @SerialName("customerName")
@@ -87,9 +89,10 @@ data class OrderDto(
          paymobTransactionId = this.paymobTransactionId,
          paymobOrderId = this.paymobOrderId,
          totalAmount = this.totalAmount,
-         status = this.status,
-         pickupType = this.pickupType,
-         orderLocation = this.orderLocation?.toDomain(),
+	         status = this.status,
+	         pickupType = this.pickupType,
+	         pickupTypeLabel = this.pickupTypeLabel,
+	         orderLocation = this.orderLocation?.toDomain(),
          customerName = this.customerName,
          customerEmail = this.customerEmail,
          customerPhone = this.customerPhone,
@@ -148,7 +151,7 @@ data class OrderItemDto(
     @SerialName("branchName")
     val branchName: String? = null,
     @SerialName("isPickupFromBranch")
-    val isPickupFromBranch: Boolean,
+    val isPickupFromBranch: Boolean = true,
     @SerialName("carName")
     val carName: String? = null,
     @SerialName("carNumber")

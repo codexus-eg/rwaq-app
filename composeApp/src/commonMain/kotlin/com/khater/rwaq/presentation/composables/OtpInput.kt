@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,7 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.khater.rwaq.designSystem.theme.theme.Theme
 
@@ -131,27 +134,21 @@ internal fun OtpInput(
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         decorationBox = { innerTextField ->
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(
-                    space = Theme.spacing._16,
-                    alignment = Alignment.CenterHorizontally
-                ),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                // We reverse the string so the "last typed" char (End of string)
-                // appears in the "first box" (Index 0)
-                val reversedOtp = otpValue.reversed()
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = Theme.spacing._16,
+                        alignment = Alignment.CenterHorizontally
+                    ),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    repeat(times = otpLength) { index ->
+                        val char = otpValue.getOrNull(index)?.toString().orEmpty()
+                        val showCursor = index == otpValue.length && isFocused && otpValue.length < otpLength
 
-                repeat(times = otpLength) { index ->
-                    val char = reversedOtp.getOrNull(index)?.toString().orEmpty()
-
-                    // The cursor always stays in the first box (Index 0)
-                    // because that's where new numbers "enter" the visual stack.
-                    // We also hide it if the OTP is completely full.
-                    val showCursor = index == 0 && isFocused && otpValue.length < otpLength
-
-                    OTPCard(char = char, showCursor = showCursor, isFocused = isFocused)
+                        OTPCard(char = char, showCursor = showCursor, isFocused = isFocused)
+                    }
                 }
             }
         },

@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import com.khater.rwaq.domain.location.NativeLocationActivityProvider
 import com.khater.rwaq.presentation.App
 import com.khater.rwaq.presentation.util.AppLocalizer
 import com.mmk.kmpnotifier.permission.AndroidPermissionUtil
@@ -35,6 +36,7 @@ class MainActivity : ComponentActivity() {
             )
         )
         super.onCreate(savedInstanceState)
+        NativeLocationActivityProvider.attach(this)
         val localizer: AppLocalizer by inject()
         localizer.applyLocaleToContext()
         setContent {
@@ -47,6 +49,23 @@ class MainActivity : ComponentActivity() {
             if (isSuccess) return@askNotificationPermission
             Toast.makeText(this, "Permissions is required", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
+    ) {
+        if (NativeLocationActivityProvider.onRequestPermissionsResult(requestCode, grantResults)) {
+            return
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun onDestroy() {
+        NativeLocationActivityProvider.detach(this)
+        super.onDestroy()
     }
 }
 

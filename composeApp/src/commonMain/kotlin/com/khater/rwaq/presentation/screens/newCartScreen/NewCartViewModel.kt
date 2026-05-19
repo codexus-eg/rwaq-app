@@ -10,6 +10,9 @@ import com.khater.rwaq.domain.entities.branch.Branch
 import com.khater.rwaq.domain.entities.car.Car
 import com.khater.rwaq.domain.entities.cart.Cart
 import com.khater.rwaq.domain.entities.cart.CartItem
+import com.khater.rwaq.domain.location.NativeLocationResult
+import com.khater.rwaq.domain.location.NativeLocationService
+import com.khater.rwaq.domain.model.PickupType
 import com.khater.rwaq.domain.useCases.GetAllBranchesUseCase
 import com.khater.rwaq.domain.useCases.cart.*
 import com.khater.rwaq.domain.util.InsufficientPointsException
@@ -27,13 +30,14 @@ import com.khater.rwaq.presentation.util.isLoginRequiredError
 import com.khater.rwaq.presentation.util.isOnlinePaymentCheckoutError
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.coroutines.FlowSettings
-import dev.jordond.compass.geolocation.Geolocator
-import dev.jordond.compass.geolocation.GeolocatorResult
-import dev.jordond.compass.geolocation.hasPermission
-import dev.jordond.compass.geolocation.mobile
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 import rwaq.composeapp.generated.resources.*
 import kotlin.math.ceil
@@ -46,15 +50,19 @@ class NewCartViewModel(
     private val updateCartItemUseCase: UpdateCartItemUseCase,
     private val removeCartItemUseCase: RemoveCartItemUseCase,
     private val checkoutUseCase: CheckoutUseCase,
+    private val clearCartBadgeCountUseCase: ClearCartBadgeCountUseCase,
     private val getAllBranchesUseCase: GetAllBranchesUseCase,
 //    private val clearCartUseCase: ClearCartUseCase,
     private val authenticationRepository: com.khater.rwaq.domain.repository.authentication.AuthenticationRepository,
     private val settings: FlowSettings,
 ) : BaseViewModel<NewCartUiState, NewCartUIEffect>(NewCartUiState()), NewCartInteractionListener {
 
-    private val geolocator = Geolocator.mobile()
+    private val locationService = NativeLocationService()
+    private val locationMutex = Mutex()
     private var hasLoadedProtectedCartData = false
+    private var hasHandledFirstScreenOpen = false
     private var authObserverJob: Job? = null
+    private var locationRequestJob: Job? = null
 
     init {
         checkAuthentication()
@@ -86,44 +94,45 @@ class NewCartViewModel(
     private fun syncInitialLocationState() {
         viewModelScope.launch {
             refreshLocationAvailability()
-            if (geolocator.hasPermission()) {
-                updateCurrentLocation(showError = false, openSettingsOnPermanentDenial = false)
+            if (hasLocationPermission()) {
+                locationMutex.withLock {
+                    updateCurrentLocation(showError = false, openSettingsOnPermanentDenial = false)
+                }
             }
         }
     }
 
-    private fun requestDriveThruLocation() {
-        viewModelScope.launch {
-            ensureDriveThruLocation(showError = true)
+    private fun requestCurrentPickupLocation(showError: Boolean = true) {
+        if (locationRequestJob?.isActive == true) return
+        locationRequestJob = viewModelScope.launch {
+            ensureCurrentPickupLocation(showError = showError)
         }
     }
 
-    private suspend fun ensureDriveThruLocation(
+    private suspend fun ensureCurrentPickupLocation(
         showError: Boolean,
-    ): Boolean {
-        val isAvailable = refreshLocationAvailability()
-        if (!isAvailable) {
-            updateState { it.copy(orderLocation = OrderLocation(), isLocationObtained = false) }
-            if (showError) showLocationServicesRequiredError()
-            return false
-        }
-
-        return updateCurrentLocation(showError = showError, openSettingsOnPermanentDenial = true)
+    ): Boolean = locationMutex.withLock {
+        updateCurrentLocation(showError = showError, openSettingsOnPermanentDenial = true)
     }
 
     private suspend fun refreshLocationAvailability(): Boolean {
-        val isAvailable = runCatching { geolocator.isAvailable() }.getOrDefault(false)
+        val isAvailable = withContext(Dispatchers.IO) {
+            runCatching { locationService.isLocationEnabled() }.getOrDefault(false)
+        }
         updateState { it.copy(isLocationEnabled = isAvailable) }
         return isAvailable
     }
+
+    private fun hasLocationPermission(): Boolean =
+        runCatching { locationService.hasLocationPermission() }.getOrDefault(false)
 
     private suspend fun updateCurrentLocation(
         showError: Boolean,
         openSettingsOnPermanentDenial: Boolean,
     ): Boolean {
-        return when (val result = geolocator.current()) {
-            is GeolocatorResult.Success -> {
-                val coordinates = result.data.coordinates
+        return when (val result = locationService.getCurrentLocation()) {
+            is NativeLocationResult.Success -> {
+                val coordinates = result.coordinates
                 val orderLocation = OrderLocation(
                     latitude = coordinates.latitude,
                     longitude = coordinates.longitude
@@ -132,6 +141,7 @@ class NewCartViewModel(
                 updateState {
                     it.copy(
                         orderLocation = orderLocation,
+                        isLocationEnabled = true,
                         isLocationObtained = hasCoordinates
                     )
                 }
@@ -148,7 +158,7 @@ class NewCartViewModel(
                 hasCoordinates
             }
 
-            is GeolocatorResult.Error -> handleLocationError(
+            else -> handleLocationError(
                 error = result,
                 showError = showError,
                 openSettingsOnPermanentDenial = openSettingsOnPermanentDenial
@@ -157,27 +167,27 @@ class NewCartViewModel(
     }
 
     private suspend fun handleLocationError(
-        error: GeolocatorResult.Error,
+        error: NativeLocationResult,
         showError: Boolean,
         openSettingsOnPermanentDenial: Boolean,
     ): Boolean {
         updateState {
             it.copy(
                 orderLocation = OrderLocation(),
-                isLocationEnabled = error !is GeolocatorResult.NotSupported,
+                isLocationEnabled = error !is NativeLocationResult.ServicesDisabled,
                 isLocationObtained = false
             )
         }
-        Logger.i { "Location error: ${error.message}" }
+        Logger.i { "Location error: $error" }
 
         if (showError) {
             when (error) {
-                is GeolocatorResult.NotSupported -> showLocationServicesRequiredError()
-                is GeolocatorResult.PermissionDenied -> {
+                NativeLocationResult.ServicesDisabled -> showLocationServicesRequiredError()
+                is NativeLocationResult.PermissionDenied -> {
                     val message = if (error.forever) {
-                        getString(Res.string.location_permission_denied_forever)
+                        getString(Res.string.location_permission_denied_forever_for_checkout_location)
                     } else {
-                        getString(Res.string.location_permission_required)
+                        getString(Res.string.location_permission_required_for_checkout_location)
                     }
                     showSnackBar(
                         title = getString(Res.string.gps_required),
@@ -189,11 +199,13 @@ class NewCartViewModel(
                     }
                 }
 
-                else -> showSnackBar(
+                is NativeLocationResult.Unavailable -> showSnackBar(
                     title = getString(Res.string.gps_required),
-                    message = error.message,
+                    message = getString(Res.string.location_unavailable_try_again),
                     isSuccess = false
                 )
+
+                is NativeLocationResult.Success -> Unit
             }
         }
         return false
@@ -202,7 +214,7 @@ class NewCartViewModel(
     private suspend fun showLocationServicesRequiredError() {
         showSnackBar(
             title = getString(Res.string.gps_required),
-            message = getString(Res.string.please_enable_gps_to_use_drive_thru),
+            message = getString(Res.string.please_enable_gps_to_use_checkout_location),
             isSuccess = false
         )
     }
@@ -240,6 +252,14 @@ class NewCartViewModel(
         )
     }
 
+    fun onScreenOpened() {
+        if (!hasHandledFirstScreenOpen) {
+            hasHandledFirstScreenOpen = true
+            return
+        }
+        refreshCartOnOpen()
+    }
+
     private fun loadProtectedCartData() {
         if (!hasLoadedProtectedCartData) {
             hasLoadedProtectedCartData = true
@@ -247,6 +267,15 @@ class NewCartViewModel(
         }
         fetchCart()
         fetchBranches()
+    }
+
+    private fun refreshCartOnOpen() {
+        if (authObserverJob == null) {
+            checkAuthentication()
+            return
+        }
+        if (!hasLoadedProtectedCartData || currentState.isGuest) return
+        fetchCart()
     }
 
     private fun refreshProtectedDataOnOpen() {
@@ -421,10 +450,10 @@ class NewCartViewModel(
 
         val currentState = state.value
 
-        if (currentState.isDriveThru) {
+        if (currentState.pickupType.requiresLocation()) {
             viewModelScope.launch {
                 updateState { it.copy(isCheckoutLoading = true) }
-                val hasLocation = ensureDriveThruLocation(
+                val hasLocation = ensureCurrentPickupLocation(
                     showError = true
                 )
                 if (!hasLocation) {
@@ -443,12 +472,24 @@ class NewCartViewModel(
 
         val currentState = state.value
 
-        if (currentState.isDriveThru && !currentState.orderLocation.hasCoordinates()) {
+        if (currentState.pickupType.requiresLocation() && !currentState.orderLocation.hasCoordinates()) {
             viewModelScope.launch {
                 updateState { it.copy(isCheckoutLoading = false, isLocationObtained = false) }
                 showSnackBar(
                     title = getString(Res.string.add_location),
                     message = getString(Res.string.add_location),
+                    isSuccess = false
+                )
+            }
+            return
+        }
+
+        if (currentState.isDelivery && currentState.deliveryAddress.isBlank()) {
+            viewModelScope.launch {
+                updateState { it.copy(isCheckoutLoading = false) }
+                showSnackBar(
+                    title = getString(Res.string.delivery_address),
+                    message = getString(Res.string.please_enter_delivery_address),
                     isSuccess = false
                 )
             }
@@ -467,12 +508,13 @@ class NewCartViewModel(
             return
         }
 
-        val branch = if (currentState.isDriveThru)
-            currentState.selectedDriveThruBranch
-        else
-            currentState.selectedPickupBranch
+        val branch = when (currentState.pickupType) {
+            PickupType.BRANCH -> currentState.selectedPickupBranch
+            PickupType.DRIVE_THRU -> currentState.selectedDriveThruBranch
+            PickupType.DELIVERY -> null
+        }
 
-        if (branch == null) {
+        if (!currentState.isDelivery && branch == null) {
             viewModelScope.launch {
                 updateState { it.copy(isCheckoutLoading = false) }
                 showSnackBar(
@@ -486,19 +528,7 @@ class NewCartViewModel(
         viewModelScope.launch {
             updateState { it.copy(isCheckoutLoading = true) }
             try {
-                val checkoutRequest = CheckoutRequestDto(
-                    paymentMethod = currentState.selectedPaymentMethod,
-                    onlinePaymentMethod = currentState.onlinePaymentMethodForCheckout(),
-                    pickupType = if (currentState.isDriveThru) "DRIVE_THRU" else "BRANCH",
-                    branchId = branch.id,
-                    branchName = branch.branchName,
-                    carNumber = currentState.selectedCar.carNumber,
-                    carColor = currentState.selectedCar.colorName,
-                    carName = currentState.selectedCar.name,
-                    notes = currentState.orderNotes,
-                    latitude = currentState.orderLocation.latitude,
-                    longitude = currentState.orderLocation.longitude
-                )
+                val checkoutRequest = currentState.toCheckoutRequest(branch)
                 Logger.i { "Checkout Request: $checkoutRequest" }
                 val result = checkoutUseCase(checkoutRequest)
                 if (result.paymentInfo != null) {
@@ -550,15 +580,23 @@ class NewCartViewModel(
         updateState { it.copy(orderNotes = notes) }
     }
 
-    override fun onOrderTypeChanged(isDriveThru: Boolean) {
+    override fun onPickupTypeChanged(pickupType: PickupType) {
         updateState {
             it.copy(
-                isDriveThru = isDriveThru,
-                isLocationObtained = if (isDriveThru) it.isLocationObtained else false
+                pickupType = pickupType,
+                isLocationObtained = if (pickupType.requiresLocation()) it.isLocationObtained else false
             )
         }
-        if (!isDriveThru) return
-        requestDriveThruLocation()
+        if (!pickupType.requiresLocation()) return
+        requestCurrentPickupLocation()
+    }
+
+    override fun onDeliveryAddressChanged(address: String) {
+        updateState { it.copy(deliveryAddress = address) }
+    }
+
+    override fun onRetryCurrentLocation() {
+        requestCurrentPickupLocation()
     }
 
     override fun onBranchSelected(branch: Branch) {
@@ -666,6 +704,9 @@ class NewCartViewModel(
     }
 
     fun onPaymentSuccess() {
+        viewModelScope.launch {
+            clearCartBadgeCountUseCase()
+        }
         updateState { it.copy(isPaymentSuccessDialogVisible = true) }
     }
 
@@ -758,6 +799,12 @@ class NewCartViewModel(
         val grossTotal = cart.items.sumOf { it.totalPrice }
         val rewardAmount = cart.items.filter { it.isRewardItem }.sumOf { it.totalPrice }
         val netPayable = grossTotal - rewardAmount
+        val pickupType = PickupType.from(cart.pickupType)
+        val cartLocation = if (cart.latitude != null && cart.longitude != null) {
+            OrderLocation(latitude = cart.latitude, longitude = cart.longitude)
+        } else {
+            null
+        }
 
         updateState { state ->
             state.copy(
@@ -765,7 +812,10 @@ class NewCartViewModel(
                 error = null,
                 isLoading = isLoading ?: state.isLoading,
                 orderNotes = cart.notes,
-                isDriveThru = cart.pickupType == "DRIVE_THRU",
+                pickupType = pickupType,
+                deliveryAddress = cart.orderAddress.ifBlank { state.deliveryAddress },
+                orderLocation = cartLocation ?: state.orderLocation,
+                isLocationObtained = cartLocation?.hasCoordinates() ?: state.isLocationObtained,
                 subTotal = grossTotal,
                 rewardDiscount = rewardAmount,
                 cartTotal = netPayable,
@@ -841,13 +891,48 @@ class NewCartViewModel(
     private fun OrderLocation.hasCoordinates(): Boolean =
         latitude != 0.0 || longitude != 0.0
 
-    private fun NewCartUiState.onlinePaymentMethodForCheckout(): String {
-        return if (
-            selectedPaymentMethod == ONLINE_PAYMENT_METHOD &&
-            showApplePayOption &&
-            isApplePaySupported &&
-            isApplePaySelected
-        ) {
+    private fun PickupType.requiresLocation(): Boolean =
+        this == PickupType.DRIVE_THRU || this == PickupType.DELIVERY
+
+    private fun NewCartUiState.toCheckoutRequest(branch: Branch?): CheckoutRequestDto =
+        when (pickupType) {
+            PickupType.BRANCH -> CheckoutRequestDto(
+                paymentMethod = selectedPaymentMethod,
+                onlinePaymentMethod = onlinePaymentMethodForCheckout(),
+                pickupType = PickupType.BRANCH.name,
+                branchId = branch?.id,
+                notes = orderNotes
+            )
+
+            PickupType.DRIVE_THRU -> CheckoutRequestDto(
+                paymentMethod = selectedPaymentMethod,
+                onlinePaymentMethod = onlinePaymentMethodForCheckout(),
+                pickupType = PickupType.DRIVE_THRU.name,
+                branchId = branch?.id,
+                carNumber = selectedCar.carNumber,
+                carColor = selectedCar.colorName,
+                carColorName = selectedCar.colorName,
+                carName = selectedCar.name,
+                notes = orderNotes,
+                latitude = orderLocation.latitude,
+                longitude = orderLocation.longitude
+            )
+
+            PickupType.DELIVERY -> CheckoutRequestDto(
+                paymentMethod = selectedPaymentMethod,
+                onlinePaymentMethod = onlinePaymentMethodForCheckout(),
+                pickupType = PickupType.DELIVERY.name,
+                orderAddress = deliveryAddress.trim(),
+                notes = orderNotes,
+                latitude = orderLocation.latitude,
+                longitude = orderLocation.longitude
+            )
+        }
+
+    private fun NewCartUiState.onlinePaymentMethodForCheckout(): String? {
+        if (selectedPaymentMethod != ONLINE_PAYMENT_METHOD) return null
+
+        return if (showApplePayOption && isApplePaySupported && isApplePaySelected) {
             APPLE_PAY_ONLINE_PAYMENT_METHOD
         } else {
             CARD_ONLINE_PAYMENT_METHOD

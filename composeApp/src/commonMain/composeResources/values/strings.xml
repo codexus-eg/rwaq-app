@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="rwaq">Rwaq cafe</string>
+    <string name="rwaq">Rwaq</string>
 
     <string name="reward">Rewards</string>
     <string name="pick_up_from_branch">Pick-up</string>
     <string name="drive_thru">Drive Thru</string>
+    <string name="delivery">Delivery</string>
     <string name="open">Open</string>
     <string name="close">Close</string>
     <string name="choose_branch">Choose branch</string>
@@ -14,8 +15,12 @@
     <string name="failed_to_load_branches">Failed to load branches</string>
     <string name="gps_required">GPS is required</string>
     <string name="please_enable_gps_to_use_drive_thru">Please enable GPS to use Drive Thru</string>
+    <string name="please_enable_gps_to_use_checkout_location">Please enable GPS to continue</string>
     <string name="location_permission_required">Please allow location permission to use Drive Thru</string>
+    <string name="location_permission_required_for_checkout_location">Please allow location permission to continue</string>
     <string name="location_permission_denied_forever">Location permission is disabled. Enable it from app settings to use Drive Thru</string>
+    <string name="location_permission_denied_forever_for_checkout_location">Location permission is disabled. Enable it from app settings to continue</string>
+    <string name="location_unavailable_try_again">Couldn't detect your location. Please make sure location is enabled and try again.</string>
     <string name="are_you_sure_delete_account">Are you sure you want to delete your account?</string>
     <string name="delete_account">Delete Account</string>
     <string name="reward_discount">Reward Discount</string>
@@ -25,6 +30,12 @@
     <string name="coffee_ready">Ready-to-Drink</string>
     <string name="all_coffee">All Coffee</string>
     <string name="special_offers">Special Offers</string>
+    <string name="app_update_default_title">New update available</string>
+    <string name="app_update_default_message">Please update the app to get the latest improvements.</string>
+    <string name="app_update_latest_version">Version %1$s</string>
+    <string name="app_update_release_notes">What is new</string>
+    <string name="app_update_update_now">Update</string>
+    <string name="app_update_later">Later</string>
     <string name="empty_products">No products available</string>
     <string name="choose">Choose</string>
     <string name="status_pending">Pending</string>
@@ -129,6 +140,11 @@
 
     <string name="order_notes">Order Notes</string>
     <string name="order_notes_hint">Do you have special notes on the request?</string>
+    <string name="delivery_address">Delivery Address</string>
+    <string name="delivery_address_hint">Enter your delivery address</string>
+    <string name="please_enter_delivery_address">Please enter your delivery address</string>
+    <string name="current_location_ready">Current location detected</string>
+    <string name="detect_current_location">Detect location</string>
 
     <string name="enter_coupon">Enter coupon code</string>
     <string name="apply">Apply</string>

@@ -3,6 +3,7 @@ package com.khater.rwaq.presentation.screens.newCartScreen.uiStates
 import com.khater.rwaq.domain.entities.branch.Branch
 import com.khater.rwaq.domain.entities.car.Car
 import com.khater.rwaq.domain.entities.cart.Cart
+import com.khater.rwaq.domain.model.PickupType
 import com.khater.rwaq.presentation.model.SnackBarState
 import com.khater.rwaq.presentation.screens.branchScreen.uiState.BranchWorkTimeUiState
 import com.khater.rwaq.presentation.screens.branchScreen.uiState.CarBrandUiState
@@ -25,9 +26,10 @@ data class NewCartUiState(
     val isLocationEnabled: Boolean = false,
     val isLocationObtained: Boolean = false,
     // Receipt Method
-    val isDriveThru: Boolean = false,
+    val pickupType: PickupType = PickupType.BRANCH,
     val selectedPickupBranch: Branch? = null,
     val selectedDriveThruBranch: Branch? = null,
+    val deliveryAddress: String = "",
 
     // Cars
     val cars: List<Car> = emptyList(),
@@ -106,4 +108,13 @@ data class NewCartUiState(
     val isGuest: Boolean = false,
     val showGuestDialog: Boolean = false,
     val isPaymentSuccessDialogVisible: Boolean = false
-)
+) {
+    val isBranchPickup: Boolean
+        get() = pickupType == PickupType.BRANCH
+
+    val isDriveThru: Boolean
+        get() = pickupType == PickupType.DRIVE_THRU
+
+    val isDelivery: Boolean
+        get() = pickupType == PickupType.DELIVERY
+}

@@ -1,6 +1,5 @@
 package com.khater.rwaq.presentation.screens.homeScreen.uiStates
 
-import com.khater.rwaq.domain.entities.product.Category
 import com.khater.rwaq.domain.entities.product.Product
 import com.khater.rwaq.presentation.model.SnackBarState
 import com.khater.rwaq.presentation.screens.productScreen.uiState.ProductDetailsUiState

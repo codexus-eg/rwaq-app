@@ -13,11 +13,13 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -26,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,26 +73,28 @@ fun OTPViewRoundedCorner(
             imeAction = ImeAction.Done
         ),
         decorationBox = {
-            Row(
-                horizontalArrangement = Arrangement
-                    .spacedBy(spacedBy, Alignment.CenterHorizontally)
-            ) {
-                repeat(otpCount) { index ->
-                    OtpView(
-                        showOtp = showOtp,
-                        index = index,
-                        shape = shape,
-                        showError = showError,
-                        text = otpText,
-                        textColor = textColor,
-                        textSize = textSize,
-                        boxBorderWidth = boxBorderWidth,
-                        boxSize = boxSize,
-                        backgroundColor = backgroundColor,
-                        focusedBoxColor = focusedBoxColor,
-                        errorBoxColor = errorBoxColor,
-                        unFocusedBoxColor = unFocusedBoxColor
-                    )
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Row(
+                    horizontalArrangement = Arrangement
+                        .spacedBy(spacedBy, Alignment.CenterHorizontally)
+                ) {
+                    repeat(otpCount) { index ->
+                        OtpView(
+                            showOtp = showOtp,
+                            index = index,
+                            shape = shape,
+                            showError = showError,
+                            text = otpText,
+                            textColor = textColor,
+                            textSize = textSize,
+                            boxBorderWidth = boxBorderWidth,
+                            boxSize = boxSize,
+                            backgroundColor = backgroundColor,
+                            focusedBoxColor = focusedBoxColor,
+                            errorBoxColor = errorBoxColor,
+                            unFocusedBoxColor = unFocusedBoxColor
+                        )
+                    }
                 }
             }
         },

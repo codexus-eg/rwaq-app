@@ -1,10 +1,11 @@
 <resources>
 
-    <string name="rwaq">رواق كافيه</string>
+    <string name="rwaq">رواق</string>
 
     <string name="reward">مكافأة</string>
     <string name="pick_up_from_branch">إستلام من الفرع</string>
     <string name="drive_thru">درايف ثرو</string>
+    <string name="delivery">توصيل</string>
     <string name="open">مفتوح</string>
     <string name="close">مغلق</string>
     <string name="cart">السلة</string>
@@ -17,10 +18,20 @@
     <string name="failed_to_load_branches">فشل في تحميل الفروع</string>
     <string name="gps_required">مطلوب تفعيل نظام تحديد الموقع (GPS)</string>
     <string name="please_enable_gps_to_use_drive_thru">يرجى تفعيل نظام تحديد الموقع (GPS) لاستخدام خدمة الاستلام من السيارة</string>
+    <string name="please_enable_gps_to_use_checkout_location">يرجى تفعيل نظام تحديد الموقع (GPS) للمتابعة</string>
     <string name="location_permission_required">يرجى السماح بإذن الموقع لاستخدام خدمة الاستلام من السيارة</string>
+    <string name="location_permission_required_for_checkout_location">يرجى السماح بإذن الموقع للمتابعة</string>
     <string name="location_permission_denied_forever">تم تعطيل إذن الموقع. فعّله من إعدادات التطبيق لاستخدام خدمة الاستلام من السيارة</string>
+    <string name="location_permission_denied_forever_for_checkout_location">تم تعطيل إذن الموقع. فعّله من إعدادات التطبيق للمتابعة</string>
+    <string name="location_unavailable_try_again">تعذر تحديد موقعك. تأكد من تفعيل الموقع ثم حاول مرة أخرى.</string>
     <string name="are_you_sure_delete_account">هل أنت متأكد أنك تريد حذف حسابك؟</string>
     <string name="delete_account">حذف الحساب</string>
+    <string name="app_update_default_title">تحديث جديد متاح</string>
+    <string name="app_update_default_message">يرجى تحديث التطبيق للحصول على أحدث التحسينات.</string>
+    <string name="app_update_latest_version">الإصدار %1$s</string>
+    <string name="app_update_release_notes">ما الجديد</string>
+    <string name="app_update_update_now">تحديث</string>
+    <string name="app_update_later">لاحقًا</string>
 
     <string name="status_completed">مكتمل</string>
     <string name="status_confirmed">مؤكد</string>
@@ -143,6 +154,11 @@
 
     <string name="order_notes">ملاحظات الطلب</string>
     <string name="order_notes_hint">هل لديك ملاحظات خاصة على الطلب؟</string>
+    <string name="delivery_address">عنوان التوصيل</string>
+    <string name="delivery_address_hint">أدخل عنوان التوصيل</string>
+    <string name="please_enter_delivery_address">يرجى إدخال عنوان التوصيل</string>
+    <string name="current_location_ready">تم تحديد موقعك الحالي</string>
+    <string name="detect_current_location">تحديد الموقع</string>
 
     <string name="enter_coupon">أدخل كود الخصم</string>
     <string name="apply">تطبيق</string>

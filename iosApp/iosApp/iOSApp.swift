@@ -14,10 +14,16 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
       FirebaseApp.configure()
       AppInitializer.shared.onApplicationStart()
-
+      NotifierManager.shared.initialize(configuration: NotificationPlatformConfigurationIos(
+          showPushNotification: true,
+          askNotificationPermissionOnStart: true,
+          notificationSoundName: nil
+      )
+      )
       
     return true
   }
+
 
 // Handle Universal Links and Deferred Dynamic Links
     func application(_ application: UIApplication,

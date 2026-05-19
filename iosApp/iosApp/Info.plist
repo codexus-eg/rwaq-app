@@ -6,6 +6,8 @@
 	<true/>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We use your location to send Drive Thru orders with your current coordinates.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
