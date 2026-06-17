@@ -15,6 +15,9 @@ data class Product(
     val isSpecialOffer: Boolean,
     val isMachine: Boolean,
     val productCashback: ProductCashback,
+    // Points required to redeem this product in the Rewards screen. Compared
+    // against the user's points balance instead of the product price.
+    val points: Double = 0.0,
 )
 
 data class ProductExtension(

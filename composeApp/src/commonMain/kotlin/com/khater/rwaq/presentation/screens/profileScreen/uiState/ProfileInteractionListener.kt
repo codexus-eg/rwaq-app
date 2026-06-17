@@ -14,4 +14,8 @@ interface ProfileInteractionListener {
     fun onSelectLanguage(appLanguage: AppLanguage)
     fun onClickLogin()
     fun onDismissGuestDialog()
+
+    fun onOpenQRCodeBottomSheet()
+    fun onDismissQRCodeBottomSheet()
+
 }

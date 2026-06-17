@@ -21,6 +21,7 @@ import rwaq.composeapp.generated.resources.Res
 import rwaq.composeapp.generated.resources.add
 import rwaq.composeapp.generated.resources.cashback
 import rwaq.composeapp.generated.resources.currency_sar
+import rwaq.composeapp.generated.resources.point
 
 @Composable
 fun ProductHeader(details: ProductDetailsUiState) {
@@ -47,7 +48,7 @@ fun ProductHeader(details: ProductDetailsUiState) {
     Spacer(modifier = Modifier.padding(top = 12.dp))
     if (details.hasCashback) {
         Text(
-            text = "${stringResource(Res.string.cashback)} ${details.cashBackAmount} ${stringResource(Res.string.currency_sar)}",
+            text = "${stringResource(Res.string.cashback)} ${details.cashBackAmount.toInt()} ${stringResource(Res.string.point)}",
             style = Theme.typography.title.medium,
             color = Color(0xFF16a085),
             fontWeight = FontWeight.Normal,

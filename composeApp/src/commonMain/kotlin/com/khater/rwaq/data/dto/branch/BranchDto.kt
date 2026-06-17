@@ -23,6 +23,8 @@ data class BranchDto(
     val branchLocation: LocationDto? = null,
     @SerialName("workTime")
     val workTime: List<BranchWorkTimeDto>? = null,
+    @SerialName("isBranchWorking")
+    val isBranchWorking: Boolean? = null,
 ) {
     fun toDomain() = Branch(
         id  = id ?: "",
@@ -37,7 +39,8 @@ data class BranchDto(
         },
         distanceAwayFromYou = distanceAwayFromYou ?: 0.0,
         branchLocation = branchLocation?.toDomain() ?: Location(latitude = 0.0, longitude = 0.0),
-        workTime = workTime?.map { it.toDomain() } ?: emptyList()
+        workTime = workTime?.map { it.toDomain() } ?: emptyList(),
+        isBranchWorking = isBranchWorking == true
     )
 }
 

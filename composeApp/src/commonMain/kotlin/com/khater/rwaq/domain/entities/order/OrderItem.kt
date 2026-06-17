@@ -11,6 +11,7 @@ data class NewOrder(
      val paymobTransactionId: String? = null,
      val paymobOrderId: String? = null,
      val totalAmount: Double, // JSON has Int, but Money usually Double
+     val deliveryFee: Double = 0.0,
 	     val status: String,
 	     val pickupType: String? = null,
 	     val pickupTypeLabel: String? = null,

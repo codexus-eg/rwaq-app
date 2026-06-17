@@ -17,14 +17,12 @@ actual class ReferralHelper(private val context: Context) {
             override fun onInstallReferrerSetupFinished(responseCode: Int) {
                 if (responseCode == InstallReferrerClient.InstallReferrerResponse.OK) {
                     val response: ReferrerDetails = client.installReferrer
-                    val raw = response.installReferrer  // "userId=123"
-                    // here i will check for start with refer and get the userId and i'll update the backend
-                    Logger.i { "rawData $raw" }
-                    val userId = raw
-                        ?.split("&")
-                        ?.firstOrNull { it.startsWith("userId=") }
-                        ?.removePrefix("userId=")
-                    onResult(userId)
+                    // Raw install referrer set by the Play Store, e.g. "ref=ABC123"
+                    // (or the legacy "userId=..."). The common ReferralManager
+                    // parses the actual code out of it via parseReferralCode().
+                    val raw = response.installReferrer
+                    Logger.i { "[Referral] install referrer raw=$raw" }
+                    onResult(raw)
                 } else {
                     onResult(null)
                 }

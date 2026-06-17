@@ -18,7 +18,7 @@ import com.khater.rwaq.presentation.screens.rewardScreen.uiState.RewardInteracti
 import org.jetbrains.compose.resources.stringResource
 import rwaq.composeapp.generated.resources.Res
 import rwaq.composeapp.generated.resources.add
-import rwaq.composeapp.generated.resources.currency_sar
+import rwaq.composeapp.generated.resources.point
 
 @Composable
 fun RewardProductFooter(
@@ -26,12 +26,13 @@ fun RewardProductFooter(
     points: Double,
     listener: RewardInteractionListener,
 ) {
-    val currentPrice = details.calculatedTotalPrice
+    val unitPoints = details.rewardPoints
+    val totalPoints = unitPoints * details.productQuantity
 
-// Logic: Button is enabled ONLY if User Points >= Price
-    val isRedeemEnabled =  points >= currentPrice
-    val maxRewardQuantity = if (details.calculatedSingleUnitTestPrice > 0.0) {
-        (points / details.calculatedSingleUnitTestPrice).toInt()
+// Logic: Button is enabled ONLY if User Points >= required points
+    val isRedeemEnabled = points >= totalPoints
+    val maxRewardQuantity = if (unitPoints > 0.0) {
+        (points / unitPoints).toInt()
     } else {
         Int.MAX_VALUE
     }
@@ -49,7 +50,7 @@ fun RewardProductFooter(
         )
 
         PrimaryButton(
-            text = "${stringResource(Res.string.add)}  ${details.calculatedTotalPrice} ${stringResource(Res.string.currency_sar)} ",
+            text = "${stringResource(Res.string.add)}  ${totalPoints.toInt()} ${stringResource(Res.string.point)} ",
             onClick = listener::onAddToCart,
             isEnabled = isRedeemEnabled,
             isLoading = details.isAddingToCart,

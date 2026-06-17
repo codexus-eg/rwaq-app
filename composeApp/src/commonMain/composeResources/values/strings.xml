@@ -12,6 +12,7 @@
     <string name="choose_branch">Choose branch</string>
     <string name="cart">Cart</string>
     <string name="select_branch">Select branch</string>
+    <string name="please_choose_branch">Please choose a branch</string>
     <string name="failed_to_load_branches">Failed to load branches</string>
     <string name="gps_required">GPS is required</string>
     <string name="please_enable_gps_to_use_drive_thru">Please enable GPS to use Drive Thru</string>
@@ -87,6 +88,7 @@
     <string name="are_you_sure_you_want_to_logout">Are you sure you want to logout?</string>
     <string name="wallet">Cash back</string>
     <string name="my_points">My Points</string>
+    <string name="points_used">Points Used</string>
     <string name="you_have_reach_max_count_of_this_extension">You have reach max count of this extension</string>
     <string name="pickup_from_branch">Pickup from Branch</string>
     <string name="car_pickup">Car Pickup</string>
@@ -152,6 +154,7 @@
     <string name="payment_details">Payment Details</string>
     <string name="sub_total">Sub-total</string>
     <string name="total_amount">Total Amount</string>
+    <string name="delivery_fee">Delivery Fee</string>
     <string name="vat_included">VAT included *</string>
 
     <string name="vat_number">Vat Number : %1$s</string>
@@ -221,6 +224,7 @@
     <string name="about_aqua">About Aqua</string>
     <string name="receiving_method">Receiving Method</string>
     <string name="temporarily_closed">Temporarily Closed</string>
+    <string name="selected_branch_temporarily_closed">The selected branch is temporarily closed right now</string>
     <string name="coming_soon">Coming Soon</string>
     <string name="username_required">Username is required</string>
     <string name="update_user">Update user data</string>

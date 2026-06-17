@@ -1,6 +1,7 @@
 package com.khater.rwaq.data.source.local.setting
 
 import com.russhwolf.settings.Settings
+import kotlin.random.Random
 
 internal var Settings.accessToken: String
     get() = getString(ACCESS_TOKEN, "")
@@ -33,6 +34,25 @@ internal var Settings.referralChecked: Boolean
     get() = getBoolean(REFERRAL_CHECKED, false)
     set(value) = putBoolean(REFERRAL_CHECKED, value)
 
+// Referral code captured from a deep link / install referrer, held until the
+// user logs in and we can claim it. Empty string means "nothing pending".
+internal var Settings.pendingReferralCode: String
+    get() = getString(PENDING_REFERRAL_CODE, "")
+    set(value) = putString(PENDING_REFERRAL_CODE, value)
+
+// A stable, locally-generated device identifier sent with referral claims as a
+// soft abuse signal. Generated once on first access and persisted.
+internal val Settings.referralDeviceId: String
+    get() {
+        val existing = getString(REFERRAL_DEVICE_ID, "")
+        if (existing.isNotBlank()) return existing
+        val generated = buildString {
+            repeat(24) { append("0123456789abcdef"[Random.nextInt(16)]) }
+        }
+        putString(REFERRAL_DEVICE_ID, generated)
+        return generated
+    }
+
 
 //region keys
 
@@ -44,6 +64,8 @@ const val LAST_REGISTRATION_LOCAL_NUMBER = "last_registration_local_number"
 const val IMAGE_UPLOAD_COMPLETED = "image_upload_completed"
 const val APP_LANGUAGE = "app_language"
 const val REFERRAL_CHECKED = "referral_checked"
+const val PENDING_REFERRAL_CODE = "pending_referral_code"
+const val REFERRAL_DEVICE_ID = "referral_device_id"
 
 
 //endregion

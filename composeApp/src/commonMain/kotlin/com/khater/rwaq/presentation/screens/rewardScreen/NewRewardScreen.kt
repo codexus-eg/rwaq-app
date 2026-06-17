@@ -10,7 +10,9 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -37,16 +39,17 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import rwaq.composeapp.generated.resources.Res
-import rwaq.composeapp.generated.resources.currency_sar
 import rwaq.composeapp.generated.resources.empty_product
 import rwaq.composeapp.generated.resources.empty_products
 import rwaq.composeapp.generated.resources.login
+import rwaq.composeapp.generated.resources.my_points
+import rwaq.composeapp.generated.resources.point
 import rwaq.composeapp.generated.resources.reward
 import rwaq.composeapp.generated.resources.rwaq_logo
 import rwaq.composeapp.generated.resources.something_went_wrong
-import rwaq.composeapp.generated.resources.wallet
 import rwaq.composeapp.generated.resources.welcome
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NewRewardScreen(viewModel: NewRewardViewModel = koinViewModel()) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -126,8 +129,8 @@ fun NewRewardScreen(viewModel: NewRewardViewModel = koinViewModel()) {
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 SettingItemCard(
-                    settingName = stringResource(Res.string.wallet),
-                    settingSubName = "${state.points} ${stringResource(Res.string.currency_sar)}",
+                    settingName = stringResource(Res.string.my_points),
+                    settingSubName = "${state.points.toInt()} ${stringResource(Res.string.point)}",
                     onClick = {},
                     hasNavigationIcon = false
                 )
@@ -167,7 +170,13 @@ fun NewRewardScreen(viewModel: NewRewardViewModel = koinViewModel()) {
                 }
             }
         }
-
+        BackHandler(
+            enabled = state.isDetailsVisible
+        ) {
+            when {
+                state.isDetailsVisible -> viewModel.onDismissDetails()
+             }
+        }
         RewardProductDetailsSheet(
             isVisible = state.isDetailsVisible,
             details = state.selectedProductDetails,

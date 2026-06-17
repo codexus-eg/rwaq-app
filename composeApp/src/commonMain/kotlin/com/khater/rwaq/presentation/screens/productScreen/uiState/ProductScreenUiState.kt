@@ -55,7 +55,9 @@ data class ProductDetailsUiState(
     val calculatedTotalPrice: Double,
     val hasCashback: Boolean,
     val cashBackAmount: Double,
-    val isAddingToCart: Boolean = false
+    val isAddingToCart: Boolean = false,
+    // Reward redemption cost in points for ONE unit (used by the Rewards screen).
+    val rewardPoints: Double = 0.0
 )
 
 data class ProductSizeUiModel(

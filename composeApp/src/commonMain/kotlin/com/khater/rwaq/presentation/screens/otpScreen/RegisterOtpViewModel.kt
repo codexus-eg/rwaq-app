@@ -14,6 +14,7 @@ import com.khater.rwaq.presentation.screens.otpScreen.uiState.RegisterOtpInterac
 import com.khater.rwaq.presentation.screens.otpScreen.uiState.RegisterOtpScreenState
 import com.khater.rwaq.presentation.screens.otpScreen.uiState.RegisterOtpUiEffect
 import com.khater.rwaq.presentation.util.LoginConstants.SNACK_BAR_DELAY
+import com.khater.rwaq.presentation.util.ReferralManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -25,6 +26,7 @@ import org.jetbrains.compose.resources.getString
 class RegisterOtpViewModel(
     savedStateHandle: SavedStateHandle,
     private val otpUseCase: OtpUseCase,
+    private val referralManager: ReferralManager,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<RegisterOtpScreenState, RegisterOtpUiEffect>(
     RegisterOtpScreenState()
@@ -71,6 +73,10 @@ class RegisterOtpViewModel(
                 phoneNumber = args.phoneNumber
 
             )
+            // Login/signup just succeeded and tokens are stored, so this is the
+            // moment to claim any pending referral. Best-effort: the manager
+            // swallows failures so it can never block the user from proceeding.
+            referralManager.claimPendingReferral()
         }else{
             otpUseCase.verifyOtpForForgetPassword(
                 otpCode = currentState.otpValue,

@@ -2,6 +2,7 @@ package com.khater.rwaq
 
 import android.app.Application
 import com.khater.rwaq.di.initKoin
+import com.khater.rwaq.presentation.util.AndroidContext
 import org.koin.android.ext.koin.androidContext
 
 class Application: Application() {
@@ -10,5 +11,7 @@ class Application: Application() {
         initKoin{
             androidContext(this@Application)
         }
+        AndroidContext.init(this)
+
     }
 }

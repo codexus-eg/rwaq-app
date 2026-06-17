@@ -52,6 +52,7 @@ import rwaq.composeapp.generated.resources.car_details
 import rwaq.composeapp.generated.resources.cart_icon
 import rwaq.composeapp.generated.resources.cashback
 import rwaq.composeapp.generated.resources.currency_sar
+import rwaq.composeapp.generated.resources.delivery_fee
 import rwaq.composeapp.generated.resources.delivery_status
 import rwaq.composeapp.generated.resources.ic_check_circle
 import rwaq.composeapp.generated.resources.ic_location
@@ -290,6 +291,13 @@ private fun DeliveryDetails(order: OrderUiModel) {
             value = order.orderAddress,
             icon = Res.drawable.ic_location
         )
+        if (order.deliveryFee != "0") {
+            DetailLine(
+                label = stringResource(Res.string.delivery_fee),
+                value = "${order.deliveryFee} ${stringResource(Res.string.currency_sar)}",
+                valueColor = Theme.colorScheme.brand.brand
+            )
+        }
     }
 }
 

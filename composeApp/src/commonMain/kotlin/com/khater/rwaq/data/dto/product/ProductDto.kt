@@ -31,6 +31,8 @@ data class ProductDto(
     val isMachine: Boolean? = null,
     @SerialName("cashback")
     val productCashback: ProductCashbackDto? = null,
+    // Effective reward redemption cost in points (resolved by the backend).
+    val points: Double? = null,
 )
 
 @Serializable
@@ -75,7 +77,8 @@ fun ProductDto.toEntity() = Product(
         enabled = productCashback?.enabled == true,
         amount = productCashback?.amount ?: 0.0,
         type = productCashback?.type ?: ""
-    )
+    ),
+    points = points ?: 0.0
 )
 
 
@@ -118,7 +121,8 @@ fun Product.toDetailsUiState(): ProductDetailsUiState {
         calculatedSingleUnitTestPrice = finalPrice,
         calculatedTotalPrice = finalPrice, // quantity 1,
         hasCashback = productCashback.enabled,
-        cashBackAmount = productCashback.amount
+        cashBackAmount = productCashback.amount,
+        rewardPoints = points
     )
 }
 

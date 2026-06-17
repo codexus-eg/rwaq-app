@@ -8,6 +8,9 @@ interface NewCartInteractionListener {
     fun onIncreaseQuantity(itemId: String, currentQuantity: Int)
     fun onDecreaseQuantity(itemId: String, currentQuantity: Int)
     fun onRemoveItem(itemId: String)
+    fun onIncreaseExtension(itemId: String, extensionId: String)
+    fun onDecreaseExtension(itemId: String, extensionId: String)
+    fun onRemoveExtension(itemId: String, extensionId: String)
     fun onCheckoutClicked()
 
     fun onBack()

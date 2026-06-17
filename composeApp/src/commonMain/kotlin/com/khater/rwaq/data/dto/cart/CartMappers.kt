@@ -8,6 +8,7 @@ fun CartData.toDomain(userPoints: Int? = null): Cart = Cart(
     id = id,
     items = items.map { it.toDomain() },
     subtotal = subtotal,
+    deliveryFee = deliveryFee,
     totalQuantity = totalQuantity,
     notes = notes,
     pickupType = pickupType,

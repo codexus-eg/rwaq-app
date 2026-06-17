@@ -24,7 +24,7 @@ val networkModule = module {
     "http://192.168.234.127:3013/"
     single<HttpClient> {
         provideHttpClient(
-            baseUrl = "https://rwaq-b04b189d2e97.herokuapp.com/",
+            baseUrl =   "https://rwaq-b04b189d2e97.herokuapp.com/",
             settings = get(),
             refreshToken = { get<AuthenticationRepository>().refreshAccessToken() },
             acceptedLanguage = get<LocalizationService>().getCurrentLanguage().iso

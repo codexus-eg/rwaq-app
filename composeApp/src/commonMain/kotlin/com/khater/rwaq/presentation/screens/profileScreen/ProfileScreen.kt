@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
@@ -22,17 +21,16 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adamglin.composeshadow.dropShadow
 import com.khater.rwaq.designSystem.component.button.PrimaryButton
 import com.khater.rwaq.designSystem.component.dialog.BasicDialog
 import com.khater.rwaq.designSystem.component.dialog.Dialog
-import com.khater.rwaq.designSystem.component.scaffold.HomeScaffold
 import com.khater.rwaq.designSystem.component.scaffold.RwaqScaffold
 import com.khater.rwaq.designSystem.theme.theme.Theme
 import com.khater.rwaq.presentation.composables.EventHandler
@@ -40,13 +38,15 @@ import com.khater.rwaq.presentation.composables.RwaqBackButton
 import com.khater.rwaq.presentation.composables.RwaqTopBar
 import com.khater.rwaq.presentation.navigation.Screen
 import com.khater.rwaq.presentation.navigation.Screen.*
+import com.khater.rwaq.presentation.screens.profileScreen.composables.CaptureComposable
 import com.khater.rwaq.presentation.screens.profileScreen.composables.LanguageBottomSheet
+import com.khater.rwaq.presentation.screens.profileScreen.composables.MyGigstersPromoScreen
 import com.khater.rwaq.presentation.screens.profileScreen.composables.ProfileSection
 import com.khater.rwaq.presentation.screens.profileScreen.composables.SettingItemCard
 import com.khater.rwaq.presentation.screens.profileScreen.composables.SettingsGroup
+import com.khater.rwaq.presentation.screens.profileScreen.composables.ShareWithQRCode
 import com.khater.rwaq.presentation.screens.profileScreen.composables.WalletSection
 import com.khater.rwaq.presentation.screens.profileScreen.composables.confirmationDialog
-import com.khater.rwaq.presentation.screens.profileScreen.composables.logoutDialog
 import com.khater.rwaq.presentation.screens.profileScreen.uiState.ProfileDialogType
 import com.khater.rwaq.presentation.screens.profileScreen.uiState.ProfileInteractionListener
 import com.khater.rwaq.presentation.screens.profileScreen.uiState.ProfileOption
@@ -55,7 +55,9 @@ import com.khater.rwaq.presentation.screens.profileScreen.uiState.ProfileUiState
 import com.khater.rwaq.presentation.util.AppStoreManager
 import com.khater.rwaq.presentation.util.Dimensions.BOTTOM_NAV_HEIGHT
 import com.khater.rwaq.presentation.util.Dimensions.PADDING_BOTTOM_WITH_NAV_VISIBLE
-import com.khater.rwaq.presentation.util.whiteSpace
+import com.khater.rwaq.presentation.util.generateReferralLink
+import com.khater.rwaq.presentation.util.shareImageBitmap
+import com.khater.rwaq.presentation.util.storesAppLink
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -64,15 +66,11 @@ import org.koin.compose.viewmodel.koinViewModel
 import rwaq.composeapp.generated.resources.Res
 import rwaq.composeapp.generated.resources.are_you_sure_delete_account
 import rwaq.composeapp.generated.resources.are_you_sure_you_want_to_logout
-import rwaq.composeapp.generated.resources.checkout
-import rwaq.composeapp.generated.resources.contact_us
-import rwaq.composeapp.generated.resources.currency_sar
 import rwaq.composeapp.generated.resources.delete
 import rwaq.composeapp.generated.resources.delete_account
 import rwaq.composeapp.generated.resources.logout
 import rwaq.composeapp.generated.resources.profile_image
 import rwaq.composeapp.generated.resources.profile_screen
-import rwaq.composeapp.generated.resources.wallet
 import rwaq.composeapp.generated.resources.welcome
 import rwaq.composeapp.generated.resources.login
 import rwaq.composeapp.generated.resources.rwaq_logo
@@ -127,7 +125,7 @@ fun ProfileScreen(appStoreManager: AppStoreManager = koinInject(),viewModel: Pro
             }
 
             ProfileUiEffect.ShareApp -> {
-                appStoreManager.shareApp(state.userId)
+               viewModel.onOpenQRCodeBottomSheet()
             }
 
             ProfileUiEffect.NavigateToLogin -> {
@@ -321,14 +319,31 @@ fun ProfileContent(state: ProfileUiState, interaction: ProfileInteractionListene
         }
 
         BackHandler(
-            enabled = state.languageDialogUiState.isVisible
+            enabled = state.languageDialogUiState.isVisible || state.isQRCodeBottomSheetVisible
         ) {
             when {
                 state.languageDialogUiState.isVisible -> interaction.onDismissLanguageDialog()
+                state.isQRCodeBottomSheetVisible -> interaction.onDismissQRCodeBottomSheet()
             }
         }
-        
 
+        AnimatedVisibility(
+            visible = state.isQRCodeBottomSheetVisible,
+            enter = slideInVertically(initialOffsetY = { it }),
+            exit = slideOutVertically(targetOffsetY = { it }),
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = BOTTOM_NAV_HEIGHT.dp)
+        ){
+            val referralLink = generateReferralLink(storesAppLink, state.referCode)
+            CaptureComposable(
+                onCaptured = { bitmap ->
+
+                    shareImageBitmap(bitmap,"The best coffee app ever! Smarter shop. Better mode $referralLink")
+
+                }
+            ) {
+                MyGigstersPromoScreen(referralLink,interaction::onDismissQRCodeBottomSheet)
+            }
+        }
         AnimatedVisibility(
             visible = state.languageDialogUiState.isVisible,
             enter = slideInVertically(initialOffsetY = { it }),

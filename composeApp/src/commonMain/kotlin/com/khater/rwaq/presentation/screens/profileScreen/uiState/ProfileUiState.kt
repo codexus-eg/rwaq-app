@@ -33,6 +33,8 @@ data class ProfileUiState(
     val userName: String = "",
     val phoneNumber: String = "",
     val userId: String = "",
+    // The user's own referral code, used to build the shareable invite link/QR.
+    val referCode: String = "",
     val isVipUser: Boolean = false,
     val snackBar: SnackBarState = SnackBarState(),
     val error: String? = null,
@@ -58,6 +60,7 @@ data class ProfileUiState(
     ),
     val currentLanguage: AppLanguage = AppLanguage.DEFAULT,
     val languageDialogUiState: LanguageDialogUiState = LanguageDialogUiState(),
+    val isQRCodeBottomSheetVisible: Boolean = false
 )
 
 data class LanguageDialogUiState(

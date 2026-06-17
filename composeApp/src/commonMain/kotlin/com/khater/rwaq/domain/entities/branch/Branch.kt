@@ -15,7 +15,8 @@ data class Branch(
     val branchStatus: BranchStatus,
     val distanceAwayFromYou: Double,
     val branchLocation: Location,
-    val workTime: List<BranchWorkTime>
+    val workTime: List<BranchWorkTime>,
+    val isBranchWorking: Boolean
 )
 enum class BranchStatus(val status: StringResource, val color: Color) {
     OPEN(status = Res.string.open, color = Color(0xFF61E061)),

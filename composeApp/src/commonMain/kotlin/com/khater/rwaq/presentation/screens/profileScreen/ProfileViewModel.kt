@@ -88,6 +88,7 @@ class ProfileViewModel(
                         isVipUser = user.isVipUser,
                         points = user.points,
                         userId = user.id,
+                        referCode = user.referCode,
                         isGuest = false
                     )
                 }
@@ -333,5 +334,14 @@ class ProfileViewModel(
     override fun onDismissGuestDialog() {
         updateState { it.copy(showGuestDialog = false) }
         sendNewEffect(ProfileUiEffect.NavigateBack)
+    }
+
+    override fun onOpenQRCodeBottomSheet() {
+        updateState { it.copy(isQRCodeBottomSheetVisible = true) }
+
+    }
+
+    override fun onDismissQRCodeBottomSheet() {
+        updateState { it.copy(isQRCodeBottomSheetVisible = false) }
     }
 }

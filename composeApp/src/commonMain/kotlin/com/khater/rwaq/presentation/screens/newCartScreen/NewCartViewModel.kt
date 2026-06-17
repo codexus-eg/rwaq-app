@@ -1,5 +1,6 @@
 package com.khater.rwaq.presentation.screens.newCartScreen
 
+import com.khater.rwaq.data.dto.cart.AddToCartRequestDto
 import com.khater.rwaq.data.dto.cart.CheckoutRequestDto
 import com.khater.rwaq.data.dto.cart.UpdateCartItemRequestDto
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import com.khater.rwaq.data.util.userPoints
 import com.khater.rwaq.domain.entities.branch.Branch
 import com.khater.rwaq.domain.entities.car.Car
 import com.khater.rwaq.domain.entities.cart.Cart
+import com.khater.rwaq.domain.entities.cart.CartExtension
 import com.khater.rwaq.domain.entities.cart.CartItem
 import com.khater.rwaq.domain.location.NativeLocationResult
 import com.khater.rwaq.domain.location.NativeLocationService
@@ -364,7 +366,8 @@ class NewCartViewModel(
                         driveThruBranches = driveThruBranches,
                         selectedPickupBranch = it.selectedPickupBranch ?: branches.firstOrNull(),
                         selectedDriveThruBranch = it.selectedDriveThruBranch
-                            ?: driveThruBranches.firstOrNull()
+                            ?: driveThruBranches.firstOrNull(),
+                        selectedDeliveryBranch = it.selectedDeliveryBranch ?: branches.firstOrNull()
                     )
                 }
             },
@@ -413,7 +416,11 @@ class NewCartViewModel(
         }
     }
 
-    private fun updateItem(itemId: String, request: UpdateCartItemRequestDto) {
+    private fun updateItem(
+        itemId: String,
+        request: UpdateCartItemRequestDto,
+        extensionId: String? = null,
+    ) {
         if (blockGuestAccess()) return
 
         tryToExecute(
@@ -424,8 +431,8 @@ class NewCartViewModel(
             onError = { error ->
                 handleCartMutationError(error)
             },
-            onStart = { updateState { it.copy(updatingItemId = itemId) } },
-            onFinish = { updateState { it.copy(updatingItemId = null) } }
+            onStart = { updateState { it.copy(updatingItemId = itemId, updatingExtensionId = extensionId) } },
+            onFinish = { updateState { it.copy(updatingItemId = null, updatingExtensionId = null) } }
         )
     }
 
@@ -444,6 +451,66 @@ class NewCartViewModel(
             onFinish = { updateState { it.copy(updatingItemId = null) } }
         )
     }
+
+    override fun onIncreaseExtension(itemId: String, extensionId: String) {
+        if (blockGuestAccess()) return
+        updateExtensionQuantity(itemId, extensionId, delta = 1)
+    }
+
+    override fun onDecreaseExtension(itemId: String, extensionId: String) {
+        if (blockGuestAccess()) return
+        updateExtensionQuantity(itemId, extensionId, delta = -1)
+    }
+
+    override fun onRemoveExtension(itemId: String, extensionId: String) {
+        if (blockGuestAccess()) return
+        applyExtensionUpdate(itemId, extensionId) { extensions ->
+            extensions.filter { it.extensionId != extensionId }
+        }
+    }
+
+    // Sends the item's full extension list with the target extension's quantity
+    // shifted by [delta]. Decreasing to 0 drops the extension from the list.
+    private fun updateExtensionQuantity(itemId: String, extensionId: String, delta: Int) {
+        applyExtensionUpdate(itemId, extensionId) { extensions ->
+            extensions.mapNotNull { ext ->
+                if (ext.extensionId != extensionId) {
+                    ext
+                } else {
+                    val newQuantity = ext.quantity + delta
+                    if (newQuantity <= 0) null else ext.copy(quantity = newQuantity)
+                }
+            }
+        }
+    }
+
+    private fun applyExtensionUpdate(
+        itemId: String,
+        extensionId: String,
+        transform: (List<CartExtension>) -> List<CartExtension>,
+    ) {
+        val item = state.value.cart?.items?.firstOrNull { it.id == itemId } ?: return
+        val updatedExtensions = transform(item.extensions).map { it.toUpdateDto() }
+        // Preserve the current item quantity; only the extensions change.
+        // Pass extensionId so only this extension's counter shows a spinner.
+        updateItem(
+            itemId,
+            UpdateCartItemRequestDto(
+                quantity = item.quantity,
+                extensions = updatedExtensions
+            ),
+            extensionId = extensionId
+        )
+    }
+
+    private fun CartExtension.toUpdateDto(): AddToCartRequestDto.CartExtensionDto =
+        AddToCartRequestDto.CartExtensionDto(
+            extensionId = extensionId,
+            name = name,
+            nameAr = nameAr,
+            price = price,
+            quantity = quantity
+        )
 
     override fun onCheckoutClicked() {
         if (blockGuestAccess()) return
@@ -511,14 +578,18 @@ class NewCartViewModel(
         val branch = when (currentState.pickupType) {
             PickupType.BRANCH -> currentState.selectedPickupBranch
             PickupType.DRIVE_THRU -> currentState.selectedDriveThruBranch
-            PickupType.DELIVERY -> null
+            PickupType.DELIVERY -> currentState.selectedDeliveryBranch
         }
 
-        if (!currentState.isDelivery && branch == null) {
+        // Every receiving method (including delivery) is fulfilled from a branch.
+        if (branch == null) {
             viewModelScope.launch {
                 updateState { it.copy(isCheckoutLoading = false) }
                 showSnackBar(
-                    message = getString(Res.string.no_branches_to_display),
+                    message = getString(
+                        if (currentState.isDelivery) Res.string.please_choose_branch
+                        else Res.string.no_branches_to_display
+                    ),
                     isSuccess = false
                 )
             }
@@ -556,7 +627,7 @@ class NewCartViewModel(
                         isSuccess = false
                     )
                 } else if (
-                    currentState.selectedPaymentMethod == ONLINE_PAYMENT_METHOD &&
+                    currentState.effectivePaymentMethod == ONLINE_PAYMENT_METHOD &&
                     e.isOnlinePaymentCheckoutError()
                 ) {
                     showSnackBar(
@@ -601,8 +672,11 @@ class NewCartViewModel(
 
     override fun onBranchSelected(branch: Branch) {
         updateState {
-            if (it.isDriveThru) it.copy(selectedDriveThruBranch = branch)
-            else it.copy(selectedPickupBranch = branch)
+            when (it.pickupType) {
+                PickupType.DRIVE_THRU -> it.copy(selectedDriveThruBranch = branch)
+                PickupType.DELIVERY -> it.copy(selectedDeliveryBranch = branch)
+                PickupType.BRANCH -> it.copy(selectedPickupBranch = branch)
+            }
         }
     }
 
@@ -818,6 +892,7 @@ class NewCartViewModel(
                 isLocationObtained = cartLocation?.hasCoordinates() ?: state.isLocationObtained,
                 subTotal = grossTotal,
                 rewardDiscount = rewardAmount,
+                deliveryFee = cart.deliveryFee,
                 cartTotal = netPayable,
                 userPoints = cart.userPoints ?: state.userPoints
             )
@@ -897,7 +972,7 @@ class NewCartViewModel(
     private fun NewCartUiState.toCheckoutRequest(branch: Branch?): CheckoutRequestDto =
         when (pickupType) {
             PickupType.BRANCH -> CheckoutRequestDto(
-                paymentMethod = selectedPaymentMethod,
+                paymentMethod = effectivePaymentMethod,
                 onlinePaymentMethod = onlinePaymentMethodForCheckout(),
                 pickupType = PickupType.BRANCH.name,
                 branchId = branch?.id,
@@ -905,7 +980,7 @@ class NewCartViewModel(
             )
 
             PickupType.DRIVE_THRU -> CheckoutRequestDto(
-                paymentMethod = selectedPaymentMethod,
+                paymentMethod = effectivePaymentMethod,
                 onlinePaymentMethod = onlinePaymentMethodForCheckout(),
                 pickupType = PickupType.DRIVE_THRU.name,
                 branchId = branch?.id,
@@ -919,9 +994,10 @@ class NewCartViewModel(
             )
 
             PickupType.DELIVERY -> CheckoutRequestDto(
-                paymentMethod = selectedPaymentMethod,
+                paymentMethod = effectivePaymentMethod,
                 onlinePaymentMethod = onlinePaymentMethodForCheckout(),
                 pickupType = PickupType.DELIVERY.name,
+                branchId = branch?.id,
                 orderAddress = deliveryAddress.trim(),
                 notes = orderNotes,
                 latitude = orderLocation.latitude,
@@ -930,7 +1006,7 @@ class NewCartViewModel(
         }
 
     private fun NewCartUiState.onlinePaymentMethodForCheckout(): String? {
-        if (selectedPaymentMethod != ONLINE_PAYMENT_METHOD) return null
+        if (effectivePaymentMethod != ONLINE_PAYMENT_METHOD) return null
 
         return if (showApplePayOption && isApplePaySupported && isApplePaySelected) {
             APPLE_PAY_ONLINE_PAYMENT_METHOD

@@ -27,6 +27,7 @@ import rwaq.composeapp.generated.resources.plus
 fun QuantitySelector(
     count: Int,
     maxCount: Int = Int.MAX_VALUE,
+    minCount: Int = 1,
     onDecrease: () -> Unit,
     onIncrease: () -> Unit,
     isBig: Boolean = false,
@@ -46,9 +47,9 @@ fun QuantitySelector(
             com.khater.rwaq.designSystem.component.icon.IconButton(
                 painter = painterResource(Res.drawable.minus),
                 contentDescription = "Minus amount",
-                tint = if (count > 0) Theme.colorScheme.primary.primary
+                tint = if (count > minCount) Theme.colorScheme.primary.primary
                 else Theme.colorScheme.shadePrimary,
-                onClick = { if (count > 1) onDecrease() },
+                onClick = { if (count > minCount) onDecrease() },
                 modifier = Modifier.size(32.dp).clip(CircleShape)
             )
 

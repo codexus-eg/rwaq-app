@@ -70,10 +70,17 @@ data class AddToCartRequestDto(
     )
 }
 
+@OptIn(ExperimentalSerializationApi::class)
 @Serializable
 data class UpdateCartItemRequestDto(
     @SerialName("quantity")
-    val quantity: Int
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val quantity: Int? = null,
+    // When non-null the backend replaces the item's extensions with this list.
+    // Omit an extension (or send quantity 0 and filter it out) to remove it.
+    @SerialName("extensions")
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val extensions: List<AddToCartRequestDto.CartExtensionDto>? = null
 )
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -203,6 +210,8 @@ data class CartData(
     val couponCode: String? = null,
     @SerialName("subtotal")
     val subtotal: Double = 0.0,
+    @SerialName("deliveryFee")
+    val deliveryFee: Double = 0.0,
     @SerialName("totalCashback")
     val totalCashback: Double = 0.0,
     @SerialName("totalQuantity")

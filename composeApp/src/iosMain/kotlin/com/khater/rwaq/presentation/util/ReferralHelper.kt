@@ -8,19 +8,20 @@ actual class ReferralHelper {
 
     actual fun fetchReferral(onResult: (String?) -> Unit) {
         val userDefaults = NSUserDefaults.standardUserDefaults
-        val key = "pending_referral_id"
 
-        // Read the value saved by the Swift AppDelegate
-        val userId = userDefaults.stringForKey(key)
+        // Current key written by the Swift AppDelegate ("ref=CODE" / "CODE"),
+        // with a fallback to the legacy key for older installs.
+        val newKey = "pending_referral_code"
+        val legacyKey = "pending_referral_id"
 
-        Logger.i { "userId $userId" }
-        print( "userId $userId")
-        if (userId != null && userId.startsWith("refer")) {
-            // Send the result back
-            onResult(userId)
+        val raw = userDefaults.stringForKey(newKey) ?: userDefaults.stringForKey(legacyKey)
 
-            // Clear the referral ID so it isn't triggered again next time the app opens
-            userDefaults.removeObjectForKey(key)
+        Logger.i { "[Referral] iOS pending referral raw=$raw" }
+        if (raw != null) {
+            onResult(raw)
+            // Clear both so it isn't processed again next launch.
+            userDefaults.removeObjectForKey(newKey)
+            userDefaults.removeObjectForKey(legacyKey)
         } else {
             onResult(null)
         }

@@ -59,6 +59,7 @@ fun ExtensionsSection(
             QuantitySelector(
                 count = ext.currentQty,
                 maxCount = ext.maxCount,
+                minCount = 0,
                 onDecrease = { onQuantityChange(ext.id, -1) },
                 onIncrease = { onQuantityChange(ext.id, 1) }
             )

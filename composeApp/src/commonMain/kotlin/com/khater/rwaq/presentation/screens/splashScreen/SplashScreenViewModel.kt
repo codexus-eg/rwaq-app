@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 
@@ -33,16 +34,24 @@ class SplashScreenViewModel(
 
     private fun checkReferral() {
         tryToExecute(
-            callee = { referralManager.checkAndSubmitReferral() },
-            onSuccess = {userID ->
+            callee = {
+                // Phase 1: capture any pending referral code from the install /
+                // deep link (stored locally, NOT yet rewarded).
+                val code = referralManager.capturePendingReferral()
+                // Phase 2: if the user is already logged in, claim it now.
+                // Otherwise the claim runs right after login/signup
+                // (see RegisterOtpViewModel).
+                if (authenticationRepository.isUserLoggedIn().first()) {
+                    referralManager.claimPendingReferral()
+                }
+                code ?: ""
+            },
+            onSuccess = { userID ->
                 updateState { it.copy(userId = userID) }
                 Logger.i { "onSuccess" }
             },
-            onError = {throwable ->
-                updateState { it.copy(userId =throwable.message ) }
-
+            onError = { throwable ->
                 Logger.i { "${throwable.message}" }
-
             },
             dispatcher = dispatcher
         )

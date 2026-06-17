@@ -4,5 +4,5 @@ import com.khater.rwaq.presentation.util.ReferralManager
 import org.koin.dsl.module
 
 val referralModule = module {
-    single { ReferralManager(helper = get(), settings = get()) }
+    single { ReferralManager(helper = get(), referralRepository = get(), settings = get()) }
 }

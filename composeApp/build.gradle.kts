@@ -23,7 +23,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -36,7 +36,7 @@ kotlin {
             export("io.github.mirzemehdi:kmpnotifier:1.6.1")
         }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -82,6 +82,8 @@ kotlin {
 //            implementation(libs.swmansion.kmpMaps.googleMaps)
 //            implementation(libs.swmansion.kmpMaps.core)
 
+            // qr code generator
+            implementation("network.chaintech:qr-kit:3.1.3")
 
             // Geocoding
             implementation(libs.compass.geocoder)
@@ -148,7 +150,7 @@ android {
     namespace = "com.khater.rwaq"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     ndkVersion = "26.1.10909125"
-     defaultConfig {
+    defaultConfig {
         applicationId = "com.khater.rwaq"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()

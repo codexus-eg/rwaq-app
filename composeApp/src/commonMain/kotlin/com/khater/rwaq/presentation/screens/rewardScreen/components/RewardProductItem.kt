@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -26,7 +25,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import rwaq.composeapp.generated.resources.Res
 import rwaq.composeapp.generated.resources.add_to_cart
-import rwaq.composeapp.generated.resources.currency_sar
+import rwaq.composeapp.generated.resources.point
 
 @Composable
 fun RewardProductItem(
@@ -36,10 +35,9 @@ fun RewardProductItem(
     isAdding: Boolean = false,
 ) {
 
-    // 1. Calculate Prices
-    val hasDiscount = product.discount > 0
-    val finalPrice = if (hasDiscount) (product.basePrice - product.discount) else product.basePrice
-    val canQuickAdd = product.isInStock && points >= finalPrice
+    // 1. Reward cost in points (compared against the user's points balance)
+    val rewardPoints = product.points
+    val canQuickAdd = product.isInStock && points >= rewardPoints
 
     // Wrapper Box to handle Shadow independently
     Box(
@@ -121,27 +119,15 @@ fun RewardProductItem(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // 4. Price Section
+                // 4. Points Section
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Current Price (Red if discounted, Brown if normal)
+                    // Reward cost in points
                     Text(
-                        text = "$finalPrice ${stringResource(Res.string.currency_sar)}",
+                        text = "${rewardPoints.toInt()} ${stringResource(Res.string.point)}",
                         style = Theme.typography.title.medium,
-                        color = if (hasDiscount) Color(0xffFF0D0D) else Color(0xFF5C482E)
+                        color = Color(0xFF5C482E)
                     )
 
-                    // Old Price (only if discounted)
-                    if (hasDiscount) {
-                        Spacer(modifier = Modifier.width(4.dp))
-
-                        Text(
-                            text = "${(product.basePrice)} ${stringResource(Res.string.currency_sar)}",
-                            style = Theme.typography.body.small.copy(
-                                textDecoration = TextDecoration.LineThrough
-                            ),
-                            color = Color(0xffC4C4C4)
-                        )
-                    }
                   //  if (product.isInStock) {
                         Spacer(modifier = Modifier.weight(1f))
 

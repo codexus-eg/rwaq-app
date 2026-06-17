@@ -62,24 +62,25 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         return false
     }
 
-    // Extract the userId and store it for Kotlin to read
+    // Extract the referral code from the invite link and store it for the Kotlin
+    // ReferralHelper to read after login.
+    //
+    // Example URL: https://rwaq-b04b189d2e97.herokuapp.com/invite?ref=ABC123
+    // We read the `ref` query param (current scheme), falling back to `userId`
+    // for any legacy links still in the wild. The value is stored under
+    // "pending_referral_code"; ReferralHelper picks it up and clears it.
     private func processReferralLink(_ url: URL?) {
         guard let url = url else { return }
 
-        // Example URL: https://rwaq-b04b189d2e97.herokuapp.com/redirect?userId=refer123
-        if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-           let queryItems = components.queryItems {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              let queryItems = components.queryItems else { return }
 
-            if let userIdItem = queryItems.first(where: { $0.name == "userId" }),
-               let userId = userIdItem.value {
-                  print("Stored Referral ID: \(userId)")
-                // Check if it starts with "refer"
-                if userId.hasPrefix("refer") {
-                    print("Stored Referral ID: \(userId)")
-                    // Store in UserDefaults so actual class ReferralHelper can read it
-                    UserDefaults.standard.set(userId, forKey: "pending_referral_id")
-                }
-            }
+        let code = queryItems.first(where: { $0.name == "ref" })?.value
+            ?? queryItems.first(where: { $0.name == "userId" })?.value
+
+        if let code = code, !code.isEmpty {
+            print("Stored Referral Code: \(code)")
+            UserDefaults.standard.set(code, forKey: "pending_referral_code")
         }
     }
 

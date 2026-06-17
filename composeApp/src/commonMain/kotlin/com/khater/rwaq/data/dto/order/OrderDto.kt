@@ -34,6 +34,8 @@ data class OrderDto(
     val paymobOrderId: String? = null,
     @SerialName("totalAmount")
     val totalAmount: Double = 0.0, // JSON has Int, but Money usually Double
+    @SerialName("deliveryFee")
+    val deliveryFee: Double = 0.0,
     @SerialName("status")
     val status: String = "",
     @SerialName("pickupType")
@@ -89,6 +91,7 @@ data class OrderDto(
          paymobTransactionId = this.paymobTransactionId,
          paymobOrderId = this.paymobOrderId,
          totalAmount = this.totalAmount,
+         deliveryFee = this.deliveryFee,
 	         status = this.status,
 	         pickupType = this.pickupType,
 	         pickupTypeLabel = this.pickupTypeLabel,

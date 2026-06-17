@@ -4,6 +4,7 @@ data class Cart(
     val id: String,
     val items: List<CartItem>,
     val subtotal: Double,
+    val deliveryFee: Double = 0.0,
     val totalQuantity: Int,
     val notes: String,
     val pickupType: String,

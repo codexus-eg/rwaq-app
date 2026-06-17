@@ -29,6 +29,8 @@ data class NewCartUiState(
     val pickupType: PickupType = PickupType.BRANCH,
     val selectedPickupBranch: Branch? = null,
     val selectedDriveThruBranch: Branch? = null,
+    // Branch the delivery is fulfilled from when Delivery is the receiving method.
+    val selectedDeliveryBranch: Branch? = null,
     val deliveryAddress: String = "",
 
     // Cars
@@ -98,6 +100,8 @@ data class NewCartUiState(
     // Pricing
     val subTotal: Double = 0.0,
     val rewardDiscount: Double = 0.0,
+    // Server-managed delivery fee from the cart response. Never hardcode it.
+    val deliveryFee: Double = 0.0,
     val cartTotal: Double = 0.0,
     val userPoints: Int? = null,
 
@@ -105,6 +109,9 @@ data class NewCartUiState(
     val isUpdatingMetadata: Boolean = false,
     val isSendingOrderLoading: Boolean = false,
     val updatingItemId: String? = null,
+    // When set, the in-flight update targets this extension (not the product line)
+    // of [updatingItemId], so only that extension's counter shows a spinner.
+    val updatingExtensionId: String? = null,
     val isGuest: Boolean = false,
     val showGuestDialog: Boolean = false,
     val isPaymentSuccessDialogVisible: Boolean = false
@@ -117,4 +124,43 @@ data class NewCartUiState(
 
     val isDelivery: Boolean
         get() = pickupType == PickupType.DELIVERY
+
+    /** Delivery fee actually charged: applied only when Delivery is the receiving method. */
+    val appliedDeliveryFee: Double
+        get() = if (isDelivery) deliveryFee else 0.0
+
+    /** Total the user pays, including the delivery fee when Delivery is selected. */
+    val payableTotal: Double
+        get() = cartTotal + appliedDeliveryFee
+
+    /** The branch tied to the current receiving method. */
+    val activeSelectedBranch: Branch?
+        get() = when (pickupType) {
+            PickupType.BRANCH -> selectedPickupBranch
+            PickupType.DRIVE_THRU -> selectedDriveThruBranch
+            PickupType.DELIVERY -> selectedDeliveryBranch
+        }
+
+    /** True when a branch is selected for pickup/drive-thru but it is closed right now. */
+    val isSelectedBranchClosed: Boolean
+        get() = activeSelectedBranch?.let { !it.isBranchWorking } ?: false
+
+    /** True when the cart has items and every one of them is a reward (points) item. */
+    val hasOnlyRewardItems: Boolean
+        get() = cart?.items?.let { it.isNotEmpty() && it.all { item -> item.isRewardItem } } ?: false
+
+    /** Total points required to redeem all reward items currently in the cart. */
+    val totalRewardPoints: Int
+        get() = cart?.items?.filter { it.isRewardItem }?.sumOf { it.pointsCost } ?: 0
+
+    /**
+     * Online payment is impossible when there is nothing monetary to charge — i.e.
+     * the cart is reward-only and no delivery fee applies (payable total is 0).
+     */
+    val mustPayWithCash: Boolean
+        get() = hasOnlyRewardItems && payableTotal <= 0.0
+
+    /** Payment method actually used at checkout, forced to CASH when nothing is payable online. */
+    val effectivePaymentMethod: String
+        get() = if (mustPayWithCash) "CASH" else selectedPaymentMethod
 }

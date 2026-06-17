@@ -45,7 +45,7 @@ fun WalletSection(
         ) {
         SettingItemCard(
             settingName = stringResource(Res.string.wallet),
-            settingSubName = "$points ${stringResource(Res.string.currency_sar)}",
+            settingSubName = "$points ${stringResource(Res.string.point)}",
             onClick = onWalletClick,
             hasNavigationIcon = false
         )

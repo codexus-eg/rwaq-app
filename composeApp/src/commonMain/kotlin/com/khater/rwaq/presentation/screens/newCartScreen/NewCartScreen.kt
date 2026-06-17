@@ -1,12 +1,15 @@
 package com.khater.rwaq.presentation.screens.newCartScreen
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -28,7 +31,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import com.khater.rwaq.designSystem.component.button.PrimaryButton
 import com.khater.rwaq.designSystem.component.indicator.DotsProgressIndicator
 import com.khater.rwaq.designSystem.theme.theme.Theme
@@ -37,6 +46,7 @@ import com.khater.rwaq.presentation.composables.EventHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.khater.rwaq.designSystem.component.dialog.BasicDialog
 import com.khater.rwaq.designSystem.component.dialog.Dialog
+import com.khater.rwaq.designSystem.component.textField.MultiLineTextField
 import com.khater.rwaq.domain.location.NativeLocationSettings
 import com.khater.rwaq.presentation.util.Dimensions.PADDING_BOTTOM_WITH_NAV_VISIBLE
 import com.khater.rwaq.domain.entities.cart.CartItem
@@ -208,6 +218,12 @@ private fun NewCartContent(
         }
     }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
+    val secondFieldFocus = remember { FocusRequester() }
+
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -239,6 +255,15 @@ private fun NewCartContent(
             ) {
                         Spacer(modifier = Modifier.height(12.dp))
 
+                        // Closed-branch warning: selected pickup/drive-thru branch is not open now
+                        AnimatedVisibility(
+                            visible = state.isSelectedBranchClosed,
+                            enter = fadeIn() + expandVertically(),
+                            exit = fadeOut() + shrinkVertically()
+                        ) {
+                            ClosedBranchBanner()
+                        }
+
                         // Branch error banner
                         AnimatedVisibility(visible = state.branchesErrorMessage != null) {
                             Row(
@@ -268,7 +293,8 @@ private fun NewCartContent(
                                 NewCartItemRow(
                                     item = item,
                                     listener = listener,
-                                    isUpdating = state.updatingItemId == item.id,
+                                    updatingItemId = state.updatingItemId,
+                                    updatingExtensionId = state.updatingExtensionId,
                                     userPoints = state.userPoints
                                 )
                                 if (index < state.cart.items.lastIndex) {
@@ -283,23 +309,43 @@ private fun NewCartContent(
 
                         // Payment Details
                         SectionCard(title = stringResource(Res.string.payment_details)) {
-                            PaymentDetailRow(
-                                label = stringResource(Res.string.sub_total),
-                                amount = "${state.subTotal} ${stringResource(Res.string.currency_sar)}"
-                            )
-
-                            if (state.rewardDiscount > 0) {
+                            if (state.hasOnlyRewardItems) {
                                 PaymentDetailRow(
-                                    label = stringResource(Res.string.reward_discount),
-                                    amount = "- ${state.rewardDiscount} ${stringResource(Res.string.currency_sar)}",
-                                    textColor = Theme.colorScheme.success
+                                    label = stringResource(Res.string.points_used),
+                                    amount = "${state.totalRewardPoints} ${stringResource(Res.string.point)}"
+                                )
+                                state.userPoints?.let { points ->
+                                    PaymentDetailRow(
+                                        label = stringResource(Res.string.my_points),
+                                        amount = "$points ${stringResource(Res.string.point)}"
+                                    )
+                                }
+                            } else {
+                                PaymentDetailRow(
+                                    label = stringResource(Res.string.sub_total),
+                                    amount = "${state.subTotal} ${stringResource(Res.string.currency_sar)}"
+                                )
+
+                                if (state.rewardDiscount > 0) {
+                                    PaymentDetailRow(
+                                        label = stringResource(Res.string.reward_discount),
+                                        amount = "- ${state.rewardDiscount} ${stringResource(Res.string.currency_sar)}",
+                                        textColor = Theme.colorScheme.success
+                                    )
+                                }
+                            }
+
+                            if (state.appliedDeliveryFee > 0) {
+                                PaymentDetailRow(
+                                    label = stringResource(Res.string.delivery_fee),
+                                    amount = "${state.appliedDeliveryFee} ${stringResource(Res.string.currency_sar)}"
                                 )
                             }
 
                             HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp), thickness = 0.5.dp, color = Color.LightGray)
                             PaymentDetailRow(
                                 label = stringResource(Res.string.total_amount),
-                                amount = "${state.cartTotal} ${stringResource(Res.string.currency_sar)}",
+                                amount = "${state.payableTotal} ${stringResource(Res.string.currency_sar)}",
                                 isBold = true
                             )
                         }
@@ -312,6 +358,17 @@ private fun NewCartContent(
                                 placeholder = {
                                     Text(stringResource(Res.string.order_notes_hint), color = Color.LightGray, style = Theme.typography.body.small)
                                 },
+                                keyboardOptions = KeyboardOptions(
+                                    imeAction = ImeAction.Done
+                                ),
+
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        focusManager.clearFocus()
+                                        keyboardController?.hide()
+                                    }
+                                ),
+
                                 textStyle = Theme.typography.body.small,
                                 modifier = Modifier.fillMaxWidth().height(80.dp),
                                 shape = RoundedCornerShape(8.dp),
@@ -443,37 +500,72 @@ private fun NewCartContent(
                                 onClick = { listener.onPickupTypeChanged(PickupType.DELIVERY) }
                             )
                             AnimatedVisibility(visible = state.isDelivery) {
-                                DeliveryDetails(
-                                    state = state,
-                                    listener = listener
-                                )
+                                Column {
+                                    Text(
+                                        stringResource(Res.string.select_branch),
+                                        style = Theme.typography.body.small,
+                                        color = Theme.colorScheme.primary.primary,
+                                        modifier = Modifier.padding(bottom = 8.dp)
+                                    )
+                                    InlineBranchList(
+                                        branches = state.allBranches.map { b ->
+                                            com.khater.rwaq.presentation.screens.branchScreen.uiState.BranchUiState(
+                                                id = b.id,
+                                                branchName = b.branchName,
+                                                branchStatus = b.branchStatus
+                                            )
+                                        },
+                                        selectedBranchId = state.selectedDeliveryBranch?.id,
+                                        onSelectBranch = { id ->
+                                            state.allBranches.find { it.id == id }?.let { listener.onBranchSelected(it) }
+                                        },
+                                        onClickTime = { id ->
+                                            state.allBranches.find { it.id == id }?.let { listener.onClickWorkTimeButton(it) }
+                                        },
+                                        onClickLocation = { loc ->
+                                            state.allBranches.find { it.branchLocation.latitude == loc.latitude && it.branchLocation.longitude == loc.longitude }?.let {
+                                                listener.onClickLocationButton(it)
+                                            }
+                                        }
+                                    )
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+
+                                    DeliveryDetails(
+                                        state = state,
+                                        listener = listener,
+                                    )
+                                }
                             }
                         }
 
                         // Payment Method Selection
+                        // When the cart is reward-only (nothing payable online), only Cash is offered.
                         SectionCard(title = null) {
-                            PaymentMethodRow(
-                                title = stringResource(Res.string.online_payment),
-                                icon = painterResource(Res.drawable.onlinepayemt),
-                                isSelected = state.selectedPaymentMethod == "ONLINE",
-                                onClick = { listener.onPaymentMethodChanged("ONLINE") }
-                            )
-                            AnimatedVisibility(
-                                visible = state.showApplePayOption && state.selectedPaymentMethod == "ONLINE"
-                            ) {
-                                Column {
-                                    HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
-                                    ApplePayOptionRow(
-                                        isSelected = state.isApplePaySelected,
-                                        onSelectionChanged = listener::onApplePaySelectionChanged
-                                    )
+                            if (!state.mustPayWithCash) {
+                                PaymentMethodRow(
+                                    title = stringResource(Res.string.online_payment),
+                                    icon = painterResource(Res.drawable.onlinepayemt),
+                                    isSelected = state.selectedPaymentMethod == "ONLINE",
+                                    onClick = { listener.onPaymentMethodChanged("ONLINE") }
+                                )
+                                AnimatedVisibility(
+                                    visible = state.showApplePayOption && state.selectedPaymentMethod == "ONLINE"
+                                ) {
+                                    Column {
+                                        HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
+                                        ApplePayOptionRow(
+                                            isSelected = state.isApplePaySelected,
+                                            onSelectionChanged = listener::onApplePaySelectionChanged
+                                        )
+                                    }
                                 }
+                                HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
                             }
-                            HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
                             PaymentMethodRow(
                                 title = stringResource(Res.string.cash),
                                 icon = painterResource(Res.drawable.cash),
-                                isSelected = state.selectedPaymentMethod == "CASH",
+                                isSelected = state.mustPayWithCash || state.selectedPaymentMethod == "CASH",
                                 onClick = { listener.onPaymentMethodChanged("CASH") }
                             )
                         }
@@ -482,7 +574,7 @@ private fun NewCartContent(
                 PrimaryButton(
                     text = stringResource(Res.string.checkout_order),
                     onClick = listener::onCheckoutClicked,
-                    isEnabled = !state.isCheckoutLoading,
+                    isEnabled = !state.isCheckoutLoading && !state.isSelectedBranchClosed,
                     isLoading = state.isCheckoutLoading,
                     modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
                 )
@@ -588,6 +680,40 @@ private fun NewCartContent(
 }
 
 @Composable
+private fun ClosedBranchBanner() {
+    val transition = rememberInfiniteTransition(label = "closed_branch")
+    val pulse by transition.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(900),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "closed_branch_alpha"
+    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(Theme.colorScheme.error.copy(alpha = 0.10f))
+            .border(1.dp, Theme.colorScheme.error.copy(alpha = pulse), RoundedCornerShape(12.dp))
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Box(
+            modifier = Modifier.size(10.dp).clip(CircleShape)
+                .background(Theme.colorScheme.error.copy(alpha = pulse))
+        )
+        Text(
+            text = stringResource(Res.string.selected_branch_temporarily_closed),
+            style = Theme.typography.body.small.copy(fontWeight = FontWeight.SemiBold),
+            color = Theme.colorScheme.error
+        )
+    }
+}
+
+@Composable
 private fun DeliveryDetails(
     state: NewCartUiState,
     listener: NewCartInteractionListener,
@@ -596,33 +722,47 @@ private fun DeliveryDetails(
         modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = if (state.isLocationObtained) {
-                    stringResource(Res.string.current_location_ready)
-                } else {
-                    stringResource(Res.string.add_location)
-                },
-                style = Theme.typography.body.small,
-                color = if (state.isLocationObtained) Color(0xFF3B7D5C) else Color.Gray,
-                modifier = Modifier.weight(1f)
-            )
-            TextButton(onClick = listener::onRetryCurrentLocation) {
-                Text(
-                    text = stringResource(Res.string.detect_current_location),
-                    style = Theme.typography.body.small,
-                    color = Theme.colorScheme.brand.brand
-                )
-            }
-        }
+//        Row(
+//            modifier = Modifier.fillMaxWidth(),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceBetween
+//        ) {
+//            Text(
+//                text = if (state.isLocationObtained) {
+//                    stringResource(Res.string.current_location_ready)
+//                } else {
+//                    stringResource(Res.string.add_location)
+//                },
+//                style = Theme.typography.body.small,
+//                color = if (state.isLocationObtained) Color(0xFF3B7D5C) else Color.Gray,
+//                modifier = Modifier.weight(1f)
+//            )
+//            TextButton(onClick = listener::onRetryCurrentLocation) {
+//                Text(
+//                    text = stringResource(Res.string.detect_current_location),
+//                    style = Theme.typography.body.small,
+//                    color = Theme.colorScheme.brand.brand
+//                )
+//            }
+//        }
+
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val focusManager = LocalFocusManager.current
+
 
         OutlinedTextField(
             value = state.deliveryAddress,
             onValueChange = listener::onDeliveryAddressChanged,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done
+            ),
+
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                }
+            ),
             label = {
                 Text(
                     text = stringResource(Res.string.delivery_address),
@@ -637,8 +777,7 @@ private fun DeliveryDetails(
                 )
             },
             textStyle = Theme.typography.body.small,
-            modifier = Modifier.fillMaxWidth(),
-            minLines = 2,
+            modifier = Modifier.fillMaxWidth().height(80.dp)  ,
             shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = Color.LightGray,
@@ -652,9 +791,15 @@ private fun DeliveryDetails(
 fun NewCartItemRow(
     item: CartItem,
     listener: NewCartInteractionListener,
-    isUpdating: Boolean,
+    updatingItemId: String?,
+    updatingExtensionId: String?,
     userPoints: Int?,
 ) {
+    val isThisItemUpdating = updatingItemId == item.id
+    // The product counter spins only when the product line itself is updating,
+    // not when one of its extensions is.
+    val isProductUpdating = isThisItemUpdating && updatingExtensionId == null
+
     val canIncrease = !item.isRewardItem ||
             userPoints == null ||
             userPoints >= item.rewardPointsForOneMore()
@@ -688,7 +833,11 @@ fun NewCartItemRow(
                 }
             }
             Text(
-                "${item.totalPrice} ${stringResource(Res.string.currency_sar)}",
+                if (item.isRewardItem) {
+                    "${item.pointsCost} ${stringResource(Res.string.point)}"
+                } else {
+                    "${item.totalPrice} ${stringResource(Res.string.currency_sar)}"
+                },
                 style = Theme.typography.body.medium,
                 color = Theme.colorScheme.primary.primary
             )
@@ -704,8 +853,47 @@ fun NewCartItemRow(
                 onDecrease = { listener.onDecreaseQuantity(item.id, item.quantity) },
                 onDelete = { listener.onRemoveItem(item.id) },
                 isBig = true,
-                isLoading = isUpdating
+                isLoading = isProductUpdating
             )
+        }
+
+        // Editable extensions for this cart item
+        if (item.extensions.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                stringResource(Res.string.extensions),
+                style = Theme.typography.body.extraSmall,
+                color = Theme.colorScheme.primary.primary,
+            )
+            item.extensions.forEach { ext ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            ext.name,
+                            style = Theme.typography.body.extraSmall,
+                            color = Theme.colorScheme.shadePrimary
+                        )
+                        Text(
+                            "${ext.price} ${stringResource(Res.string.currency_sar)}",
+                            style = Theme.typography.body.extraSmall,
+                            color = Color.Gray
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    QuantitySelector(
+                        count = ext.quantity,
+                        onIncrease = { listener.onIncreaseExtension(item.id, ext.extensionId) },
+                        onDecrease = { listener.onDecreaseExtension(item.id, ext.extensionId) },
+                        onDelete = { listener.onRemoveExtension(item.id, ext.extensionId) },
+                        isBig = false,
+                        isLoading = isThisItemUpdating && updatingExtensionId == ext.extensionId
+                    )
+                }
+            }
         }
     }
 }

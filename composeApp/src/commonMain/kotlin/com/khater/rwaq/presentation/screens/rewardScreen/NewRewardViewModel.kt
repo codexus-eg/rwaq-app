@@ -127,13 +127,13 @@ class NewRewardViewModel(
 
         if (newQty < 1) return
 
-        val unitPrice = details.calculatedSingleUnitTestPrice
-        val projectedTotalPrice = unitPrice * newQty
+        val unitPoints = details.rewardPoints
+        val projectedTotalPoints = unitPoints * newQty
 
-        if (change > 0 && projectedTotalPrice > currentState.points) {
+        if (change > 0 && projectedTotalPoints > currentState.points) {
             viewModelScope.launch {
                 showInsufficientPointsError(
-                    requiredPoints = projectedTotalPrice.toPoints(),
+                    requiredPoints = projectedTotalPoints.toPoints(),
                     availablePoints = currentState.points.toPoints()
                 )
             }
@@ -143,8 +143,7 @@ class NewRewardViewModel(
         updateState { state ->
             state.copy(
                 selectedProductDetails = details.copy(
-                    productQuantity = newQty,
-                    calculatedTotalPrice = projectedTotalPrice
+                    productQuantity = newQty
                 )
             )
         }
@@ -156,10 +155,11 @@ class NewRewardViewModel(
 
         val details = currentState.selectedProductDetails ?: return
 
-        if (details.calculatedTotalPrice > currentState.points) {
+        val totalPoints = details.rewardPoints * details.productQuantity
+        if (totalPoints > currentState.points) {
             viewModelScope.launch {
                 showInsufficientPointsError(
-                    requiredPoints = details.calculatedTotalPrice.toPoints(),
+                    requiredPoints = totalPoints.toPoints(),
                     availablePoints = currentState.points.toPoints()
                 )
             }
@@ -245,7 +245,7 @@ class NewRewardViewModel(
         }
 
         val selectedSize = product.sizes.firstOrNull()
-        val rewardCost = ((selectedSize?.price ?: product.basePrice) - product.discount).coerceAtLeast(0.0)
+        val rewardCost = product.points
         if (rewardCost > currentState.points) {
             viewModelScope.launch {
                 showInsufficientPointsError(
